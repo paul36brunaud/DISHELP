@@ -17,29 +17,40 @@ function renderHome() {
   ];
 
   content.innerHTML = `<h2>Plats du jour</h2>
-  ${recipes.map(r => `
-    <div class="recipe-card">
-      <h3>${r.name}</h3>
-      <p>${r.time}</p>
-      <button data-id="${r.id}" class="fav-btn">❤️</button>
-    </div>
-  `).join('')}`;
+  ${recipes.map(r => {
+    const isFav = favorites.some(f => f.id === r.id);
+    return `
+      <div class="recipe-card">
+        <h3>${r.name}</h3>
+        <p>${r.time}</p>
+        <button data-id="${r.id}" class="fav-btn">
+          ${isFav ? "❌ Retirer" : "❤️ Ajouter"}
+        </button>
+      </div>
+    `;
+  }).join('')}`;
 
   document.querySelectorAll(".fav-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const id = parseInt(btn.dataset.id);
       const recipe = recipes.find(r => r.id === id);
-      if (!favorites.some(f => f.id === id)) {
+      const index = favorites.findIndex(f => f.id === id);
+
+      if (index === -1) {
         favorites.push(recipe);
-        localStorage.setItem("favorites", JSON.stringify(favorites));
-        alert("Ajouté aux favoris ❤️");
+        btn.textContent = "❌ Retirer";
+      } else {
+        favorites.splice(index, 1);
+        btn.textContent = "❤️ Ajouter";
       }
+
+      localStorage.setItem("favorites", JSON.stringify(favorites));
     });
   });
 }
 
 function renderFavorites() {
-  content.innerHTML = `<h2>Mes favoris ❤️</h2>`;
+  content.innerHTML = `<h2>Mes favoris :</h2>`;
   if (favorites.length === 0) {
     content.innerHTML += `<p>Aucun favori pour l'instant.</p>`;
     return;
@@ -51,7 +62,7 @@ function renderFavorites() {
     div.innerHTML = `
       <h3>${f.name}</h3>
       <p>${f.time}</p>
-      <button data-id="${f.id}" class="remove-fav">❌</button>
+      <button data-id="${f.id}" class="remove-fav">❌ Retirer</button>
     `;
     content.appendChild(div);
   });
@@ -63,7 +74,7 @@ function renderFavorites() {
       if (index !== -1) {
         favorites.splice(index, 1);
         localStorage.setItem("favorites", JSON.stringify(favorites));
-        renderFavorites();
+        renderFavorites(); // Rafraîchir la liste
       }
     });
   });
