@@ -1,8 +1,14 @@
-
+// --- Données locales ---
 const pantry = JSON.parse(localStorage.getItem("pantry")) || [];
 const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 const profile = JSON.parse(localStorage.getItem("profile")) || { diet: "standard", allergies: "" };
 
+// --- Sélection éléments ---
+const buttons = document.querySelectorAll('.menu-btn');
+const content = document.getElementById('content');
+let currentSection = 'home';
+
+// --- Fonctions de rendu ---
 function renderHome() {
   const recipes = [
     { id: 1, name: "Pâtes à la tomate 🍝", time: "15 min" },
@@ -134,6 +140,7 @@ function renderProfile() {
   });
 }
 
+// --- Table de routage ---
 const pages = {
   home: renderHome,
   favorites: renderFavorites,
@@ -141,61 +148,39 @@ const pages = {
   profile: renderProfile
 };
 
-document.querySelectorAll(".menu-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    pages[btn.dataset.target]();
-  });
-});
-
-const buttons = document.querySelectorAll('.menu-btn');
-const content = document.getElementById('content');
-let currentSection = 'home';
-
+// --- Navigation + animations ---
 buttons.forEach(btn => {
   btn.addEventListener('click', () => {
     const nextSection = btn.dataset.target;
     if (nextSection === currentSection) return;
 
-    // Déterminer la direction du slide
-    const direction = buttons.length
-      ? Array.from(buttons).indexOf(btn) > Array.from(buttons).indexOf(document.querySelector('.menu-btn.active'))
-        ? 'right' : 'left'
-      : 'right';
+    // Direction du slide
+    const direction =
+      Array.from(buttons).indexOf(btn) >
+      Array.from(buttons).indexOf(document.querySelector('.menu-btn.active'))
+        ? 'right'
+        : 'left';
 
-    // Ajouter animation de sortie
+    // Animation de sortie
     content.classList.add(`slide-out-${direction}`);
 
     setTimeout(() => {
-      // Changer le contenu après animation
-      loadSection(nextSection);
+      pages[nextSection](); // Charge la nouvelle page
       currentSection = nextSection;
 
-      // Réinitialiser l'animation
+      // Animation d’entrée + rebond
       content.className = 'content slide-in-' + direction;
       setTimeout(() => {
-       content.className = 'content rebound';
-      setTimeout(() => content.className = 'content', 250);
-      }, 200);
-    }, 300);
+        content.className = 'content rebound';
+        setTimeout(() => (content.className = 'content'), 200);
+      }, 150);
+    }, 150);
 
-    // Met à jour l’état actif des boutons
+    // Met à jour les boutons
     buttons.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   });
 });
 
-function loadSection(section) {
-  if (section === 'home') {
-    content.innerHTML = `<h2>Accueil</h2><p>Bienvenue sur DISHELP 🌿</p>`;
-  } else if (section === 'favorites') {
-    content.innerHTML = `<h2>Favoris</h2><p>Vos plats préférés apparaîtront ici 💚</p>`;
-  } else if (section === 'pantry') {
-    content.innerHTML = `<h2>Garde-manger</h2><p>Liste de vos ingrédients stockés 🍎</p>`;
-  } else if (section === 'profile') {
-    content.innerHTML = `<h2>Profil</h2><p>Informations et préférences utilisateur 👤</p>`;
-  }
-}
-
+// --- Démarrage ---
 renderHome();
