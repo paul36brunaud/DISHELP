@@ -175,8 +175,9 @@ buttons.forEach(btn => {
       // Réinitialiser l'animation
       content.className = 'content slide-in-' + direction;
       setTimeout(() => {
-        content.className = 'content';
-      }, 400);
+       content.className = 'content rebound';
+      setTimeout(() => content.className = 'content', 250);
+      }, 200);
     }, 300);
 
     // Met à jour l’état actif des boutons
