@@ -21,7 +21,7 @@ function renderHome() {
     <div class="recipe-card">
       <h3>${r.name}</h3>
       <p>${r.time}</p>
-      <button data-id="${r.id}" class="fav-btn">❤️ Ajouter</button>
+      <button data-id="${r.id}" class="fav-btn">❤️</button>
     </div>
   `).join('')}`;
 
@@ -51,7 +51,7 @@ function renderFavorites() {
     div.innerHTML = `
       <h3>${f.name}</h3>
       <p>${f.time}</p>
-      <button data-id="${f.id}" class="remove-fav">❌ Retirer</button>
+      <button data-id="${f.id}" class="remove-fav">❌</button>
     `;
     content.appendChild(div);
   });
@@ -71,7 +71,7 @@ function renderFavorites() {
 
 function renderPantry() {
   content.innerHTML = `
-    <h2>Mon garde-manger 🥕</h2>
+    <h2>Mon garde-manger</h2>
     <div>
       <input type="text" id="ing-input" placeholder="Ajouter un ingrédient...">
       <button id="add-ing">Ajouter</button>
@@ -113,7 +113,7 @@ function renderPantry() {
 
 function renderProfile() {
   content.innerHTML = `
-    <h2>Mon profil ⚙️</h2>
+    <h2>Mon profil :</h2>
     <label>Régime :
       <select id="diet">
         <option value="standard">Standard</option>
