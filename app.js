@@ -1,5 +1,3 @@
-const content = document.getElementById("content");
-const buttons = document.querySelectorAll(".menu-btn");
 
 const pantry = JSON.parse(localStorage.getItem("pantry")) || [];
 const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -150,5 +148,53 @@ document.querySelectorAll(".menu-btn").forEach(btn => {
     pages[btn.dataset.target]();
   });
 });
+
+const buttons = document.querySelectorAll('.menu-btn');
+const content = document.getElementById('content');
+let currentSection = 'home';
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const nextSection = btn.dataset.target;
+    if (nextSection === currentSection) return;
+
+    // Déterminer la direction du slide
+    const direction = buttons.length
+      ? Array.from(buttons).indexOf(btn) > Array.from(buttons).indexOf(document.querySelector('.menu-btn.active'))
+        ? 'right' : 'left'
+      : 'right';
+
+    // Ajouter animation de sortie
+    content.classList.add(`slide-out-${direction}`);
+
+    setTimeout(() => {
+      // Changer le contenu après animation
+      loadSection(nextSection);
+      currentSection = nextSection;
+
+      // Réinitialiser l'animation
+      content.className = 'content slide-in-' + direction;
+      setTimeout(() => {
+        content.className = 'content';
+      }, 400);
+    }, 300);
+
+    // Met à jour l’état actif des boutons
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+function loadSection(section) {
+  if (section === 'home') {
+    content.innerHTML = `<h2>Accueil</h2><p>Bienvenue sur DISHELP 🌿</p>`;
+  } else if (section === 'favorites') {
+    content.innerHTML = `<h2>Favoris</h2><p>Vos plats préférés apparaîtront ici 💚</p>`;
+  } else if (section === 'pantry') {
+    content.innerHTML = `<h2>Garde-manger</h2><p>Liste de vos ingrédients stockés 🍎</p>`;
+  } else if (section === 'profile') {
+    content.innerHTML = `<h2>Profil</h2><p>Informations et préférences utilisateur 👤</p>`;
+  }
+}
 
 renderHome();
