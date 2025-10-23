@@ -57,32 +57,35 @@ h1 {
 
 /* ----- Menu de navigation ----- */
 .menu {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 colonnes égales */
+  gap: 0.8rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 .menu-btn {
   background: white;
   border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  padding: 1rem 0; /* Ajuste la hauteur des boutons */
+  font-size: clamp(1rem, 2.5vw, 1.2rem); /* Taille de texte responsive */
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s;
-  color: var(--accent);
+  transition: transform 0.2s ease, background 0.3s ease;
+  width: 100%;
 }
 
-.menu-btn:hover {
-  background: var(--card-bg-light);
+.menu-btn:active {
+  transform: scale(0.97);
 }
 
 .menu-btn.active {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255,255,255,0.3);
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255,255,255,0.4);
 }
 
 /* ----- Zone de contenu avec animation slide rapide + rebond ----- */
