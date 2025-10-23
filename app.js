@@ -24,7 +24,7 @@ function renderHome() {
         <h3>${r.name}</h3>
         <p>${r.time}</p>
         <button data-id="${r.id}" class="fav-btn">
-          ${isFav ? "❌ Retirer" : "❤️ Ajouter"}
+          ${isFav ? "❌" : "❤️"}
         </button>
       </div>
     `;
@@ -38,10 +38,10 @@ function renderHome() {
 
       if (index === -1) {
         favorites.push(recipe);
-        btn.textContent = "❌ Retirer";
+        btn.textContent = "❌";
       } else {
         favorites.splice(index, 1);
-        btn.textContent = "❤️ Ajouter";
+        btn.textContent = "❤️";
       }
 
       localStorage.setItem("favorites", JSON.stringify(favorites));
@@ -62,7 +62,7 @@ function renderFavorites() {
     div.innerHTML = `
       <h3>${f.name}</h3>
       <p>${f.time}</p>
-      <button data-id="${f.id}" class="remove-fav">❌ Retirer</button>
+      <button data-id="${f.id}" class="remove-fav">❌</button>
     `;
     content.appendChild(div);
   });
