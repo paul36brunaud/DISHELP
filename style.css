@@ -68,7 +68,7 @@ h1 {
 }
 
 .menu-btn {
-  background: white;
+  background: rgb(255, 255, 255);
   border: none;
   border-radius: 12px;
   padding: 1rem 0; /* Ajuste la hauteur des boutons */
@@ -77,12 +77,15 @@ h1 {
   font-weight: 600;
   transition: transform 0.15s ease, background 0.25s ease;
   width: 100%;
+  color: #4caf6c
 }
 
 /* ✅ Survol fluide */
 .menu-btn:hover {
   background: #cccccc; /* Vert pastel légèrement plus foncé */
   transform: scale(1.02); /* Petit zoom */
+  color: #fff;
+
 }
 
 /* ✅ Pression tactile ou clic */
