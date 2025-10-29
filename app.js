@@ -1,85 +1,38 @@
-// --- Données locales ---
-const pantry = JSON.parse(localStorage.getItem("pantry")) || [];
-const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-const profile = JSON.parse(localStorage.getItem("profile")) || { diet: "standard", allergies: "" };
+const content = document.getElementById("content");
+const buttons = document.querySelectorAll(".menu-btn");
+let pantry = JSON.parse(localStorage.getItem("pantry")) || [];
 
-// --- Sélection éléments ---
-const buttons = document.querySelectorAll('.menu-btn');
-const content = document.getElementById('content');
-let currentSection = 'home';
+// --- Gestion des onglets ---
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    buttons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
 
-// --- Fonctions de rendu ---
+    const target = btn.dataset.target;
+    if (target === "home") renderHome();
+    else if (target === "favorites") renderFavorites();
+    else if (target === "pantry") renderPantry();
+    else if (target === "profile") renderProfile();
+  });
+});
+
+// --- Écran d'accueil ---
 function renderHome() {
-  const recipes = [
-    { id: 1, name: "Pâtes à la tomate 🍝", time: "15 min" },
-    { id: 2, name: "Salade de riz 🥗", time: "10 min" },
-    { id: 3, name: "Omelette aux légumes 🍳", time: "8 min" }
-  ];
-
-  content.innerHTML = `<h2>Plats du jour</h2>
-  ${recipes.map(r => {
-    const isFav = favorites.some(f => f.id === r.id);
-    return `
-      <div class="recipe-card">
-        <h3>${r.name}</h3>
-        <p>${r.time}</p>
-        <button data-id="${r.id}" class="fav-btn">
-          ${isFav ? "❌" : "❤️"}
-        </button>
-      </div>
-    `;
-  }).join('')}`;
-
-  document.querySelectorAll(".fav-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = parseInt(btn.dataset.id);
-      const recipe = recipes.find(r => r.id === id);
-      const index = favorites.findIndex(f => f.id === id);
-
-      if (index === -1) {
-        favorites.push(recipe);
-        btn.textContent = "❌";
-      } else {
-        favorites.splice(index, 1);
-        btn.textContent = "❤️";
-      }
-
-      localStorage.setItem("favorites", JSON.stringify(favorites));
-    });
-  });
+  content.innerHTML = `
+    <h2>Bienvenue sur Dishhelp 🍽️</h2>
+    <p>Découvrez des plats adaptés à vos goûts et votre garde-manger.</p>
+  `;
 }
 
+// --- Favoris ---
 function renderFavorites() {
-  content.innerHTML = `<h2>Mes favoris :</h2>`;
-  if (favorites.length === 0) {
-    content.innerHTML += `<p>Aucun favori pour l'instant.</p>`;
-    return;
-  }
-
-  favorites.forEach(f => {
-    const div = document.createElement("div");
-    div.className = "recipe-card";
-    div.innerHTML = `
-      <h3>${f.name}</h3>
-      <p>${f.time}</p>
-      <button data-id="${f.id}" class="remove-fav">❌</button>
-    `;
-    content.appendChild(div);
-  });
-
-  document.querySelectorAll(".remove-fav").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = parseInt(btn.dataset.id);
-      const index = favorites.findIndex(f => f.id === id);
-      if (index !== -1) {
-        favorites.splice(index, 1);
-        localStorage.setItem("favorites", JSON.stringify(favorites));
-        renderFavorites(); // Rafraîchir la liste
-      }
-    });
-  });
+  content.innerHTML = `
+    <h2>Mes favoris ❤️</h2>
+    <p>Vos recettes enregistrées apparaîtront ici.</p>
+  `;
 }
 
+// --- Garde-manger ---
 function renderPantry() {
   content.innerHTML = `
     <h2>Mon garde-manger</h2>
@@ -95,9 +48,20 @@ function renderPantry() {
   const addBtn = document.getElementById("add-ing");
 
   function renderList() {
-    list.innerHTML = pantry.map((i, idx) => `
-      <li>${i} <button data-idx="${idx}" class="del-ing">❌</button></li>
-    `).join('');
+    list.innerHTML = "";
+    pantry.forEach((i, idx) => {
+      const li = document.createElement("li");
+      li.textContent = i;
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "❌";
+      delBtn.classList.add("del-ing");
+      delBtn.dataset.idx = idx;
+
+      li.appendChild(delBtn);
+      li.style.animation = "fadeInUp 0.3s ease";
+      list.appendChild(li);
+    });
   }
 
   addBtn.addEventListener("click", () => {
@@ -112,86 +76,27 @@ function renderPantry() {
 
   list.addEventListener("click", e => {
     if (e.target.classList.contains("del-ing")) {
-      const idx = e.target.dataset.idx;
-      pantry.splice(idx, 1);
-      localStorage.setItem("pantry", JSON.stringify(pantry));
-      renderList();
+      const li = e.target.parentElement;
+      li.style.animation = "fadeOut 0.3s ease forwards";
+      setTimeout(() => {
+        const idx = e.target.dataset.idx;
+        pantry.splice(idx, 1);
+        localStorage.setItem("pantry", JSON.stringify(pantry));
+        renderList();
+      }, 300);
     }
   });
 
   renderList();
 }
 
+// --- Profil ---
 function renderProfile() {
   content.innerHTML = `
-    <h2>Mon profil :</h2>
-    <label>Régime :
-      <select id="diet">
-        <option value="standard">Standard</option>
-        <option value="vegetarien">Végétarien</option>
-        <option value="vegan">Végan</option>
-      </select>
-    </label>
-    <label>Allergènes :
-      <input type="text" id="allergies" placeholder="Ex: gluten, lactose...">
-    </label>
-    <button id="save">Sauvegarder</button>
+    <h2>Mon profil 👤</h2>
+    <p>Paramètres et préférences utilisateur à venir.</p>
   `;
-
-  document.getElementById("diet").value = profile.diet;
-  document.getElementById("allergies").value = profile.allergies;
-
-  document.getElementById("save").addEventListener("click", () => {
-    const updated = {
-      diet: document.getElementById("diet").value,
-      allergies: document.getElementById("allergies").value
-    };
-    localStorage.setItem("profile", JSON.stringify(updated));
-    alert("Profil sauvegardé ✅");
-  });
 }
 
-// --- Table de routage ---
-const pages = {
-  home: renderHome,
-  favorites: renderFavorites,
-  pantry: renderPantry,
-  profile: renderProfile
-};
-
-// --- Navigation + animations ---
-buttons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const nextSection = btn.dataset.target;
-    if (nextSection === currentSection) return;
-
-    // Direction du slide
-    const direction =
-      Array.from(buttons).indexOf(btn) >
-      Array.from(buttons).indexOf(document.querySelector('.menu-btn.active'))
-        ? 'right'
-        : 'left';
-
-    // Animation de sortie
-    content.classList.add(`slide-out-${direction}`);
-
-    setTimeout(() => {
-      pages[nextSection](); // Charge la nouvelle page
-      currentSection = nextSection;
-
-      // Animation d’entrée + rebond
-      content.className = 'content slide-in-' + direction;
-      setTimeout(() => {
-        content.className = 'content rebound';
-        setTimeout(() => (content.className = 'content'), 200);
-      }, 150);
-    }, 150);
-
-    // Met à jour les boutons
-    buttons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-// --- Démarrage ---
+// Charger l'accueil au démarrage
 renderHome();
