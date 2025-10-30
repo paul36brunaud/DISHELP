@@ -117,13 +117,16 @@ function renderPantry() {
 
   renderList();
 }
+// --- Sauvegarde locale ---
+function saveFavorites() {
+  localStorage.setItem("dishhelp_favorites", JSON.stringify(favorites));
+}
 
-// --- Gestion des Favoris ---
-
-// Affiche la page des favoris
+// --- Affichage de la page des favoris ---
 function renderFavorites() {
   const list = document.getElementById("fav-list");
-  if (favorites.length === 0) {
+
+  if (!favorites || favorites.length === 0) {
     list.innerHTML = "<p>Aucun favori pour le moment.</p>";
     return;
   }
@@ -133,62 +136,75 @@ function renderFavorites() {
       (f, i) => `
         <li>
           ${f}
-          <button class="del-ing" data-index="${i}">✖</button>
+          <button class="fav-toggle" data-index="${i}">❌</button>
         </li>
       `
     )
     .join("");
 
-  // Supprimer un favori avec le bouton ✖
-  list.addEventListener("click", (e) => {
-    if (e.target.classList.contains("del-ing")) {
-      const index = e.target.dataset.index;
+  list.querySelectorAll(".fav-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const index = btn.dataset.index;
       favorites.splice(index, 1);
       saveFavorites();
       renderFavorites();
-    }
-  });
-}
-
-// --- Ajouter ou retirer un favori depuis la page d'accueil ---
-function initHome() {
-  const favButtons = document.querySelectorAll(".fav-btn");
-
-  favButtons.forEach(btn => {
-    const recipe = btn.dataset.recipe;
-
-    // État initial : si déjà favori -> croix + classe 'added', sinon coeur
-    if (favorites.includes(recipe)) {
-      btn.classList.add("added");
-      btn.textContent = "✖"; // croix (rouge pastel via .added)
-      btn.setAttribute("aria-label", `${recipe} - retire des favoris`);
-    } else {
-      btn.classList.remove("added");
-      btn.textContent = "♥"; // cœur (rouge vif)
-      btn.setAttribute("aria-label", `${recipe} - ajouter aux favoris`);
-    }
-
-    // Clic : toggle ajouter / retirer
-    btn.addEventListener("click", () => {
-      if (favorites.includes(recipe)) {
-        // retirer
-        favorites = favorites.filter(r => r !== recipe);
-        btn.classList.remove("added");
-        btn.textContent = "♥";
-        btn.setAttribute("aria-label", `${recipe} - ajouter aux favoris`);
-      } else {
-        // ajouter
-        favorites.push(recipe);
-        btn.classList.add("added");
-        btn.textContent = "✖";
-        btn.setAttribute("aria-label", `${recipe} - retire des favoris`);
-      }
-      saveFavorites();
+      updateHeartIcons();
     });
   });
 }
 
-// --- Sauvegarde locale ---
-function saveFavorites() {
-  localStorage.setItem("dishhelp_favorites", JSON.stringify(favorites));
+// --- Page d’accueil : ajout / retrait des favoris ---
+function initHome() {
+  const favButtons = document.querySelectorAll(".fav-btn");
+
+  favButtons.forEach((btn) => {
+    const recipe = btn.dataset.recipe;
+
+    // état initial
+    if (favorites.includes(recipe)) {
+      setToCross(btn);
+    } else {
+      setToHeart(btn);
+    }
+
+    // clic : toggle
+    btn.addEventListener("click", () => {
+      btn.classList.add("anim-click");
+
+      if (favorites.includes(recipe)) {
+        favorites = favorites.filter((r) => r !== recipe);
+        setToHeart(btn);
+      } else {
+        favorites.push(recipe);
+        setToCross(btn);
+      }
+
+      saveFavorites();
+      updateHeartIcons();
+
+      // retire la classe d'animation après un court délai
+      setTimeout(() => btn.classList.remove("anim-click"), 300);
+    });
+  });
+}
+
+// --- Fonctions pour les styles ---
+function setToHeart(btn) {
+  btn.textContent = "❤️";
+  btn.style.color = "#e63946"; // rouge vif
+}
+
+function setToCross(btn) {
+  btn.textContent = "❌";
+  btn.style.color = "#ff6b6b"; // rouge pastel
+}
+
+// --- Synchronisation visuelle quand on revient sur une page ---
+function updateHeartIcons() {
+  const favButtons = document.querySelectorAll(".fav-btn");
+  favButtons.forEach((btn) => {
+    const recipe = btn.dataset.recipe;
+    if (favorites.includes(recipe)) setToCross(btn);
+    else setToHeart(btn);
+  });
 }
