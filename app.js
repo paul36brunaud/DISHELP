@@ -10,25 +10,24 @@ let favorites = JSON.parse(localStorage.getItem("dishhelp_favorites")) || [];
 const pages = {
   home: `
     <h2>🍽️ Bienvenue sur Dishhelp</h2>
-    <p>Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
-
+    <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
     <div id="recipe-list">
-      <div class="recipe-card">
+      <div class="recipe-card" data-recipe="Salade fraîcheur">
         <h3>🥗 Salade fraîcheur</h3>
         <p>Tomates, concombres, feta et huile d'olive.</p>
-        <button class="fav-btn" data-recipe="Salade fraîcheur">Ajouter aux favoris</button>
+        <button class="fav-btn">Ajouter aux favoris</button>
       </div>
 
-      <div class="recipe-card">
+      <div class="recipe-card" data-recipe="Pâtes à la tomate">
         <h3>🍝 Pâtes à la tomate</h3>
         <p>Pâtes, tomate, basilic et parmesan.</p>
-        <button class="fav-btn" data-recipe="Pâtes à la tomate">Ajouter aux favoris</button>
+        <button class="fav-btn">Ajouter aux favoris</button>
       </div>
 
-      <div class="recipe-card">
+      <div class="recipe-card" data-recipe="Omelette de légumes">
         <h3>🍛 Omelette de légumes</h3>
         <p>Œufs, carottes, courgettes et oignons.</p>
-        <button class="fav-btn" data-recipe="Omelette de légumes">Ajouter aux favoris</button>
+        <button class="fav-btn">Ajouter aux favoris</button>
       </div>
     </div>
   `,
@@ -49,24 +48,30 @@ const pages = {
 
   profile: `
     <h2>👤 Profil</h2>
-    <p>Configurez ici vos préférences alimentaires et allergènes.</p>
+    <p>Configurez ici vos préférences culinaires, allergènes et régimes alimentaires.</p>
   `
 };
 
 // --- Navigation ---
 function showPage(target) {
   content.innerHTML = pages[target] || "<p>Page introuvable.</p>";
+  
+  // Réinitialiser le texte descriptif lorsqu'on revient sur la page
+  if (target === "home" || target === "pantry" || target === "favorites") {
+    const introText = document.getElementById("intro-text");
+    if (introText && !introText.classList.contains("interacted")) {
+      introText.style.display = "block"; // Affiche le texte si il n'a pas été masqué
+    }
+  }
+
   buttons.forEach(btn => btn.classList.remove("active"));
   document.querySelector(`[data-target="${target}"]`).classList.add("active");
 
+  // Charger la page spécifique
   if (target === "pantry") renderPantry();
   if (target === "favorites") renderFavorites();
   if (target === "home") initHome();
 }
-
-buttons.forEach(btn =>
-  btn.addEventListener("click", () => showPage(btn.dataset.target))
-);
 
 // --- Garde-manger ---
 function renderPantry() {
@@ -97,6 +102,11 @@ function renderPantry() {
     localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
     input.value = "";
     renderList();
+    const introText = document.getElementById("intro-text");
+    if (introText) {
+      introText.style.display = "none"; // Masque le texte une fois que l'utilisateur interagit
+      introText.classList.add("interacted"); // Ajoute un flag pour marquer l'interaction
+    }
   };
 
   addBtn.addEventListener("click", addIngredient);
@@ -117,12 +127,13 @@ function renderPantry() {
 
   renderList();
 }
-// --- Sauvegarde locale ---
+
+// --- Sauvegarde des favoris ---
 function saveFavorites() {
   localStorage.setItem("dishhelp_favorites", JSON.stringify(favorites));
 }
 
-// --- Affichage de la page des favoris ---
+// --- Affichage des favoris ---
 function renderFavorites() {
   const list = document.getElementById("fav-list");
 
@@ -135,7 +146,8 @@ function renderFavorites() {
     .map(
       (f, i) => `
         <li>
-          ${f}
+          <h3>${f.name}</h3>
+          <p>${f.description}</p>
           <button class="fav-toggle" data-index="${i}">❌</button>
         </li>
       `
@@ -158,10 +170,12 @@ function initHome() {
   const favButtons = document.querySelectorAll(".fav-btn");
 
   favButtons.forEach((btn) => {
-    const recipe = btn.dataset.recipe;
+    const recipeCard = btn.closest(".recipe-card");
+    const recipeName = recipeCard.dataset.recipe;
+    const recipeDescription = recipeCard.querySelector("p").textContent;
 
     // état initial
-    if (favorites.includes(recipe)) {
+    if (favorites.some(fav => fav.name === recipeName)) {
       setToCross(btn);
     } else {
       setToHeart(btn);
@@ -171,8 +185,13 @@ function initHome() {
     btn.addEventListener("click", () => {
       btn.classList.add("anim-click");
 
-      if (favorites.includes(recipe)) {
-        favorites = favorites.filter((r) => r !== recipe);
+      const recipe = {
+        name: recipeName,
+        description: recipeDescription
+      };
+
+      if (favorites.some(fav => fav.name === recipeName)) {
+        favorites = favorites.filter(f => f.name !== recipeName);
         setToHeart(btn);
       } else {
         favorites.push(recipe);
@@ -199,12 +218,13 @@ function setToCross(btn) {
   btn.style.color = "#ff6b6b"; // rouge pastel
 }
 
-// --- Synchronisation visuelle quand on revient sur une page ---
+// --- Synchronisation visuelle des icônes de cœur ---
 function updateHeartIcons() {
   const favButtons = document.querySelectorAll(".fav-btn");
   favButtons.forEach((btn) => {
-    const recipe = btn.dataset.recipe;
-    if (favorites.includes(recipe)) setToCross(btn);
+    const recipeCard = btn.closest(".recipe-card");
+    const recipeName = recipeCard.dataset.recipe;
+    if (favorites.some(fav => fav.name === recipeName)) setToCross(btn);
     else setToHeart(btn);
   });
 }
