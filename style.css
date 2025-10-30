@@ -176,3 +176,22 @@ h1 {
   font-size: 1.3rem;
   cursor: pointer;
 }
+
+/* ❤️ Bouton favoris */
+.fav-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #ff7b7b; /* rouge pastel */
+  transition: transform 0.2s ease, opacity 0.3s ease;
+}
+
+.fav-btn:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
+
+.fav-btn.added {
+  color: #ff7b7b;
+}

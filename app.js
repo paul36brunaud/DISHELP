@@ -118,7 +118,9 @@ function renderPantry() {
   renderList();
 }
 
-// --- Favoris ---
+// --- Gestion des Favoris ---
+
+// Affiche la page des favoris
 function renderFavorites() {
   const list = document.getElementById("fav-list");
   if (favorites.length === 0) {
@@ -129,40 +131,59 @@ function renderFavorites() {
   list.innerHTML = favorites
     .map(
       (f, i) => `
-      <li>${f}
-        <button class="del-ing" data-index="${i}">✖</button>
-      </li>`
+        <li>
+          ${f}
+          <button class="del-ing" data-index="${i}">✖</button>
+        </li>
+      `
     )
     .join("");
 
-  list.addEventListener("click", e => {
+  // Supprimer un favori avec le bouton ✖
+  list.addEventListener("click", (e) => {
     if (e.target.classList.contains("del-ing")) {
-      favorites.splice(e.target.dataset.index, 1);
+      const index = e.target.dataset.index;
+      favorites.splice(index, 1);
       saveFavorites();
       renderFavorites();
     }
   });
 }
 
-// --- Accueil ---
+// --- Ajouter ou retirer un favori depuis la page d'accueil ---
 function initHome() {
   const favButtons = document.querySelectorAll(".fav-btn");
 
-  favButtons.forEach(btn => {
+  favButtons.forEach((btn) => {
+    const recipe = btn.dataset.recipe;
+
+    // Si la recette est déjà en favoris
+    if (favorites.includes(recipe)) {
+      btn.classList.add("added");
+      btn.textContent = "✖"; // croix rouge pastel
+    } else {
+      btn.textContent = "♡"; // cœur rouge pastel
+    }
+
+    // Gestion du clic sur le cœur / croix
     btn.addEventListener("click", () => {
-      const recipe = btn.dataset.recipe;
-      if (!favorites.includes(recipe)) {
+      if (favorites.includes(recipe)) {
+        // Supprimer des favoris
+        favorites = favorites.filter((r) => r !== recipe);
+        btn.classList.remove("added");
+        btn.textContent = "♡"; // revient au cœur rouge pastel
+      } else {
+        // Ajouter aux favoris
         favorites.push(recipe);
-        saveFavorites();
-        btn.textContent = "✅ Ajouté !";
-        btn.disabled = true;
+        btn.classList.add("added");
+        btn.textContent = "✖"; // croix rouge pastel
       }
+      saveFavorites();
     });
   });
 }
 
+// --- Sauvegarde locale ---
 function saveFavorites() {
   localStorage.setItem("dishhelp_favorites", JSON.stringify(favorites));
 }
-
-document.addEventListener("DOMContentLoaded", () => showPage("home"));
