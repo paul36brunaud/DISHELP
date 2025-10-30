@@ -1,28 +1,25 @@
-/* ----- Couleurs principales ----- */
 :root {
   --bg-light: #ffffff;
   --text-light: #111;
   --bg-dark: #121212;
   --text-dark: #eee;
-  --accent: #67db8c;          /* 🌿 Vert pastel principal */
-  --accent-hover: #39af5c;    /* 🌿 Vert pastel foncé au survol */
-  --card-bg-light: #f4f9f5;   /* Fond clair des cartes */
-  --card-bg-dark: #1a231b;    /* Fond sombre des cartes */
+  --accent: #67db8c;
+  --accent-hover: #39af5c;
+  --card-bg-light: #f4f9f5;
+  --card-bg-dark: #1a231b;
 }
 
-
-/* ----- Styles globaux ----- */
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   margin: 0;
-  background-color: var(--bg-light);
+  background: var(--bg-light);
   color: var(--text-light);
   transition: background 0.3s, color 0.3s;
 }
 
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: var(--bg-dark);
+    background: var(--bg-dark);
     color: var(--text-dark);
   }
 }
@@ -32,31 +29,24 @@ h1 {
   font-size: clamp(1.8rem, 5vw, 3.8rem);
 }
 
-
-/* ----- Conteneur principal ----- */
 .app {
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
 }
 
-
-/* ----- En-tête ----- */
 .header {
   text-align: center;
   background: var(--accent);
   color: white;
   padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-
-/* ----- Menu de navigation ----- */
+/* Navigation */
 .menu {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -64,7 +54,6 @@ h1 {
   width: 100%;
   margin-top: 1rem;
   padding: 0 1rem;
-  box-sizing: border-box;
 }
 
 .menu-btn {
@@ -72,31 +61,25 @@ h1 {
   border: none;
   border-radius: 12px;
   padding: 1rem 0;
+  font-weight: 600;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
-  font-weight: 600;
-  transition: transform 0.15s ease, background 0.25s ease;
-  width: 100%;
   color: #4caf6c;
+  transition: all 0.2s ease;
 }
 
 .menu-btn:hover {
-  background: #cccccc;
+  background: #ccc;
+  color: white;
   transform: scale(1.02);
-  color: #fff;
-}
-
-.menu-btn:active {
-  transform: scale(0.97);
 }
 
 .menu-btn.active {
-  background:#4caf6c;
-  color: #fff;
+  background: #4caf6c;
+  color: white;
 }
 
-
-/* ----- Zone de contenu ----- */
+/* Contenu */
 .content {
   flex: 1;
   overflow-y: auto;
@@ -110,14 +93,12 @@ h1 {
   }
 }
 
-
-/* ----- Cartes de recettes ----- */
+/* Cartes recette */
 .recipe-card {
+  background: rgba(103, 219, 140, 0.15);
   border-radius: 10px;
-  background-color: rgba(103, 219, 140, 0.15);
-  margin-bottom: 1rem;
   padding: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
   transition: transform 0.2s ease;
 }
 
@@ -125,170 +106,73 @@ h1 {
   transform: translateY(-3px);
 }
 
-.recipe-card h3 {
-  margin-top: 0;
-}
-
+/* Bouton recette */
 .recipe-card button {
   background: var(--accent);
   color: white;
   border: none;
-  padding: 0.4rem 0.6rem;
   border-radius: 6px;
+  padding: 0.4rem 0.6rem;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
 }
 
 .recipe-card button:hover {
   background: var(--accent-hover);
 }
 
-
-/* ----- Garde-manger responsive et esthétique amélioré ----- */
+/* Garde-manger */
 .pantry-input {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 1rem; /* ❌ Corrigé : il y avait “1 rem” avec un espace — syntaxe invalide */
-  flex-wrap: wrap;
+  gap: 1rem;
   margin-top: 1rem;
 }
 
-/* 🧺 Champ d’ajout adaptatif */
 #ing-input {
   flex: 1;
-  min-width: 150px;
-  max-width: 500px;
   padding: 0.6em 1em;
   border: 1px solid #ccc;
   border-radius: 10px;
-  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-  box-sizing: border-box;
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
-  word-wrap: break-word; /* ✅ empêche le texte de dépasser */
-  overflow-wrap: break-word;
 }
 
-#ing-input:focus {
-  outline: none;
-  box-shadow: 0 0 6px rgba(103, 219, 140, 0.5);
-  transform: scale(1.02);
-}
-
-/* ➕ Bouton "Ajouter" adaptatif */
 #add-ing {
   background: var(--accent);
-  border: none;
   color: white;
+  border: none;
   border-radius: 15px;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: clamp(1rem, 2.5vw, 1.2rem);
   padding: 0.6em 1em;
-  transition: transform 0.2s ease, background 0.3s ease;
-  margin-left: 0.8rem; /* ✅ un peu plus d’espace visuel */
+  cursor: pointer;
 }
 
 #add-ing:hover {
   background: var(--accent-hover);
-  transform: scale(1.09);
 }
 
-/* Liste d’ingrédients responsive avec espacement constant */
-/* 🧺 Grille d’ingrédients responsive */
+/* Liste ingrédients */
 #ing-list {
   list-style: none;
   padding: 0;
-  margin: 1.5rem auto; /* ✅ espace autour de la grille */
-  width: 95%; /* évite que les cases collent aux bords */
+  margin: 1.5rem auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* ✅ retour à la ligne automatique */
-  gap: 1rem; /* ✅ espace constant entre les cases */
-  justify-items: stretch; /* équilibre la largeur */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
 }
 
-/* 🥦 Élément individuel */
 #ing-list li {
   background: white;
   border-radius: 12px;
-  padding: clamp(0.6rem, 2vw, 1rem);
-  font-size: clamp(1rem, 2.5vw, 1.1rem);
-  color: var(--accent);
+  padding: 0.8rem;
   font-weight: 700;
+  color: var(--accent);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* ✅ le texte long passe à la ligne */
-  min-height: 2.5rem; /* ✅ hauteur minimale homogène */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-  overflow-wrap: anywhere;
-  word-break: break-word;
 }
 
-#ing-list li:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-}
-
-
-/* ❌ Bouton de suppression stylé */
 .del-ing {
   background: none;
   border: none;
   color: #ff6b6b;
+  font-size: 1.3rem;
   cursor: pointer;
-  font-size: clamp(1.2rem, 3vw, 1.5rem);
-  transition: transform 0.2s ease, color 0.3s ease;
-}
-
-.del-ing:hover {
-  transform: scale(1.4);
-  color: #ff4040;
-}
-
-/* ✨ Animation d’apparition */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 📱 Ajustement sur petits écrans */
-@media (max-width: 500px) {
-  .pantry-input {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.8rem; /* ✅ espace harmonieux sur mobile */
-  }
-
-  #ing-input, #add-ing {
-    width: 100%;
-    margin-left: 0;
-  }
-}
-
-
-
-/* ----- Animations ----- */
-@keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeOut {
-  0% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.9); }
-}
-
-/* ----- Responsive ----- */
-@media (max-width: 600px) {
-  .menu { gap: 0.3rem; }
-  .menu-btn { padding: 0.8rem; font-size: 0.9rem; }
 }

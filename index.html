@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>DISHELP</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Dishhelp</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#67db8c">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-  <link rel="apple-touch-icon" href="icon-ios.png">
+  <!-- 🧩 Styles -->
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Bowlby+One&display=swap" rel="stylesheet" />
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bowlby+One&display=swap');
-  </style>
+  <!-- 📱 PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#67db8c" />
+
+  <!-- 🖼️ Icônes -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
 </head>
+
 <body>
   <div class="app">
-
-    <!-- HEADER -->
+    <!-- 🧭 En-tête -->
     <header class="header">
-      <h1>DISHELP</h1>
+      <h1>Dishhelp</h1>
       <nav class="menu">
         <button class="menu-btn active" data-target="home">Accueil</button>
         <button class="menu-btn" data-target="favorites">Favoris</button>
@@ -32,19 +32,20 @@
       </nav>
     </header>
 
-    <!-- CONTENU -->
+    <!-- 📦 Contenu dynamique -->
     <main id="content" class="content"></main>
-
   </div>
 
+  <!-- ⚙️ Script principal -->
   <script src="app.js"></script>
 
-  <!-- Enregistrement du Service Worker -->
+  <!-- 🌐 Service Worker -->
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker enregistré ✅'))
-        .catch(err => console.log('Erreur SW :', err));
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("service-worker.js")
+        .then(() => console.log("✅ Service Worker enregistré"))
+        .catch(err => console.error("❌ Erreur Service Worker :", err));
     }
   </script>
 </body>

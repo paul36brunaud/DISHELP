@@ -1,12 +1,12 @@
 // --- Sélecteurs principaux ---
-const buttons = document.querySelectorAll('.menu-btn');
-const content = document.getElementById('content');
+const buttons = document.querySelectorAll(".menu-btn");
+const content = document.getElementById("content");
 
 // --- Données stockées ---
-let pantry = JSON.parse(localStorage.getItem('dishhelp_pantry')) || [];
-let favorites = JSON.parse(localStorage.getItem('dishhelp_favorites')) || [];
+let pantry = JSON.parse(localStorage.getItem("dishhelp_pantry")) || [];
+let favorites = JSON.parse(localStorage.getItem("dishhelp_favorites")) || [];
 
-// --- Pages de base ---
+// --- Pages ---
 const pages = {
   home: `
     <h2>🍽️ Bienvenue sur Dishhelp</h2>
@@ -16,32 +16,32 @@ const pages = {
       <div class="recipe-card">
         <h3>🥗 Salade fraîcheur</h3>
         <p>Tomates, concombres, feta et huile d'olive.</p>
-        <button class="fav-btn" data-recipe="Salade fraîcheur"> Ajouter aux favoris</button>
+        <button class="fav-btn" data-recipe="Salade fraîcheur">Ajouter aux favoris</button>
       </div>
 
       <div class="recipe-card">
         <h3>🍝 Pâtes à la tomate</h3>
-        <p>Pâtes, crème, champignons et persil.</p>
-        <button class="fav-btn" data-recipe="Pâtes à la crème"> Ajouter aux favoris</button>
+        <p>Pâtes, tomate, basilic et parmesan.</p>
+        <button class="fav-btn" data-recipe="Pâtes à la tomate">Ajouter aux favoris</button>
       </div>
 
       <div class="recipe-card">
-        <h3>🍛 omelette de légumes</h3>
-        <p>Carottes, courgettes, pois chiches et lait de coco.</p>
-        <button class="fav-btn" data-recipe="Curry de légumes"> Ajouter aux favoris</button>
+        <h3>🍛 Omelette de légumes</h3>
+        <p>Œufs, carottes, courgettes et oignons.</p>
+        <button class="fav-btn" data-recipe="Omelette de légumes">Ajouter aux favoris</button>
       </div>
     </div>
   `,
 
   favorites: `
-    <h2> Mes favoris</h2>
+    <h2>❤️ Mes favoris</h2>
     <ul id="fav-list"></ul>
   `,
 
   pantry: `
-    <h2> Mon garde-manger</h2>
+    <h2>🧺 Mon garde-manger</h2>
     <div class="pantry-input">
-      <input id="ing-input" type="text" placeholder="Ajouter un ingrédient...">
+      <input id="ing-input" type="text" placeholder="Ajouter un ingrédient..." />
       <button id="add-ing">+</button>
     </div>
     <ul id="ing-list"></ul>
@@ -53,42 +53,32 @@ const pages = {
   `
 };
 
-// --- Affiche la page ---
+// --- Navigation ---
 function showPage(target) {
   content.innerHTML = pages[target] || "<p>Page introuvable.</p>";
-  buttons.forEach(btn => btn.classList.remove('active'));
-  document.querySelector(`[data-target="${target}"]`).classList.add('active');
+  buttons.forEach(btn => btn.classList.remove("active"));
+  document.querySelector(`[data-target="${target}"]`).classList.add("active");
 
-  if (target === "pantry") initPantry();
+  if (target === "pantry") renderPantry();
   if (target === "favorites") renderFavorites();
   if (target === "home") initHome();
 }
 
-// --- Menu ---
-buttons.forEach(btn => {
-  btn.addEventListener('click', () => showPage(btn.dataset.target));
-});
+buttons.forEach(btn =>
+  btn.addEventListener("click", () => showPage(btn.dataset.target))
+);
 
 // --- Garde-manger ---
 function renderPantry() {
-  content.innerHTML = `
-    <h2>Mon garde-manger</h2>
-    <div class="pantry-input">
-      <input type="text" id="ing-input" placeholder="Ajouter un ingrédient...">
-      <button id="add-ing">Ajouter</button>
-    </div>
-    <ul id="ing-list"></ul>
-  `;
-
   const list = document.getElementById("ing-list");
   const input = document.getElementById("ing-input");
   const addBtn = document.getElementById("add-ing");
 
   function renderList() {
     list.innerHTML = "";
-    pantry.forEach((i, idx) => {
+    pantry.forEach((item, idx) => {
       const li = document.createElement("li");
-      li.textContent = i;
+      li.textContent = item;
 
       const delBtn = document.createElement("button");
       delBtn.textContent = "❌";
@@ -100,21 +90,27 @@ function renderPantry() {
     });
   }
 
-  addBtn.addEventListener("click", () => {
+  const addIngredient = () => {
     const val = input.value.trim();
-    if (val) {
-      pantry.push(val);
-      localStorage.setItem("pantry", JSON.stringify(pantry));
-      input.value = "";
-      renderList();
+    if (!val) return;
+    pantry.push(val);
+    localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
+    input.value = "";
+    renderList();
+  };
+
+  addBtn.addEventListener("click", addIngredient);
+  input.addEventListener("keypress", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addIngredient();
     }
   });
 
   list.addEventListener("click", e => {
     if (e.target.classList.contains("del-ing")) {
-      const idx = e.target.dataset.idx;
-      pantry.splice(idx, 1);
-      localStorage.setItem("pantry", JSON.stringify(pantry));
+      pantry.splice(e.target.dataset.idx, 1);
+      localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
       renderList();
     }
   });
@@ -122,39 +118,38 @@ function renderPantry() {
   renderList();
 }
 
-
 // --- Favoris ---
 function renderFavorites() {
-  const list = document.getElementById('fav-list');
+  const list = document.getElementById("fav-list");
   if (favorites.length === 0) {
-    list.innerHTML = "<p>Aucun favori pour le moment </p>";
+    list.innerHTML = "<p>Aucun favori pour le moment.</p>";
     return;
   }
 
-  list.innerHTML = favorites.map((f, i) => `
-    <li>
-      ${f}
-      <button class="del-ing" data-index="${i}">✖</button>
-    </li>
-  `).join('');
+  list.innerHTML = favorites
+    .map(
+      (f, i) => `
+      <li>${f}
+        <button class="del-ing" data-index="${i}">✖</button>
+      </li>`
+    )
+    .join("");
 
-  // suppression d’un favori
-  list.addEventListener('click', (e) => {
-    if (e.target.classList.contains('del-ing')) {
-      const index = e.target.dataset.index;
-      favorites.splice(index, 1);
+  list.addEventListener("click", e => {
+    if (e.target.classList.contains("del-ing")) {
+      favorites.splice(e.target.dataset.index, 1);
       saveFavorites();
       renderFavorites();
     }
   });
 }
 
-// --- Ajouter un favori depuis la page d’accueil ---
+// --- Accueil ---
 function initHome() {
-  const favButtons = document.querySelectorAll('.fav-btn');
+  const favButtons = document.querySelectorAll(".fav-btn");
 
   favButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener("click", () => {
       const recipe = btn.dataset.recipe;
       if (!favorites.includes(recipe)) {
         favorites.push(recipe);
@@ -166,45 +161,8 @@ function initHome() {
   });
 }
 
-// --- Sauvegardes locales ---
 function saveFavorites() {
-  localStorage.setItem('dishhelp_favorites', JSON.stringify(favorites));
+  localStorage.setItem("dishhelp_favorites", JSON.stringify(favorites));
 }
 
-// --- Démarrage ---
-showPage('home');
-// Sélection des éléments
-const input = document.getElementById("ing-input");
-const addBtn = document.getElementById("add-ing");
-const list = document.getElementById("ing-list");
-
-// Fonction pour ajouter un ingrédient
-function addIngredient() {
-  const value = input.value.trim();
-  if (value === "") return; // Empêche les entrées vides
-
-  const li = document.createElement("li");
-  li.textContent = value;
-
-  // Ajout du bouton de suppression
-  const delBtn = document.createElement("button");
-  delBtn.classList.add("del-ing");
-  delBtn.innerHTML = "✖";
-  delBtn.addEventListener("click", () => li.remove());
-
-  li.appendChild(delBtn);
-  list.appendChild(li);
-
-  input.value = ""; // Vide le champ après ajout
-}
-
-// 📦 Clique sur le bouton “Ajouter”
-addBtn.addEventListener("click", addIngredient);
-
-// ⌨️ Appui sur la touche “Entrée”
-input.addEventListener("keypress", function (event) {
-  if (event.key === "Enter") {
-    event.preventDefault(); // empêche le rechargement du formulaire
-    addIngredient();
-  }
-});
+document.addEventListener("DOMContentLoaded", () => showPage("home"));
