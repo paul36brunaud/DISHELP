@@ -47,40 +47,39 @@ const pages = {
   `,
 
   profile: `
-<!-- Profil -->
-<h2>👤 Profil</h2>
-<p>Configurez ici vos préférences culinaires, allergènes et régimes alimentaires.</p>
+    <h2>👤 Profil</h2>
+    <p>Configurez ici vos préférences culinaires, allergènes et régimes alimentaires.</p>
 
-<form id="profile-form">
-  <div class="profile-section">
-    <label for="allergens">Allergènes :</label>
-    <select id="allergens" multiple>
-      <option value="Arachides">Arachides</option>
-      <option value="Fruits à coque">Fruits à coque</option>
-      <option value="Œufs">Œufs</option>
-      <option value="Lait">Lait</option>
-      <option value="Poissons">Poissons</option>
-      <option value="Crustacés">Crustacés</option>
-      <option value="Blé">Blé</option>
-      <option value="Gluten">Gluten</option>
-      <option value="Soja">Soja</option>
-    </select>
-  </div>
+    <form id="profile-form">
+      <div class="profile-section">
+        <label for="allergens">Allergènes :</label>
+        <select id="allergens" multiple>
+          <option value="Arachides">Arachides</option>
+          <option value="Fruits à coque">Fruits à coque</option>
+          <option value="Œufs">Œufs</option>
+          <option value="Lait">Lait</option>
+          <option value="Poissons">Poissons</option>
+          <option value="Crustacés">Crustacés</option>
+          <option value="Blé">Blé</option>
+          <option value="Gluten">Gluten</option>
+          <option value="Soja">Soja</option>
+        </select>
+      </div>
 
-  <div class="profile-section">
-    <label for="fruits">Fruits :</label>
-    <input type="text" id="fruits" placeholder="Précisez vos fruits favoris ou à éviter" />
-  </div>
+      <div class="profile-section">
+        <label for="fruits">Fruits :</label>
+        <input type="text" id="fruits" placeholder="Précisez vos fruits favoris ou à éviter" />
+      </div>
 
-  <div class="profile-section">
-    <label for="vegetables">Légumes :</label>
-    <input type="text" id="vegetables" placeholder="Précisez vos légumes favoris ou à éviter" />
-  </div>
+      <div class="profile-section">
+        <label for="vegetables">Légumes :</label>
+        <input type="text" id="vegetables" placeholder="Précisez vos légumes favoris ou à éviter" />
+      </div>
 
-  <button type="submit">Enregistrer</button>
-</form>
+      <button type="submit">Enregistrer</button>
+    </form>
 
-<div id="profile-summary"></div>
+    <div id="profile-summary"></div>
   `
 };
 
@@ -293,6 +292,12 @@ function saveProfile(event) {
 
   // Affiche un résumé mis à jour
   loadProfile();
+
+  // Confirmation visuelle
+  const confirmationMessage = document.createElement("p");
+  confirmationMessage.textContent = "Vos préférences ont été enregistrées avec succès !";
+  document.getElementById("profile-summary").appendChild(confirmationMessage);
+  setTimeout(() => confirmationMessage.remove(), 3000); // Disparaît après 3 secondes
 }
 
 // --- Initialisation du profil ---
