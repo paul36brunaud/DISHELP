@@ -170,10 +170,9 @@ h1 {
   padding: 0;
   margin: 1.5rem auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(222px, 1fr));
   gap: 1rem;
   word-wrap: break-word;
-  max-width: 700px; /* Centre et limite la largeur de la liste */
 }
 
 #ing-list li {
