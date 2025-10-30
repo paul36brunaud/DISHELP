@@ -10,6 +10,7 @@
   --card-bg-dark: #1a231b;    /* Fond sombre des cartes */
 }
 
+
 /* ----- Styles globaux ----- */
 body {
   font-family: 'Poppins', sans-serif;
@@ -31,6 +32,7 @@ h1 {
   font-size: clamp(1.8rem, 5vw, 3.8rem);
 }
 
+
 /* ----- Conteneur principal ----- */
 .app {
   margin: 0 auto;
@@ -39,6 +41,7 @@ h1 {
   height: 100vh;
   width: 100vw;
 }
+
 
 /* ----- En-tête ----- */
 .header {
@@ -51,6 +54,7 @@ h1 {
   top: 0;
   z-index: 10;
 }
+
 
 /* ----- Menu de navigation ----- */
 .menu {
@@ -91,6 +95,7 @@ h1 {
   color: #fff;
 }
 
+
 /* ----- Zone de contenu ----- */
 .content {
   flex: 1;
@@ -104,6 +109,7 @@ h1 {
     background: var(--card-bg-dark);
   }
 }
+
 
 /* ----- Cartes de recettes ----- */
 .recipe-card {
@@ -138,53 +144,87 @@ h1 {
   background: var(--accent-hover);
 }
 
-/* ----- Garde-manger responsive et esthétique ----- */
-#ing-input {
-  padding: 0.7rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  width: 70%;
-  font-size: 1rem;
+
+/* ----- Garde-manger responsive et esthétique amélioré ----- */
+.pantry-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* ❌ Corrigé : il y avait “1 rem” avec un espace — syntaxe invalide */
+  flex-wrap: wrap;
+  margin-top: 1rem;
 }
 
+/* 🧺 Champ d’ajout adaptatif */
+#ing-input {
+  flex: 1;
+  min-width: 150px;
+  max-width: 500px;
+  padding: 0.6em 1em;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  box-sizing: border-box;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  word-wrap: break-word; /* ✅ empêche le texte de dépasser */
+  overflow-wrap: break-word;
+}
+
+#ing-input:focus {
+  outline: none;
+  box-shadow: 0 0 6px rgba(103, 219, 140, 0.5);
+  transform: scale(1.02);
+}
+
+/* ➕ Bouton "Ajouter" adaptatif */
 #add-ing {
   background: var(--accent);
   border: none;
   color: white;
-  padding: 0.7rem 1rem;
-  margin-left: 0.5rem;
-  border-radius: 8px;
+  border-radius: 15px;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s ease;
+  font-weight: 700;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  padding: 0.6em 1em;
+  transition: transform 0.2s ease, background 0.3s ease;
+  margin-left: 0.8rem; /* ✅ un peu plus d’espace visuel */
 }
 
 #add-ing:hover {
-  background: #4caf6c;
-  transform: scale(1.08);
+  background: var(--accent-hover);
+  transform: scale(1.09);
 }
 
-/* ✅ Liste d’ingrédients responsive (nombre de colonnes automatique) */
+/* Liste d’ingrédients responsive avec espacement constant */
+/* 🧺 Grille d’ingrédients responsive */
 #ing-list {
   list-style: none;
   padding: 0;
-  margin-top: 1rem;
+  margin: 1.5rem auto; /* ✅ espace autour de la grille */
+  width: 95%; /* évite que les cases collent aux bords */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Adaptation automatique */
-  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* ✅ retour à la ligne automatique */
+  gap: 1rem; /* ✅ espace constant entre les cases */
+  justify-items: stretch; /* équilibre la largeur */
 }
 
+/* 🥦 Élément individuel */
 #ing-list li {
   background: white;
-  padding: 0.8rem 1rem;
-  border-radius: 10px;
+  border-radius: 12px;
+  padding: clamp(0.6rem, 2vw, 1rem);
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
+  color: var(--accent);
+  font-weight: 700;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* ✅ le texte long passe à la ligne */
+  min-height: 2.5rem; /* ✅ hauteur minimale homogène */
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  animation: fadeInUp 0.3s ease forwards;
-  color: var(--accent);
-  font-weight: 700;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 #ing-list li:hover {
@@ -192,13 +232,14 @@ h1 {
   box-shadow: 0 4px 8px rgba(0,0,0,0.08);
 }
 
+
 /* ❌ Bouton de suppression stylé */
 .del-ing {
   background: none;
   border: none;
   color: #ff6b6b;
   cursor: pointer;
-  font-size: 1.3rem;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
   transition: transform 0.2s ease, color 0.3s ease;
 }
 
@@ -218,6 +259,21 @@ h1 {
     transform: translateY(0);
   }
 }
+
+/* 📱 Ajustement sur petits écrans */
+@media (max-width: 500px) {
+  .pantry-input {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem; /* ✅ espace harmonieux sur mobile */
+  }
+
+  #ing-input, #add-ing {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
 
 
 /* ----- Animations ----- */
