@@ -173,3 +173,38 @@ function saveFavorites() {
 
 // --- Démarrage ---
 showPage('home');
+// Sélection des éléments
+const input = document.getElementById("ing-input");
+const addBtn = document.getElementById("add-ing");
+const list = document.getElementById("ing-list");
+
+// Fonction pour ajouter un ingrédient
+function addIngredient() {
+  const value = input.value.trim();
+  if (value === "") return; // Empêche les entrées vides
+
+  const li = document.createElement("li");
+  li.textContent = value;
+
+  // Ajout du bouton de suppression
+  const delBtn = document.createElement("button");
+  delBtn.classList.add("del-ing");
+  delBtn.innerHTML = "✖";
+  delBtn.addEventListener("click", () => li.remove());
+
+  li.appendChild(delBtn);
+  list.appendChild(li);
+
+  input.value = ""; // Vide le champ après ajout
+}
+
+// 📦 Clique sur le bouton “Ajouter”
+addBtn.addEventListener("click", addIngredient);
+
+// ⌨️ Appui sur la touche “Entrée”
+input.addEventListener("keypress", function (event) {
+  if (event.key === "Enter") {
+    event.preventDefault(); // empêche le rechargement du formulaire
+    addIngredient();
+  }
+});
