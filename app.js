@@ -154,29 +154,34 @@ function renderFavorites() {
 function initHome() {
   const favButtons = document.querySelectorAll(".fav-btn");
 
-  favButtons.forEach((btn) => {
+  favButtons.forEach(btn => {
     const recipe = btn.dataset.recipe;
 
-    // Si la recette est déjà en favoris
+    // État initial : si déjà favori -> croix + classe 'added', sinon coeur
     if (favorites.includes(recipe)) {
       btn.classList.add("added");
-      btn.textContent = "✖"; // croix rouge pastel
+      btn.textContent = "✖"; // croix (rouge pastel via .added)
+      btn.setAttribute("aria-label", `${recipe} - retire des favoris`);
     } else {
-      btn.textContent = "♡"; // cœur rouge pastel
+      btn.classList.remove("added");
+      btn.textContent = "♥"; // cœur (rouge vif)
+      btn.setAttribute("aria-label", `${recipe} - ajouter aux favoris`);
     }
 
-    // Gestion du clic sur le cœur / croix
+    // Clic : toggle ajouter / retirer
     btn.addEventListener("click", () => {
       if (favorites.includes(recipe)) {
-        // Supprimer des favoris
-        favorites = favorites.filter((r) => r !== recipe);
+        // retirer
+        favorites = favorites.filter(r => r !== recipe);
         btn.classList.remove("added");
-        btn.textContent = "♡"; // revient au cœur rouge pastel
+        btn.textContent = "♥";
+        btn.setAttribute("aria-label", `${recipe} - ajouter aux favoris`);
       } else {
-        // Ajouter aux favoris
+        // ajouter
         favorites.push(recipe);
         btn.classList.add("added");
-        btn.textContent = "✖"; // croix rouge pastel
+        btn.textContent = "✖";
+        btn.setAttribute("aria-label", `${recipe} - retire des favoris`);
       }
       saveFavorites();
     });
