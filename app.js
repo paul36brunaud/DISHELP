@@ -47,8 +47,40 @@ const pages = {
   `,
 
   profile: `
-    <h2>👤 Profil</h2>
-    <p>Configurez ici vos préférences culinaires, allergènes et régimes alimentaires.</p>
+<!-- Profil -->
+<h2>👤 Profil</h2>
+<p>Configurez ici vos préférences culinaires, allergènes et régimes alimentaires.</p>
+
+<form id="profile-form">
+  <div class="profile-section">
+    <label for="allergens">Allergènes :</label>
+    <select id="allergens" multiple>
+      <option value="Arachides">Arachides</option>
+      <option value="Fruits à coque">Fruits à coque</option>
+      <option value="Œufs">Œufs</option>
+      <option value="Lait">Lait</option>
+      <option value="Poissons">Poissons</option>
+      <option value="Crustacés">Crustacés</option>
+      <option value="Blé">Blé</option>
+      <option value="Gluten">Gluten</option>
+      <option value="Soja">Soja</option>
+    </select>
+  </div>
+
+  <div class="profile-section">
+    <label for="fruits">Fruits :</label>
+    <input type="text" id="fruits" placeholder="Précisez vos fruits favoris ou à éviter" />
+  </div>
+
+  <div class="profile-section">
+    <label for="vegetables">Légumes :</label>
+    <input type="text" id="vegetables" placeholder="Précisez vos légumes favoris ou à éviter" />
+  </div>
+
+  <button type="submit">Enregistrer</button>
+</form>
+
+<div id="profile-summary"></div>
   `
 };
 
@@ -228,3 +260,47 @@ function updateHeartIcons() {
     else setToHeart(btn);
   });
 }
+
+// --- Fonction pour récupérer et afficher les informations du profil ---
+function loadProfile() {
+  const allergens = JSON.parse(localStorage.getItem("dishhelp_allergens")) || [];
+  const fruits = localStorage.getItem("dishhelp_fruits") || '';
+  const vegetables = localStorage.getItem("dishhelp_vegetables") || '';
+
+  // Affichage des informations de profil
+  const profileSummary = document.getElementById("profile-summary");
+  profileSummary.innerHTML = `
+    <h3>Résumé du profil</h3>
+    <p><strong>Allergènes sélectionnés : </strong>${allergens.length ? allergens.join(", ") : "Aucun"}</p>
+    <p><strong>Fruits : </strong>${fruits || "Aucun"}</p>
+    <p><strong>Légumes : </strong>${vegetables || "Aucun"}</p>
+  `;
+}
+
+// --- Fonction pour enregistrer les données du profil ---
+function saveProfile(event) {
+  event.preventDefault(); // Empêche le rechargement de la page lors de la soumission du formulaire
+
+  const allergensSelect = document.getElementById("allergens");
+  const selectedAllergens = Array.from(allergensSelect.selectedOptions).map(option => option.value);
+  const fruits = document.getElementById("fruits").value.trim();
+  const vegetables = document.getElementById("vegetables").value.trim();
+
+  // Sauvegarde des données dans le localStorage
+  localStorage.setItem("dishhelp_allergens", JSON.stringify(selectedAllergens));
+  localStorage.setItem("dishhelp_fruits", fruits);
+  localStorage.setItem("dishhelp_vegetables", vegetables);
+
+  // Affiche un résumé mis à jour
+  loadProfile();
+}
+
+// --- Initialisation du profil ---
+document.addEventListener("DOMContentLoaded", () => {
+  // Charger et afficher les données existantes si elles existent
+  loadProfile();
+
+  // Ajouter un événement de soumission au formulaire
+  const profileForm = document.getElementById("profile-form");
+  profileForm.addEventListener("submit", saveProfile);
+});
