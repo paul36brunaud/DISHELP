@@ -163,9 +163,6 @@ h1 {
   text-align: center;
 }
 
-div {
-  text-align: center; /* Centre la ligne complète */
-}
 
 
 /* Liste ingrédients */
@@ -210,11 +207,6 @@ div {
 .fav-btn.anim-click {
   transform: scale(1.3);
   opacity: 0.7;
-}
-
-/* ---- Mise en page spécifique ---- */
-#home {
-  text-align: left; /* Aligne le contenu de l’accueil à gauche */
 }
 
 #favorites,
