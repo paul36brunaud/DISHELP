@@ -27,6 +27,7 @@ body {
 h1 {
   font-family: "Bowlby One", sans-serif;
   font-size: clamp(1.8rem, 5vw, 3.8rem);
+  letter-spacing: 2.5px;
 }
 
 .app {
