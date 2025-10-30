@@ -164,8 +164,6 @@ h1 {
 }
 
 
-
-
 /* Liste ingrédients */
 #ing-list {
   list-style: none;
@@ -210,13 +208,4 @@ h1 {
   opacity: 0.7;
 }
 
-/* ---- Mise en page spécifique ---- */
-#home {
-  text-align: left; /* Aligne le contenu de l’accueil à gauche */
-}
 
-#favorites,
-#pantry,
-#profile {
-  text-align: center; /* Les autres pages restent centrées */
-}
