@@ -36,7 +36,7 @@ const pages = {
 
   favorites: `
     <h2>❤️ Mes favoris</h2>
-    <ul id="fav-list"></ul>
+    <div id="fav-list"></div>
   `,
 
   pantry: `
@@ -167,7 +167,7 @@ function saveFavorites() {
   localStorage.setItem("dishhelp_favorites", JSON.stringify(favorites));
 }
 
-// --- Affichage des favoris ---
+// --- Affichage des favoris (NOUVELLE VERSION) ---
 function renderFavorites() {
   const list = document.getElementById("fav-list");
 
@@ -179,12 +179,12 @@ function renderFavorites() {
   list.innerHTML = favorites
     .map(
       (f, i) => `
-        <li>
-          <h3>${f.name}</h3>
-          <p>${f.description}</p>
-          <p><strong>Contenu complet :</strong> ${f.full}</p>
-          <button class="fav-toggle" data-index="${i}">❌</button>
-        </li>
+        <div class="recipe-card" data-recipe="${f.name}">
+          ${f.full}
+          <button class="fav-btn fav-toggle" data-index="${i}" style="margin-top:10px;">
+            ❌
+          </button>
+        </div>
       `
     )
     .join("");
@@ -209,7 +209,6 @@ function initHome() {
     const recipeName = recipeCard.dataset.recipe;
     const recipeDescription = recipeCard.querySelector("p").textContent;
 
-    // Ajout du contenu ENTIER
     const fullContent = recipeCard.innerHTML;
 
     if (favorites.some(fav => fav.name === recipeName)) {
@@ -224,7 +223,7 @@ function initHome() {
       const recipe = {
         name: recipeName,
         description: recipeDescription,
-        full: fullContent   // ← ajout du menu ENTIER
+        full: fullContent
       };
 
       if (favorites.some(fav => fav.name === recipeName)) {
@@ -254,7 +253,7 @@ function setToCross(btn) {
   btn.style.color = "#ff6b6b";
 }
 
-// --- Synchronisation visuelle des icônes de cœur ---
+// --- Synchronisation visuelle ---
 function updateHeartIcons() {
   const favButtons = document.querySelectorAll(".fav-btn");
 
