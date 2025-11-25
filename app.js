@@ -86,19 +86,19 @@ const pages = {
 // --- Navigation ---
 function showPage(target) {
   content.innerHTML = pages[target] || "<p>Page introuvable.</p>";
-  
-  // Réinitialiser le texte descriptif lorsqu'on revient sur la page
-  if (target === "home" || target === "pantry" || target === "favorites") {
-    const introText = document.getElementById("intro-text");
-    if (introText && !introText.classList.contains("interacted")) {
-      introText.style.display = "block"; // Affiche le texte si il n'a pas été masqué
+
+  const introText = document.getElementById("intro-text");
+  if (introText && (target === "home" || target === "pantry" || target === "favorites")) {
+    if (!introText.classList.contains("interacted")) {
+      introText.style.display = "block";
     }
   }
 
   buttons.forEach(btn => btn.classList.remove("active"));
-  document.querySelector(`[data-target="${target}"]`).classList.add("active");
+  
+  const activeBtn = document.querySelector(`[data-target="${target}"]`);
+  if (activeBtn) activeBtn.classList.add("active");
 
-  // Charger la page spécifique
   if (target === "pantry") renderPantry();
   if (target === "favorites") renderFavorites();
   if (target === "home") initHome();
@@ -133,10 +133,11 @@ function renderPantry() {
     localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
     input.value = "";
     renderList();
+
     const introText = document.getElementById("intro-text");
     if (introText) {
-      introText.style.display = "none"; // Masque le texte une fois que l'utilisateur interagit
-      introText.classList.add("interacted"); // Ajoute un flag pour marquer l'interaction
+      introText.style.display = "none";
+      introText.classList.add("interacted");
     }
   };
 
@@ -205,14 +206,12 @@ function initHome() {
     const recipeName = recipeCard.dataset.recipe;
     const recipeDescription = recipeCard.querySelector("p").textContent;
 
-    // état initial
     if (favorites.some(fav => fav.name === recipeName)) {
       setToCross(btn);
     } else {
       setToHeart(btn);
     }
 
-    // clic : toggle
     btn.addEventListener("click", () => {
       btn.classList.add("anim-click");
 
@@ -232,7 +231,6 @@ function initHome() {
       saveFavorites();
       updateHeartIcons();
 
-      // retire la classe d'animation après un court délai
       setTimeout(() => btn.classList.remove("anim-click"), 300);
     });
   });
@@ -241,33 +239,40 @@ function initHome() {
 // --- Fonctions pour les styles ---
 function setToHeart(btn) {
   btn.textContent = "❤️";
-  btn.style.color = "#e63946"; // rouge vif
+  btn.style.color = "#e63946";
 }
 
 function setToCross(btn) {
   btn.textContent = "❌";
-  btn.style.color = "#ff6b6b"; // rouge pastel
+  btn.style.color = "#ff6b6b";
 }
 
 // --- Synchronisation visuelle des icônes de cœur ---
 function updateHeartIcons() {
   const favButtons = document.querySelectorAll(".fav-btn");
+
   favButtons.forEach((btn) => {
     const recipeCard = btn.closest(".recipe-card");
     const recipeName = recipeCard.dataset.recipe;
-    if (favorites.some(fav => fav.name === recipeName)) setToCross(btn);
-    else setToHeart(btn);
+
+    if (favorites.some(fav => fav.name === recipeName)) {
+      setToCross(btn);
+    } else {
+      setToHeart(btn);
+    }
   });
 }
 
-// --- Fonction pour récupérer et afficher les informations du profil ---
+// --- Chargement du profil ---
 function loadProfile() {
   const allergens = JSON.parse(localStorage.getItem("dishhelp_allergens")) || [];
   const fruits = localStorage.getItem("dishhelp_fruits") || '';
   const vegetables = localStorage.getItem("dishhelp_vegetables") || '';
 
-  // Affichage des informations de profil
   const profileSummary = document.getElementById("profile-summary");
+
+  if (!profileSummary) return;
+
   profileSummary.innerHTML = `
     <h3>Résumé du profil</h3>
     <p><strong>Allergènes sélectionnés : </strong>${allergens.length ? allergens.join(", ") : "Aucun"}</p>
@@ -276,36 +281,38 @@ function loadProfile() {
   `;
 }
 
-// --- Fonction pour enregistrer les données du profil ---
+// --- Enregistrement du profil ---
 function saveProfile(event) {
-  event.preventDefault(); // Empêche le rechargement de la page lors de la soumission du formulaire
+  event.preventDefault();
 
   const allergensSelect = document.getElementById("allergens");
   const selectedAllergens = Array.from(allergensSelect.selectedOptions).map(option => option.value);
   const fruits = document.getElementById("fruits").value.trim();
   const vegetables = document.getElementById("vegetables").value.trim();
 
-  // Sauvegarde des données dans le localStorage
   localStorage.setItem("dishhelp_allergens", JSON.stringify(selectedAllergens));
   localStorage.setItem("dishhelp_fruits", fruits);
   localStorage.setItem("dishhelp_vegetables", vegetables);
 
-  // Affiche un résumé mis à jour
   loadProfile();
 
-  // Confirmation visuelle
   const confirmationMessage = document.createElement("p");
   confirmationMessage.textContent = "Vos préférences ont été enregistrées avec succès !";
   document.getElementById("profile-summary").appendChild(confirmationMessage);
-  setTimeout(() => confirmationMessage.remove(), 3000); // Disparaît après 3 secondes
+
+  setTimeout(() => confirmationMessage.remove(), 3000);
 }
 
-// --- Initialisation du profil ---
+// --- Initialisation ---
 document.addEventListener("DOMContentLoaded", () => {
-  // Charger et afficher les données existantes si elles existent
-  loadProfile();
-
-  // Ajouter un événement de soumission au formulaire
   const profileForm = document.getElementById("profile-form");
-  profileForm.addEventListener("submit", saveProfile);
+  if (profileForm) profileForm.addEventListener("submit", saveProfile);
+
+  showPage("home");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      showPage(btn.dataset.target);
+    });
+  });
 });
