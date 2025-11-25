@@ -12,6 +12,7 @@ const pages = {
     <h2>🍽️ Bienvenue sur Dishhelp</h2>
     <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
     <div id="recipe-list">
+
       <div class="recipe-card" data-recipe="Salade fraîcheur">
         <h3>🥗 Salade fraîcheur</h3>
         <p>Tomates, concombres, feta et huile d'olive.</p>
@@ -29,6 +30,7 @@ const pages = {
         <p>Œufs, carottes, courgettes et oignons.</p>
         <button class="fav-btn">Ajouter aux favoris</button>
       </div>
+
     </div>
   `,
 
@@ -180,6 +182,7 @@ function renderFavorites() {
         <li>
           <h3>${f.name}</h3>
           <p>${f.description}</p>
+          <p><strong>Contenu complet :</strong> ${f.full}</p>
           <button class="fav-toggle" data-index="${i}">❌</button>
         </li>
       `
@@ -206,6 +209,9 @@ function initHome() {
     const recipeName = recipeCard.dataset.recipe;
     const recipeDescription = recipeCard.querySelector("p").textContent;
 
+    // Ajout du contenu ENTIER
+    const fullContent = recipeCard.innerHTML;
+
     if (favorites.some(fav => fav.name === recipeName)) {
       setToCross(btn);
     } else {
@@ -217,7 +223,8 @@ function initHome() {
 
       const recipe = {
         name: recipeName,
-        description: recipeDescription
+        description: recipeDescription,
+        full: fullContent   // ← ajout du menu ENTIER
       };
 
       if (favorites.some(fav => fav.name === recipeName)) {
