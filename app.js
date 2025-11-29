@@ -48,14 +48,20 @@ const pages = {
     <ul id="ing-list"></ul>
   `,
 
-  profile: `
-    <h2>👤 Profil</h2>
-    <p>Configurez ici vos préférences culinaires, allergènes et régimes alimentaires.</p>
+ profile: `
+  <h2 class="title-profile">👤 Mon Profil</h2>
 
-    <form id="profile-form">
+  <div class="profile-card">
+
+    <div class="profile-photo">
+      <div class="photo-circle">👤</div>
+    </div>
+
+    <form id="profile-form" class="profile-form">
+
       <div class="profile-section">
-        <label for="allergens">Allergènes :</label>
-        <select id="allergens" multiple>
+        <label class="section-label">🧪 Allergènes :</label>
+        <select id="allergens" multiple class="profile-select">
           <option value="Arachides">Arachides</option>
           <option value="Fruits à coque">Fruits à coque</option>
           <option value="Œufs">Œufs</option>
@@ -69,20 +75,22 @@ const pages = {
       </div>
 
       <div class="profile-section">
-        <label for="fruits">Fruits :</label>
-        <input type="text" id="fruits" placeholder="Précisez vos fruits favoris ou à éviter" />
+        <label class="section-label">🍎 Fruits :</label>
+        <input type="text" id="fruits" placeholder="Vos préférences fruitées" class="profile-input" />
       </div>
 
       <div class="profile-section">
-        <label for="vegetables">Légumes :</label>
-        <input type="text" id="vegetables" placeholder="Précisez vos légumes favoris ou à éviter" />
+        <label class="section-label">🥕 Légumes :</label>
+        <input type="text" id="vegetables" placeholder="Vos préférences en légumes" class="profile-input" />
       </div>
 
-      <button type="submit">Enregistrer</button>
+      <button type="submit" class="profile-btn">💾 Enregistrer</button>
     </form>
 
-    <div id="profile-summary"></div>
-  `
+    <div id="profile-summary" class="profile-summary"></div>
+
+  </div>
+`
 };
 
 // --- Navigation ---
