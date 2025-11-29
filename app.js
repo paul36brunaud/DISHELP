@@ -167,7 +167,7 @@ function saveFavorites() {
   localStorage.setItem("dishhelp_favorites", JSON.stringify(favorites));
 }
 
-// --- Affichage des favoris (NOUVELLE VERSION) ---
+// --- Affichage des favoris (corrigé) ---
 function renderFavorites() {
   const list = document.getElementById("fav-list");
 
@@ -177,16 +177,14 @@ function renderFavorites() {
   }
 
   list.innerHTML = favorites
-    .map(
-      (f, i) => `
-        <div class="recipe-card" data-recipe="${f.name}">
-          ${f.full}
-          <button class="fav-btn fav-toggle" data-index="${i}" style="margin-top:10px;">
-            ❌
-          </button>
-        </div>
-      `
-    )
+    .map((f, i) => `
+      <div class="recipe-card" data-recipe="${f.name}">
+        ${f.full}
+        <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">
+          ❌ Retirer des favoris
+        </button>
+      </div>
+    `)
     .join("");
 
   list.querySelectorAll(".fav-toggle").forEach((btn) => {
@@ -209,7 +207,11 @@ function initHome() {
     const recipeName = recipeCard.dataset.recipe;
     const recipeDescription = recipeCard.querySelector("p").textContent;
 
-    const fullContent = recipeCard.innerHTML;
+    // NOUVEAU : clonage sans le bouton favoris
+    const clone = recipeCard.cloneNode(true);
+    const favBtnInClone = clone.querySelector(".fav-btn");
+    if (favBtnInClone) favBtnInClone.remove();
+    const fullContent = clone.innerHTML;
 
     if (favorites.some(fav => fav.name === recipeName)) {
       setToCross(btn);
