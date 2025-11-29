@@ -189,7 +189,7 @@ function renderFavorites() {
       <div class="recipe-card" data-recipe="${f.name}">
         ${f.full}
         <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">
-          ❌ Retirer des favoris
+          ❌
         </button>
       </div>
     `)
