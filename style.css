@@ -187,7 +187,7 @@ h1 {
   cursor: pointer;
 }
 
-/* --- LISTES FRUITS & LÉGUMES (NOUVEAU) --- */
+/* --- LISTES FRUITS & LÉGUMES (VERT & BLANC) --- */
 
 .list-box {
   list-style: none;
@@ -199,21 +199,21 @@ h1 {
 }
 
 .list-box li {
-  background: white;
+  background: var(--accent);          /* FOND VERT */
   padding: 0.5rem 0.8rem;
   border-radius: 10px;
-  border-left: 5px solid var(--accent);
+  border-left: 5px solid var(--accent-hover);
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-weight: 600;
-  color: var(--accent);
+  color: white;                       /* TEXTE BLANC */
 }
 
 .list-del {
   background: none;
   border: none;
-  color: #ff6b6b;
+  color: white;                       /* ❌ BLANC */
   font-size: 1.3rem;
   cursor: pointer;
 }
@@ -312,11 +312,7 @@ h1 {
   background: var(--accent-hover);
 }
 
+/* Résumé supprimé visuellement */
 .profile-summary {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: #f3f3f3;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  line-height: 1.4;
+  display: none;
 }
