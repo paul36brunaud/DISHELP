@@ -157,13 +157,12 @@ h1 {
   background: var(--accent-hover);
 }
 
-/* Liste ingrédients */
 /* Liste des ingrédients */
 #ing-list {
   list-style: none;
   padding: 0;
   margin: 1.5rem auto;
-  display: flex; /* Utilise flex pour une disposition en ligne */
+  display: flex;
   flex-direction: column;
   gap: 1rem;
 }
@@ -172,16 +171,16 @@ h1 {
 #ing-list li {
   background: white;
   border-radius: 12px;
-  padding: 0.6rem 1rem; /* Ajuste le padding pour être plus serré autour du contenu */
+  padding: 0.4rem 0.8rem; /* Réduit un peu le padding pour mieux ajuster */
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--accent);
-  display: inline-flex; /* Force le contenu à s'ajuster à sa largeur */
-  justify-content: space-between;
+  display: inline-flex; /* Permet au contenu de s'ajuster à la taille du texte */
+  justify-content: space-between; /* Aligne le texte et la croix aux extrémités */
   align-items: center;
   width: auto; /* La largeur s'ajuste au contenu */
-  min-width: 0; /* Évite les contraintes minimales de largeur */
-  box-sizing: border-box; /* Assure que le padding n'ajoute pas de largeur supplémentaire */
+  min-width: 0; /* Empêche la largeur minimum par défaut */
+  box-sizing: border-box; /* Assure que le padding et la bordure sont inclus dans la largeur */
 }
 
 /* Bouton de suppression (croix) */
@@ -191,6 +190,7 @@ h1 {
   color: #ff6b6b;
   font-size: 1.4rem;
   cursor: pointer;
+  margin-left: 1rem; /* Espacement entre le texte et la croix */
 }
 
 /* --- LISTES FRUITS & LÉGUMES (VERT & BLANC) --- */
