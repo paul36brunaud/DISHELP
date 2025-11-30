@@ -310,6 +310,7 @@ function initProfile() {
       .join("");
   }
 
+  // --- Bouton ajouter fruit ---
   addFruitBtn.addEventListener("click", () => {
     const val = fruitInput.value.trim();
     if (!val) return;
@@ -319,6 +320,7 @@ function initProfile() {
     renderFruitList();
   });
 
+  // --- Bouton ajouter légume ---
   addVegBtn.addEventListener("click", () => {
     const val = vegInput.value.trim();
     if (!val) return;
@@ -328,6 +330,7 @@ function initProfile() {
     renderVegList();
   });
 
+  // --- SUPPRESSION FRUIT ---
   fruitListBox.addEventListener("click", (e) => {
     if (e.target.classList.contains("list-del")) {
       const i = e.target.dataset.i;
@@ -337,6 +340,7 @@ function initProfile() {
     }
   });
 
+  // --- SUPPRESSION LÉGUME ---
   vegListBox.addEventListener("click", (e) => {
     if (e.target.classList.contains("list-del")) {
       const i = e.target.dataset.i;
@@ -346,9 +350,26 @@ function initProfile() {
     }
   });
 
+  // --- AJOUT VIA ENTRÉE : FRUITS ---
+  fruitInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addFruitBtn.click();
+    }
+  });
+
+  // --- AJOUT VIA ENTRÉE : LÉGUMES ---
+  vegInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addVegBtn.click();
+    }
+  });
+
   renderFruitList();
   renderVegList();
 }
+
 
 // --- Enregistrement du profil ---
 function saveProfile(event) {
