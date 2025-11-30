@@ -176,6 +176,8 @@ h1 {
   color: var(--accent);
   display: flex;
   justify-content: space-between;
+  width: auto; /* Ajuste la largeur automatiquement */
+  min-width: 0; /* S'assure qu'il n'y a pas de "min-width" forcé */
   align-items: center;
 }
 
