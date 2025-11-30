@@ -6,6 +6,9 @@ const content = document.getElementById("content");
 let pantry = JSON.parse(localStorage.getItem("dishhelp_pantry")) || [];
 let favorites = JSON.parse(localStorage.getItem("dishhelp_favorites")) || [];
 
+let fruitList = JSON.parse(localStorage.getItem("dishhelp_fruitList")) || [];
+let vegetableList = JSON.parse(localStorage.getItem("dishhelp_vegetableList")) || [];
+
 // --- Pages ---
 const pages = {
   home: `
@@ -48,49 +51,51 @@ const pages = {
     <ul id="ing-list"></ul>
   `,
 
- profile: `
-  <h2 class="title-profile">Mon Profil</h2>
+  profile: `
+    <h2 class="title-profile">Mon Profil</h2>
 
-  <div class="profile-card">
+    <div class="profile-card">
 
-    <div class="profile-photo">
-      <div class="photo-circle">👤</div>
+      <div class="profile-photo">
+        <div class="photo-circle">👤</div>
+      </div>
+
+      <form id="profile-form" class="profile-form">
+
+        <div class="profile-section">
+          <label class="section-label">⚠️ Allergènes :</label>
+          <select id="allergens" multiple class="profile-select">
+            <option value="Arachides">Arachides</option>
+            <option value="Fruits à coque">Fruits à coque</option>
+            <option value="Œufs">Œufs</option>
+            <option value="Lait">Lait</option>
+            <option value="Poissons">Poissons</option>
+            <option value="Crustacés">Crustacés</option>
+            <option value="Blé">Blé</option>
+            <option value="Gluten">Gluten</option>
+            <option value="Soja">Soja</option>
+          </select>
+        </div>
+
+        <div class="profile-section">
+          <label class="section-label">🍎 Fruits :</label>
+          <input type="text" id="fruits" placeholder="Ajouter un fruit" class="profile-input" />
+          <ul id="fruit-list"></ul>
+        </div>
+
+        <div class="profile-section">
+          <label class="section-label">🥕 Légumes :</label>
+          <input type="text" id="vegetables" placeholder="Ajouter un légume" class="profile-input" />
+          <ul id="vegetable-list"></ul>
+        </div>
+
+        <button type="submit" class="profile-btn">💾 Enregistrer</button>
+      </form>
+
+      <div id="profile-summary" class="profile-summary"></div>
+
     </div>
-
-    <form id="profile-form" class="profile-form">
-
-      <div class="profile-section">
-        <label class="section-label">⚠️ Allergènes :</label>
-        <select id="allergens" multiple class="profile-select">
-          <option value="Arachides">Arachides</option>
-          <option value="Fruits à coque">Fruits à coque</option>
-          <option value="Œufs">Œufs</option>
-          <option value="Lait">Lait</option>
-          <option value="Poissons">Poissons</option>
-          <option value="Crustacés">Crustacés</option>
-          <option value="Blé">Blé</option>
-          <option value="Gluten">Gluten</option>
-          <option value="Soja">Soja</option>
-        </select>
-      </div>
-
-      <div class="profile-section">
-        <label class="section-label">🍎 Fruits :</label>
-        <input type="text" id="fruits" placeholder="Vos préférences fruitées" class="profile-input" />
-      </div>
-
-      <div class="profile-section">
-        <label class="section-label">🥕 Légumes :</label>
-        <input type="text" id="vegetables" placeholder="Vos préférences en légumes" class="profile-input" />
-      </div>
-
-      <button type="submit" class="profile-btn">💾 Enregistrer</button>
-    </form>
-
-    <div id="profile-summary" class="profile-summary"></div>
-
-  </div>
-`
+  `
 };
 
 // --- Navigation ---
@@ -112,6 +117,7 @@ function showPage(target) {
   if (target === "pantry") renderPantry();
   if (target === "favorites") renderFavorites();
   if (target === "home") initHome();
+  if (target === "profile") initProfile();
 }
 
 // --- Garde-manger ---
@@ -143,12 +149,6 @@ function renderPantry() {
     localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
     input.value = "";
     renderList();
-
-    const introText = document.getElementById("intro-text");
-    if (introText) {
-      introText.style.display = "none";
-      introText.classList.add("interacted");
-    }
   };
 
   addBtn.addEventListener("click", addIngredient);
@@ -175,11 +175,11 @@ function saveFavorites() {
   localStorage.setItem("dishhelp_favorites", JSON.stringify(favorites));
 }
 
-// --- Affichage des favoris (corrigé) ---
+// --- Affichage des favoris ---
 function renderFavorites() {
   const list = document.getElementById("fav-list");
 
-  if (!favorites || favorites.length === 0) {
+  if (!favorites.length) {
     list.innerHTML = "<p>Aucun favori pour le moment.</p>";
     return;
   }
@@ -188,17 +188,14 @@ function renderFavorites() {
     .map((f, i) => `
       <div class="recipe-card" data-recipe="${f.name}">
         ${f.full}
-        <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">
-          ❌
-        </button>
+        <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">❌</button>
       </div>
     `)
     .join("");
 
-  list.querySelectorAll(".fav-toggle").forEach((btn) => {
+  list.querySelectorAll(".fav-toggle").forEach(btn => {
     btn.addEventListener("click", () => {
-      const index = btn.dataset.index;
-      favorites.splice(index, 1);
+      favorites.splice(btn.dataset.index, 1);
       saveFavorites();
       renderFavorites();
       updateHeartIcons();
@@ -206,7 +203,7 @@ function renderFavorites() {
   });
 }
 
-// --- Page d’accueil : ajout / retrait des favoris ---
+// --- Page d’accueil : favoris ---
 function initHome() {
   const favButtons = document.querySelectorAll(".fav-btn");
 
@@ -215,13 +212,12 @@ function initHome() {
     const recipeName = recipeCard.dataset.recipe;
     const recipeDescription = recipeCard.querySelector("p").textContent;
 
-    // NOUVEAU : clonage sans le bouton favoris
     const clone = recipeCard.cloneNode(true);
     const favBtnInClone = clone.querySelector(".fav-btn");
     if (favBtnInClone) favBtnInClone.remove();
     const fullContent = clone.innerHTML;
 
-    if (favorites.some(fav => fav.name === recipeName)) {
+    if (favorites.some(f => f.name === recipeName)) {
       setToCross(btn);
     } else {
       setToHeart(btn);
@@ -230,13 +226,9 @@ function initHome() {
     btn.addEventListener("click", () => {
       btn.classList.add("anim-click");
 
-      const recipe = {
-        name: recipeName,
-        description: recipeDescription,
-        full: fullContent
-      };
+      const recipe = { name: recipeName, description: recipeDescription, full: fullContent };
 
-      if (favorites.some(fav => fav.name === recipeName)) {
+      if (favorites.some(f => f.name === recipeName)) {
         favorites = favorites.filter(f => f.name !== recipeName);
         setToHeart(btn);
       } else {
@@ -246,13 +238,12 @@ function initHome() {
 
       saveFavorites();
       updateHeartIcons();
-
       setTimeout(() => btn.classList.remove("anim-click"), 300);
     });
   });
 }
 
-// --- Fonctions pour les styles ---
+// --- Icônes coeur / croix ---
 function setToHeart(btn) {
   btn.textContent = "❤️";
   btn.style.color = "#e63946";
@@ -263,27 +254,91 @@ function setToCross(btn) {
   btn.style.color = "#ff6b6b";
 }
 
-// --- Synchronisation visuelle ---
 function updateHeartIcons() {
-  const favButtons = document.querySelectorAll(".fav-btn");
+  document.querySelectorAll(".fav-btn").forEach(btn => {
+    const recipeName = btn.closest(".recipe-card").dataset.recipe;
+    favorites.some(f => f.name === recipeName) ? setToCross(btn) : setToHeart(btn);
+  });
+}
 
-  favButtons.forEach((btn) => {
-    const recipeCard = btn.closest(".recipe-card");
-    const recipeName = recipeCard.dataset.recipe;
+// --- PROFIL ---
+// ------------------------
 
-    if (favorites.some(fav => fav.name === recipeName)) {
-      setToCross(btn);
-    } else {
-      setToHeart(btn);
+function initProfile() {
+  const fruitsInput = document.getElementById("fruits");
+  const vegetablesInput = document.getElementById("vegetables");
+
+  const fruitListEl = document.getElementById("fruit-list");
+  const vegetableListEl = document.getElementById("vegetable-list");
+
+  // --- Rendu des listes ---
+  function renderFruitList() {
+    fruitListEl.innerHTML = fruitList
+      .map((f, i) => `<li>${f} <button class="del-fruit" data-i="${i}">❌</button></li>`)
+      .join("");
+  }
+
+  function renderVegetableList() {
+    vegetableListEl.innerHTML = vegetableList
+      .map((v, i) => `<li>${v} <button class="del-veg" data-i="${i}">❌</button></li>`)
+      .join("");
+  }
+
+  // --- Ajouter fruit ---
+  fruitsInput.addEventListener("keypress", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const val = fruitsInput.value.trim();
+      if (!val) return;
+
+      fruitList.push(val);
+      localStorage.setItem("dishhelp_fruitList", JSON.stringify(fruitList));
+
+      fruitsInput.value = "";
+      renderFruitList();
     }
   });
+
+  // --- Ajouter légume ---
+  vegetablesInput.addEventListener("keypress", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const val = vegetablesInput.value.trim();
+      if (!val) return;
+
+      vegetableList.push(val);
+      localStorage.setItem("dishhelp_vegetableList", JSON.stringify(vegetableList));
+
+      vegetablesInput.value = "";
+      renderVegetableList();
+    }
+  });
+
+  // --- Suppressions ---
+  fruitListEl.addEventListener("click", e => {
+    if (e.target.classList.contains("del-fruit")) {
+      fruitList.splice(e.target.dataset.i, 1);
+      localStorage.setItem("dishhelp_fruitList", JSON.stringify(fruitList));
+      renderFruitList();
+    }
+  });
+
+  vegetableListEl.addEventListener("click", e => {
+    if (e.target.classList.contains("del-veg")) {
+      vegetableList.splice(e.target.dataset.i, 1);
+      localStorage.setItem("dishhelp_vegetableList", JSON.stringify(vegetableList));
+      renderVegetableList();
+    }
+  });
+
+  renderFruitList();
+  renderVegetableList();
+  loadProfile();
 }
 
 // --- Chargement du profil ---
 function loadProfile() {
   const allergens = JSON.parse(localStorage.getItem("dishhelp_allergens")) || [];
-  const fruits = localStorage.getItem("dishhelp_fruits") || '';
-  const vegetables = localStorage.getItem("dishhelp_vegetables") || '';
 
   const profileSummary = document.getElementById("profile-summary");
 
@@ -292,8 +347,8 @@ function loadProfile() {
   profileSummary.innerHTML = `
     <h3>Résumé du profil</h3>
     <p><strong>Allergènes sélectionnés : </strong>${allergens.length ? allergens.join(", ") : "Aucun"}</p>
-    <p><strong>Fruits : </strong>${fruits || "Aucun"}</p>
-    <p><strong>Légumes : </strong>${vegetables || "Aucun"}</p>
+    <p><strong>Fruits : </strong>${fruitList.length ? fruitList.join(", ") : "Aucun"}</p>
+    <p><strong>Légumes : </strong>${vegetableList.length ? vegetableList.join(", ") : "Aucun"}</p>
   `;
 }
 
@@ -302,21 +357,17 @@ function saveProfile(event) {
   event.preventDefault();
 
   const allergensSelect = document.getElementById("allergens");
-  const selectedAllergens = Array.from(allergensSelect.selectedOptions).map(option => option.value);
-  const fruits = document.getElementById("fruits").value.trim();
-  const vegetables = document.getElementById("vegetables").value.trim();
+  const selectedAllergens = Array.from(allergensSelect.selectedOptions).map(o => o.value);
 
   localStorage.setItem("dishhelp_allergens", JSON.stringify(selectedAllergens));
-  localStorage.setItem("dishhelp_fruits", fruits);
-  localStorage.setItem("dishhelp_vegetables", vegetables);
 
   loadProfile();
 
-  const confirmationMessage = document.createElement("p");
-  confirmationMessage.textContent = "Vos préférences ont été enregistrées avec succès !";
-  document.getElementById("profile-summary").appendChild(confirmationMessage);
+  const msg = document.createElement("p");
+  msg.textContent = "Vos préférences ont été enregistrées avec succès !";
+  document.getElementById("profile-summary").appendChild(msg);
 
-  setTimeout(() => confirmationMessage.remove(), 3000);
+  setTimeout(() => msg.remove(), 3000);
 }
 
 // --- Initialisation ---

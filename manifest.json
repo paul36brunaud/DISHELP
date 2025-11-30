@@ -1,13 +1,14 @@
 {
   "name": "Dishhelp",
   "short_name": "Dishhelp",
-  "lang": "fr-FR",
-  "start_url": "./index.html",
-  "scope": "./",
+  "description": "Votre assistant cuisine : recettes, favoris, garde-manger et profil alimentaire.",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#ffffff",
+  "background_color": "#67db8c",
   "theme_color": "#67db8c",
+  "orientation": "portrait-primary",
+
   "icons": [
     {
       "src": "icons/icon-192.png",
