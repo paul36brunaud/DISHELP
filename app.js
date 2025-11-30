@@ -49,7 +49,7 @@ const pages = {
   `,
 
  profile: `
-  <h2 class="title-profile">👤 Mon Profil</h2>
+  <h2 class="title-profile">Mon Profil</h2>
 
   <div class="profile-card">
 
