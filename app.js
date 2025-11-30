@@ -60,7 +60,7 @@ const pages = {
     <form id="profile-form" class="profile-form">
 
       <div class="profile-section">
-        <label class="section-label">🧪 Allergènes :</label>
+        <label class="section-label">⚠️ Allergènes :</label>
         <select id="allergens" multiple class="profile-select">
           <option value="Arachides">Arachides</option>
           <option value="Fruits à coque">Fruits à coque</option>
