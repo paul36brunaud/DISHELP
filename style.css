@@ -198,6 +198,8 @@ h1 {
   gap: 0.6rem;
 }
 
+/* --- LISTES FRUITS & LÉGUMES (VERT & BLANC) --- */
+
 .list-box li {
   background: var(--accent);          /* FOND VERT */
   padding: 0.5rem 0.8rem;
@@ -208,7 +210,9 @@ h1 {
   align-items: center;
   font-weight: 600;
   color: white;                       /* TEXTE BLANC */
+  box-shadow: none;                   /* Ajoute cette ligne pour enlever l'ombre */
 }
+
 
 .list-del {
   background: none;
