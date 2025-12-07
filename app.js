@@ -129,7 +129,6 @@ function renderPantry() {
   const input = document.getElementById("ing-input");
   const addBtn = document.getElementById("add-ing");
 
-  // Convertir les anciens ingrédients texte → objets {name, qty}
   pantry = pantry.map(item => {
     if (typeof item === "string") return { name: item, qty: 1 };
     return item;
@@ -142,11 +141,9 @@ function renderPantry() {
       const li = document.createElement("li");
       li.classList.add("pantry-item");
 
-      // Nom
       const nameSpan = document.createElement("span");
       nameSpan.textContent = item.name;
 
-      // Quantité (input)
       const qtyInput = document.createElement("input");
       qtyInput.type = "number";
       qtyInput.min = 1;
@@ -159,7 +156,6 @@ function renderPantry() {
         localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
       });
 
-      // Supprimer
       const delBtn = document.createElement("button");
       delBtn.textContent = "❌";
       delBtn.classList.add("del-ing");
@@ -205,7 +201,6 @@ function renderPantry() {
 
   renderList();
 }
-
 
 // --- Sauvegarde des favoris ---
 function saveFavorites() {
@@ -338,7 +333,6 @@ function initProfile() {
       .join("");
   }
 
-  // --- Bouton ajouter fruit ---
   addFruitBtn.addEventListener("click", () => {
     const val = fruitInput.value.trim();
     if (!val) return;
@@ -348,7 +342,6 @@ function initProfile() {
     renderFruitList();
   });
 
-  // --- Bouton ajouter légume ---
   addVegBtn.addEventListener("click", () => {
     const val = vegInput.value.trim();
     if (!val) return;
@@ -358,7 +351,6 @@ function initProfile() {
     renderVegList();
   });
 
-  // --- SUPPRESSION FRUIT ---
   fruitListBox.addEventListener("click", (e) => {
     if (e.target.classList.contains("list-del")) {
       const i = e.target.dataset.i;
@@ -368,7 +360,6 @@ function initProfile() {
     }
   });
 
-  // --- SUPPRESSION LÉGUME ---
   vegListBox.addEventListener("click", (e) => {
     if (e.target.classList.contains("list-del")) {
       const i = e.target.dataset.i;
@@ -378,7 +369,6 @@ function initProfile() {
     }
   });
 
-  // --- AJOUT VIA ENTRÉE : FRUITS ---
   fruitInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -386,7 +376,6 @@ function initProfile() {
     }
   });
 
-  // --- AJOUT VIA ENTRÉE : LÉGUMES ---
   vegInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -396,8 +385,11 @@ function initProfile() {
 
   renderFruitList();
   renderVegList();
-}
 
+  // 🔥 FIX IMPORTANT : attacher l'événement submit APRES injection du profil
+  const form = document.getElementById("profile-form");
+  form.addEventListener("submit", saveProfile);
+}
 
 // --- Enregistrement du profil ---
 function saveProfile(event) {
@@ -408,14 +400,12 @@ function saveProfile(event) {
 
   localStorage.setItem("dishhelp_allergens", JSON.stringify(selectedAllergens));
 
-  // Message de confirmation flottant
   const message = document.createElement("div");
   message.classList.add("save-confirm");
   message.textContent = "✔ Profil enregistré avec succès !";
 
   document.body.appendChild(message);
 
-  // Attendre puis faire disparaître
   setTimeout(() => {
     message.classList.add("hide");
     setTimeout(() => message.remove(), 300);
@@ -431,7 +421,4 @@ document.addEventListener("DOMContentLoaded", () => {
       showPage(btn.dataset.target);
     });
   });
-
-  const form = document.getElementById("profile-form");
-  if (form) form.addEventListener("submit", saveProfile);
 });
