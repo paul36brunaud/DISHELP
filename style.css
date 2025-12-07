@@ -342,6 +342,33 @@ h1 {
   background: var(--accent-hover);
 }
 
+/* Confirmation sauvegarde */
+.save-confirm {
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4caf6c;
+  color: white;
+  padding: 0.8rem 1.4rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  animation: popIn 0.25s ease;
+  z-index: 9999;
+}
+
+.save-confirm.hide {
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+@keyframes popIn {
+  0% { transform: translateX(-50%) scale(0.7); opacity: 0; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
 /* Résumé supprimé visuellement */
 .profile-summary {
   display: none;

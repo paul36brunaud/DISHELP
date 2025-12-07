@@ -408,16 +408,18 @@ function saveProfile(event) {
 
   localStorage.setItem("dishhelp_allergens", JSON.stringify(selectedAllergens));
 
-  const confirmationMessage = document.createElement("p");
-  confirmationMessage.textContent = "Vos préférences ont été enregistrées avec succès !";
-  confirmationMessage.style.color = "green";
-  confirmationMessage.style.fontWeight = "600";
+  // Message de confirmation flottant
+  const message = document.createElement("div");
+  message.classList.add("save-confirm");
+  message.textContent = "✔ Profil enregistré avec succès !";
 
-  const summary = document.getElementById("profile-summary");
-  summary.innerHTML = "";
-  summary.appendChild(confirmationMessage);
+  document.body.appendChild(message);
 
-  setTimeout(() => summary.innerHTML = "", 2500);
+  // Attendre puis faire disparaître
+  setTimeout(() => {
+    message.classList.add("hide");
+    setTimeout(() => message.remove(), 300);
+  }, 1800);
 }
 
 // --- Initialisation ---
@@ -430,10 +432,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  document.addEventListener("click", (e) => {
-    if (e.target.closest("#profile-form")) {
-      const form = document.getElementById("profile-form");
-      if (form) form.addEventListener("submit", saveProfile);
-    }
-  });
+  const form = document.getElementById("profile-form");
+  if (form) form.addEventListener("submit", saveProfile);
 });
