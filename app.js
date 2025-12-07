@@ -123,24 +123,57 @@ function showPage(target) {
   if (target === "profile") initProfile();
 }
 
-// --- Garde-manger ---
+/// --- Garde-manger ---
 function renderPantry() {
   const list = document.getElementById("ing-list");
   const input = document.getElementById("ing-input");
   const addBtn = document.getElementById("add-ing");
 
+  // Convertir les anciens ingrédients texte → objets {name, qty}
+  pantry = pantry.map(item => {
+    if (typeof item === "string") return { name: item, qty: 1 };
+    return item;
+  });
+
   function renderList() {
     list.innerHTML = "";
+
     pantry.forEach((item, idx) => {
       const li = document.createElement("li");
-      li.textContent = item;
+      li.classList.add("pantry-item");
 
+      // Nom
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = item.name;
+
+      // Quantité (input)
+      const qtyInput = document.createElement("input");
+      qtyInput.type = "number";
+      qtyInput.min = 1;
+      qtyInput.max = 20;
+      qtyInput.value = item.qty;
+      qtyInput.classList.add("qty-input");
+
+      qtyInput.addEventListener("change", () => {
+        item.qty = parseInt(qtyInput.value) || 1;
+        localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
+      });
+
+      // Supprimer
       const delBtn = document.createElement("button");
       delBtn.textContent = "❌";
       delBtn.classList.add("del-ing");
-      delBtn.dataset.idx = idx;
 
+      delBtn.addEventListener("click", () => {
+        pantry.splice(idx, 1);
+        localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
+        renderList();
+      });
+
+      li.appendChild(nameSpan);
+      li.appendChild(qtyInput);
       li.appendChild(delBtn);
+
       list.appendChild(li);
     });
   }
@@ -148,8 +181,10 @@ function renderPantry() {
   const addIngredient = () => {
     const val = input.value.trim();
     if (!val) return;
-    pantry.push(val);
+
+    pantry.push({ name: val, qty: 1 });
     localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
+
     input.value = "";
     renderList();
 
@@ -161,23 +196,16 @@ function renderPantry() {
   };
 
   addBtn.addEventListener("click", addIngredient);
-  input.addEventListener("keypress", e => {
+  input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       addIngredient();
     }
   });
 
-  list.addEventListener("click", e => {
-    if (e.target.classList.contains("del-ing")) {
-      pantry.splice(e.target.dataset.idx, 1);
-      localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
-      renderList();
-    }
-  });
-
   renderList();
 }
+
 
 // --- Sauvegarde des favoris ---
 function saveFavorites() {

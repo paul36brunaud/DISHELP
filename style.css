@@ -193,6 +193,26 @@ h1 {
   margin-left: 1rem; /* Espacement entre le texte et la croix */
 }
 
+.pantry-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.8rem;
+  background: white;
+  color: var(--accent);
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.qty-input {
+  width: 60px;
+  padding: 0.3rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+
 /* --- LISTES FRUITS & LÉGUMES (VERT & BLANC) --- */
 
 .list-box {
