@@ -373,3 +373,22 @@ h1 {
 .profile-summary {
   display: none;
 }
+
+/* Effet d’appui sur tous les boutons */
+button:active,
+.menu-btn:active,
+.profile-btn:active,
+#add-ing:active,
+.add-small:active {
+  transform: scale(0.94);
+  opacity: 0.8;
+  transition: transform 0.08s, opacity 0.08s;
+}
+
+button,
+.menu-btn,
+.profile-btn,
+#add-ing,
+.add-small {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
