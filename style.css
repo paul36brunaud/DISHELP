@@ -262,7 +262,7 @@ h1 {
   opacity: 0.7;
 }
 
-/* ---- PROFIL ---- */
+/*/* ---- PROFIL ---- */
 
 .title-profile {
   text-align: center;
@@ -341,6 +341,66 @@ h1 {
 .profile-btn:hover {
   background: var(--accent-hover);
 }
+
+/* --- MENU ALLERGÈNES AMÉLIORÉ --- */
+
+.profile-select {
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: 14px;
+  border: 1px solid #c8c8c8;
+  background: #fafafa;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  outline: none;
+  height: auto;
+  cursor: pointer;
+  appearance: none;
+  position: relative;
+}
+
+/* Flèche stylée */
+.profile-section {
+  position: relative;
+}
+
+.profile-section::after {
+  content: "▼";
+  font-size: 0.9rem;
+  color: #4caf6c;
+  position: absolute;
+  right: 1rem;
+  top: 48%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Style des options */
+.profile-select option {
+  padding: 0.6rem;
+  background: white;
+  color: #333;
+}
+
+/* Effet focus */
+.profile-select:focus {
+  border-color: #67db8c;
+  box-shadow: 0 0 8px rgba(103, 219, 140, 0.35);
+}
+
+/* Mode multiple */
+.profile-select[multiple] {
+  min-height: 150px;
+}
+
+/* Option sélectionnée visible */
+.profile-select option:checked {
+  background: #67db8c !important;
+  color: white;
+  font-weight: 600;
+}
+
 
 /* Confirmation sauvegarde */
 .save-confirm {
