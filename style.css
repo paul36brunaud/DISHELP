@@ -9,6 +9,7 @@
   --card-bg-dark: #1a231b;
 }
 
+/* Base */
 body {
   font-family: "Poppins", sans-serif;
   margin: 0;
@@ -67,7 +68,7 @@ h1 {
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
   color: #4caf6c;
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .menu-btn:hover {
@@ -121,7 +122,7 @@ h1 {
   background: var(--accent-hover);
 }
 
-/* PANTRY */
+/* PANTRY input */
 .pantry-input {
   display: flex;
   justify-content: center;
@@ -138,7 +139,7 @@ h1 {
   border: 1px solid #ccc;
 }
 
-/* Bouton + */
+/* Boutons + */
 #add-ing, .add-small {
   width: 3rem;
   height: 3rem;
@@ -149,7 +150,7 @@ h1 {
   background: var(--accent);
   color: white;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 #add-ing:hover,
@@ -157,7 +158,7 @@ h1 {
   background: var(--accent-hover);
 }
 
-/* Liste des ingrédients */
+/* Liste du garde-manger - inline, taille du fond s'adapte au texte */
 #ing-list {
   list-style: none;
   padding: 0;
@@ -167,34 +168,22 @@ h1 {
   gap: 1rem;
 }
 
-/* Chaque élément de la liste */
 #ing-list li {
   background: white;
   border-radius: 12px;
-  padding: 0.4rem 0.8rem; /* Réduit un peu le padding pour mieux ajuster */
+  padding: 0.4rem 0.8rem;
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--accent);
-  display: inline-flex; /* Permet au contenu de s'ajuster à la taille du texte */
-  justify-content: space-between; /* Aligne le texte et la croix aux extrémités */
+  display: inline-flex;
+  justify-content: space-between;
   align-items: center;
-  width: auto; /* La largeur s'ajuste au contenu */
-  min-width: 0; /* Empêche la largeur minimum par défaut */
-  box-sizing: border-box; /* Assure que le padding et la bordure sont inclus dans la largeur */
-}
-
-/* Bouton de suppression (croix) */
-.del-ing {
-  background: none;
-  border: none;
-  color: #ff6b6b;
-  font-size: 1.4rem;
-  cursor: pointer;
-  margin-left: 1rem; /* Espacement entre le texte et la croix */
+  width: fit-content;
+  box-sizing: border-box;
 }
 
 .pantry-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.6rem;
   padding: 0.4rem 0.8rem;
@@ -212,9 +201,7 @@ h1 {
   font-size: 1rem;
 }
 
-
-/* --- LISTES FRUITS & LÉGUMES (VERT & BLANC) --- */
-
+/* remove default shadow from profile ingredient list */
 .list-box {
   list-style: none;
   padding: 0;
@@ -224,10 +211,8 @@ h1 {
   gap: 0.6rem;
 }
 
-/* --- LISTES FRUITS & LÉGUMES (VERT & BLANC) --- */
-
 .list-box li {
-  background: var(--accent);          /* FOND VERT */
+  background: var(--accent);
   padding: 0.5rem 0.8rem;
   border-radius: 10px;
   border-left: 5px solid var(--accent-hover);
@@ -235,20 +220,19 @@ h1 {
   justify-content: space-between;
   align-items: center;
   font-weight: 600;
-  color: white;                       /* TEXTE BLANC */
-  box-shadow: none;                   /* Ajoute cette ligne pour enlever l'ombre */
+  color: white;
+  box-shadow: none; /* remove shadow */
 }
-
 
 .list-del {
   background: none;
   border: none;
-  color: white;                       /* ❌ BLANC */
+  color: white;
   font-size: 1.3rem;
   cursor: pointer;
 }
 
-/* FAV BUTTON */
+/* Fav button */
 .fav-btn {
   transition: transform 0.25s ease, opacity 0.25s ease;
   font-size: 1.4rem;
@@ -262,8 +246,7 @@ h1 {
   opacity: 0.7;
 }
 
-/*/* ---- PROFIL ---- */
-
+/* Profile visual */
 .title-profile {
   text-align: center;
   margin-bottom: 1rem;
@@ -342,8 +325,7 @@ h1 {
   background: var(--accent-hover);
 }
 
-/* --- MENU ALLERGÈNES AMÉLIORÉ --- */
-
+/* Improved allergens select */
 .profile-select {
   width: 100%;
   padding: 0.9rem;
@@ -360,7 +342,6 @@ h1 {
   position: relative;
 }
 
-/* Flèche stylée */
 .profile-section {
   position: relative;
 }
@@ -376,33 +357,28 @@ h1 {
   pointer-events: none;
 }
 
-/* Style des options */
 .profile-select option {
   padding: 0.6rem;
   background: white;
   color: #333;
 }
 
-/* Effet focus */
 .profile-select:focus {
   border-color: #67db8c;
   box-shadow: 0 0 8px rgba(103, 219, 140, 0.35);
 }
 
-/* Mode multiple */
 .profile-select[multiple] {
   min-height: 150px;
 }
 
-/* Option sélectionnée visible */
 .profile-select option:checked {
   background: #67db8c !important;
   color: white;
   font-weight: 600;
 }
 
-
-/* Confirmation sauvegarde */
+/* Save confirmation toast */
 .save-confirm {
   position: fixed;
   bottom: 25px;
@@ -429,12 +405,12 @@ h1 {
   100% { transform: translateX(-50%) scale(1); opacity: 1; }
 }
 
-/* Résumé supprimé visuellement */
+/* hide profile summary area (no textual summary) */
 .profile-summary {
   display: none;
 }
 
-/* Effet d’appui sur tous les boutons */
+/* Press effect on buttons */
 button:active,
 .menu-btn:active,
 .profile-btn:active,
@@ -451,4 +427,11 @@ button,
 #add-ing,
 .add-small {
   transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/* Responsive tweaks */
+@media (max-width: 520px) {
+  .menu { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; padding: 0 0.6rem; }
+  #ing-input { width: 65%; }
+  .profile-card { width: 95%; padding: 1rem; }
 }

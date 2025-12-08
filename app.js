@@ -45,7 +45,7 @@ const pages = {
     <h2>🧺 Mon garde-manger</h2>
     <div class="pantry-input">
       <input id="ing-input" type="text" placeholder="Ajouter un ingrédient..." />
-      <button id="add-ing">+</button>
+      <button id="add-ing" type="button">+</button>
     </div>
     <ul id="ing-list"></ul>
   `,
@@ -129,10 +129,8 @@ function renderPantry() {
   const input = document.getElementById("ing-input");
   const addBtn = document.getElementById("add-ing");
 
-  pantry = pantry.map(item => {
-    if (typeof item === "string") return { name: item, qty: 1 };
-    return item;
-  });
+  // Normalize old string items into objects
+  pantry = pantry.map(item => typeof item === "string" ? { name: item, qty: 1 } : item);
 
   function renderList() {
     list.innerHTML = "";
@@ -141,13 +139,15 @@ function renderPantry() {
       const li = document.createElement("li");
       li.classList.add("pantry-item");
 
+      // Name
       const nameSpan = document.createElement("span");
       nameSpan.textContent = item.name;
 
+      // Qty input
       const qtyInput = document.createElement("input");
       qtyInput.type = "number";
       qtyInput.min = 1;
-      qtyInput.max = 20;
+      qtyInput.max = 100;
       qtyInput.value = item.qty;
       qtyInput.classList.add("qty-input");
 
@@ -156,7 +156,9 @@ function renderPantry() {
         localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
       });
 
+      // Delete button
       const delBtn = document.createElement("button");
+      delBtn.type = "button";
       delBtn.textContent = "❌";
       delBtn.classList.add("del-ing");
 
@@ -220,9 +222,7 @@ function renderFavorites() {
     .map((f, i) => `
       <div class="recipe-card" data-recipe="${f.name}">
         ${f.full}
-        <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">
-          ❌
-        </button>
+        <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">❌</button>
       </div>
     `)
     .join("");
@@ -247,6 +247,7 @@ function initHome() {
     const recipeName = recipeCard.dataset.recipe;
     const recipeDescription = recipeCard.querySelector("p").textContent;
 
+    // clone and remove inner fav button so stored "full" doesn't include an add button
     const clone = recipeCard.cloneNode(true);
     const favBtnInClone = clone.querySelector(".fav-btn");
     if (favBtnInClone) favBtnInClone.remove();
@@ -283,7 +284,7 @@ function initHome() {
   });
 }
 
-// --- Styles ---
+// --- Styles helpers ---
 function setToHeart(btn) {
   btn.textContent = "❤️";
   btn.style.color = "#e63946";
@@ -294,7 +295,6 @@ function setToCross(btn) {
   btn.style.color = "#ff6b6b";
 }
 
-// --- Synchronisation favoris ---
 function updateHeartIcons() {
   const favButtons = document.querySelectorAll(".fav-btn");
 
@@ -310,7 +310,7 @@ function updateHeartIcons() {
   });
 }
 
-// --- PROFIL : AJOUT LISTES FRUITS / LEGUMES ---
+// --- PROFIL : AJOUT LISTES FRUITS / LÉGUMES ---
 function initProfile() {
   const fruitInput = document.getElementById("fruits");
   const vegInput = document.getElementById("vegetables");
@@ -323,16 +323,17 @@ function initProfile() {
 
   function renderFruitList() {
     fruitListBox.innerHTML = fruitList
-      .map((f, i) => `<li>${f}<button data-i="${i}" class="list-del">❌</button></li>`)
+      .map((f, i) => `<li>${f}<button data-i="${i}" class="list-del" type="button">❌</button></li>`)
       .join("");
   }
 
   function renderVegList() {
     vegListBox.innerHTML = vegList
-      .map((v, i) => `<li>${v}<button data-i="${i}" class="list-del">❌</button></li>`)
+      .map((v, i) => `<li>${v}<button data-i="${i}" class="list-del" type="button">❌</button></li>`)
       .join("");
   }
 
+  // add fruit (no save-confirm here)
   addFruitBtn.addEventListener("click", () => {
     const val = fruitInput.value.trim();
     if (!val) return;
@@ -342,6 +343,7 @@ function initProfile() {
     renderFruitList();
   });
 
+  // add veg (no save-confirm here)
   addVegBtn.addEventListener("click", () => {
     const val = vegInput.value.trim();
     if (!val) return;
@@ -351,9 +353,10 @@ function initProfile() {
     renderVegList();
   });
 
+  // delete handlers
   fruitListBox.addEventListener("click", (e) => {
     if (e.target.classList.contains("list-del")) {
-      const i = e.target.dataset.i;
+      const i = parseInt(e.target.dataset.i, 10);
       fruitList.splice(i, 1);
       localStorage.setItem("dishhelp_fruitList", JSON.stringify(fruitList));
       renderFruitList();
@@ -362,13 +365,14 @@ function initProfile() {
 
   vegListBox.addEventListener("click", (e) => {
     if (e.target.classList.contains("list-del")) {
-      const i = e.target.dataset.i;
+      const i = parseInt(e.target.dataset.i, 10);
       vegList.splice(i, 1);
       localStorage.setItem("dishhelp_vegList", JSON.stringify(vegList));
       renderVegList();
     }
   });
 
+  // add on Enter
   fruitInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -386,9 +390,13 @@ function initProfile() {
   renderFruitList();
   renderVegList();
 
-  // 🔥 FIX IMPORTANT : attacher l'événement submit APRES injection du profil
+  // attach submit handler (only here after profile injection)
   const form = document.getElementById("profile-form");
-  form.addEventListener("submit", saveProfile);
+  if (form) {
+    // remove existing to avoid duplicates
+    form.removeEventListener && form.removeEventListener("submit", saveProfile);
+    form.addEventListener("submit", saveProfile);
+  }
 }
 
 // --- Enregistrement du profil ---
@@ -400,6 +408,7 @@ function saveProfile(event) {
 
   localStorage.setItem("dishhelp_allergens", JSON.stringify(selectedAllergens));
 
+  // Only show toast for the save button
   const message = document.createElement("div");
   message.classList.add("save-confirm");
   message.textContent = "✔ Profil enregistré avec succès !";

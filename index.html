@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Dishhelp</title>
 
-  <!-- 🧩 Styles -->
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Bowlby+One&display=swap" rel="stylesheet" />
 
-  <!-- 📱 PWA -->
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#67db8c" />
 
-  <!-- 🖼️ Icônes -->
+  <!-- Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
@@ -21,9 +21,9 @@
 
 <body>
   <div class="app">
-    <!-- 🧭 En-tête -->
+    <!-- Header -->
     <header class="header">
-      <h1>Dishelp</h1>
+      <h1>Dishhelp</h1>
       <nav class="menu">
         <button class="menu-btn active" data-target="home">Accueil</button>
         <button class="menu-btn" data-target="favorites">Favoris</button>
@@ -32,14 +32,14 @@
       </nav>
     </header>
 
-    <!-- 📦 Contenu dynamique -->
+    <!-- Dynamic content -->
     <main id="content" class="content"></main>
   </div>
 
-  <!-- ⚙️ Script principal -->
+  <!-- App script -->
   <script src="app.js"></script>
 
-  <!-- 🌐 Service Worker -->
+  <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
