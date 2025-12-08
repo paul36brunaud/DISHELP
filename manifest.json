@@ -1,6 +1,6 @@
 {
-  "name": "Dishhelp",
-  "short_name": "Dishhelp",
+  "name": "Dishelp",
+  "short_name": "Dishelp",
   "description": "Votre assistant cuisine : recettes, favoris, garde-manger et profil alimentaire.",
   "start_url": "/index.html",
   "scope": "/",

@@ -3,15 +3,15 @@ const buttons = document.querySelectorAll(".menu-btn");
 const content = document.getElementById("content");
 
 // --- Données stockées ---
-let pantry = JSON.parse(localStorage.getItem("dishhelp_pantry")) || [];
-let favorites = JSON.parse(localStorage.getItem("dishhelp_favorites")) || [];
-let fruitList = JSON.parse(localStorage.getItem("dishhelp_fruitList")) || [];
-let vegList = JSON.parse(localStorage.getItem("dishhelp_vegList")) || [];
+let pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
+let favorites = JSON.parse(localStorage.getItem("dishelp_favorites")) || [];
+let fruitList = JSON.parse(localStorage.getItem("dishelp_fruitList")) || [];
+let vegList = JSON.parse(localStorage.getItem("dishelp_vegList")) || [];
 
 // --- Pages ---
 const pages = {
   home: `
-    <h2>🍽️ Bienvenue sur Dishhelp</h2>
+    <h2>🍽️ Bienvenue sur Dishelp</h2>
     <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
     <div id="recipe-list">
 

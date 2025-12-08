@@ -1,4 +1,4 @@
-const CACHE_NAME = "dishhelp-cache-v1";
+const CACHE_NAME = "dishelp-cache-v1";
 const ASSETS = [
   "/",
   "/index.html",
