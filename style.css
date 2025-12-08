@@ -346,7 +346,7 @@ h1 {
   position: relative;
 }
 
-.profile-section::after {
+.profile-section.select-allergens::after {
   content: "▼";
   font-size: 0.9rem;
   color: #4caf6c;
