@@ -80,7 +80,7 @@ const pages = {
           <label class="section-label">🍎 Fruits :</label>
           <div class="small-input-row">
             <input type="text" id="fruits" placeholder="Ajouter un fruit" class="profile-input" />
-            <button id="add-fruit" class="add-small">+</button>
+            <button type="button" id="add-fruit" class="add-small">+</button>
           </div>
           <ul id="fruit-list" class="list-box"></ul>
         </div>
@@ -89,7 +89,7 @@ const pages = {
           <label class="section-label">🥕 Légumes :</label>
           <div class="small-input-row">
             <input type="text" id="vegetables" placeholder="Ajouter un légume" class="profile-input" />
-            <button id="add-veg" class="add-small">+</button>
+            <button type="button" id="add-veg" class="add-small">+</button>
           </div>
           <ul id="veg-list" class="list-box"></ul>
         </div>
