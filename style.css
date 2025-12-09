@@ -72,13 +72,12 @@ h1 {
 }
 
 .menu-btn:hover {
-  transform: translateX(-50%);
+  background: rgb(50, 129, 56);
   color: white;
   transform: scale(1.02);
 }
 
 .menu-btn.active {
-  background: #4caf6c;
   color: white;
 }
 
