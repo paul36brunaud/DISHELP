@@ -72,7 +72,7 @@ h1 {
 }
 
 .menu-btn:hover {
-  color: #4caf6c;
+  color: #white;
   background: #3d8855;;
   transform: scale(1.02);
 }
