@@ -327,10 +327,6 @@ function initProfile() {
   const addFruitBtn = document.getElementById("add-fruit");
   const addVegBtn = document.getElementById("add-veg");
 
-  // ⭐ Active la sélection multiple facile
-  const allergenSelect = document.getElementById("allergens");
-  if (allergenSelect) enableMultiSelect(allergenSelect);
-
   function renderFruitList() {
     fruitListBox.innerHTML = fruitList
       .map((f, i) => `<li>${f}<button data-i="${i}" class="list-del" type="button">❌</button></li>`)
@@ -396,12 +392,24 @@ function initProfile() {
   renderFruitList();
   renderVegList();
 
+  // --- Recharge les allergènes ---
+  const savedAllergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
+  const allergensSelect = document.getElementById("allergens");
+
+  Array.from(allergensSelect.options).forEach(opt => {
+    if (savedAllergens.includes(opt.value)) {
+      opt.selected = true;
+    }
+  });
+
+  // Attache la sauvegarde
   const form = document.getElementById("profile-form");
   if (form) {
     form.removeEventListener && form.removeEventListener("submit", saveProfile);
     form.addEventListener("submit", saveProfile);
   }
-}
+} // ← FIN MANQUANTE CORRIGÉE
+
 
 // --- Enregistrement du profil ---
 function saveProfile(event) {
@@ -423,6 +431,7 @@ function saveProfile(event) {
     setTimeout(() => message.remove(), 300);
   }, 1800);
 }
+
 
 // --- Initialisation ---
 document.addEventListener("DOMContentLoaded", () => {

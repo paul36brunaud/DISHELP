@@ -72,8 +72,9 @@ h1 {
 }
 
 .menu-btn:hover {
-  color: white;
+  color: #4caf6c;
   transform: scale(1.02);
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .menu-btn.active {
