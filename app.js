@@ -139,11 +139,9 @@ function renderPantry() {
       const li = document.createElement("li");
       li.classList.add("pantry-item");
 
-      // Name
       const nameSpan = document.createElement("span");
       nameSpan.textContent = item.name;
 
-      // Qty input
       const qtyInput = document.createElement("input");
       qtyInput.type = "number";
       qtyInput.min = 1;
@@ -156,7 +154,6 @@ function renderPantry() {
         localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
       });
 
-      // Delete button
       const delBtn = document.createElement("button");
       delBtn.type = "button";
       delBtn.textContent = "❌";
@@ -247,7 +244,6 @@ function initHome() {
     const recipeName = recipeCard.dataset.recipe;
     const recipeDescription = recipeCard.querySelector("p").textContent;
 
-    // clone and remove inner fav button so stored "full" doesn't include an add button
     const clone = recipeCard.cloneNode(true);
     const favBtnInClone = clone.querySelector(".fav-btn");
     if (favBtnInClone) favBtnInClone.remove();
@@ -310,7 +306,17 @@ function updateHeartIcons() {
   });
 }
 
-// --- PROFIL : AJOUT LISTES FRUITS / LÉGUMES ---
+// ⭐⭐⭐ AJOUT : sélectionner plusieurs allergènes SANS CTRL ⭐⭐⭐
+function enableMultiSelect(select) {
+  Array.from(select.options).forEach(option => {
+    option.addEventListener("mousedown", e => {
+      e.preventDefault();
+      option.selected = !option.selected;
+    });
+  });
+}
+
+// --- PROFIL ---
 function initProfile() {
   const fruitInput = document.getElementById("fruits");
   const vegInput = document.getElementById("vegetables");
@@ -320,6 +326,10 @@ function initProfile() {
 
   const addFruitBtn = document.getElementById("add-fruit");
   const addVegBtn = document.getElementById("add-veg");
+
+  // ⭐ Active la sélection multiple facile
+  const allergenSelect = document.getElementById("allergens");
+  if (allergenSelect) enableMultiSelect(allergenSelect);
 
   function renderFruitList() {
     fruitListBox.innerHTML = fruitList
@@ -333,7 +343,6 @@ function initProfile() {
       .join("");
   }
 
-  // add fruit (no save-confirm here)
   addFruitBtn.addEventListener("click", () => {
     const val = fruitInput.value.trim();
     if (!val) return;
@@ -343,7 +352,6 @@ function initProfile() {
     renderFruitList();
   });
 
-  // add veg (no save-confirm here)
   addVegBtn.addEventListener("click", () => {
     const val = vegInput.value.trim();
     if (!val) return;
@@ -353,7 +361,6 @@ function initProfile() {
     renderVegList();
   });
 
-  // delete handlers
   fruitListBox.addEventListener("click", (e) => {
     if (e.target.classList.contains("list-del")) {
       const i = parseInt(e.target.dataset.i, 10);
@@ -372,7 +379,6 @@ function initProfile() {
     }
   });
 
-  // add on Enter
   fruitInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -390,10 +396,8 @@ function initProfile() {
   renderFruitList();
   renderVegList();
 
-  // attach submit handler (only here after profile injection)
   const form = document.getElementById("profile-form");
   if (form) {
-    // remove existing to avoid duplicates
     form.removeEventListener && form.removeEventListener("submit", saveProfile);
     form.addEventListener("submit", saveProfile);
   }
@@ -408,7 +412,6 @@ function saveProfile(event) {
 
   localStorage.setItem("dishelp_allergens", JSON.stringify(selectedAllergens));
 
-  // Only show toast for the save button
   const message = document.createElement("div");
   message.classList.add("save-confirm");
   message.textContent = "✔ Profil enregistré avec succès !";
