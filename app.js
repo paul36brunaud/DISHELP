@@ -153,7 +153,7 @@ function renderPantry() {
 
       qtyInput.addEventListener("change", () => {
         item.qty = parseInt(qtyInput.value) || 1;
-        localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
+        localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
       });
 
       // Delete button
@@ -164,7 +164,7 @@ function renderPantry() {
 
       delBtn.addEventListener("click", () => {
         pantry.splice(idx, 1);
-        localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
+        localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
         renderList();
       });
 
@@ -181,7 +181,7 @@ function renderPantry() {
     if (!val) return;
 
     pantry.push({ name: val, qty: 1 });
-    localStorage.setItem("dishhelp_pantry", JSON.stringify(pantry));
+    localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
 
     input.value = "";
     renderList();
@@ -206,7 +206,7 @@ function renderPantry() {
 
 // --- Sauvegarde des favoris ---
 function saveFavorites() {
-  localStorage.setItem("dishhelp_favorites", JSON.stringify(favorites));
+  localStorage.setItem("dishelp_favorites", JSON.stringify(favorites));
 }
 
 // --- Affichage des favoris ---
@@ -339,7 +339,7 @@ function initProfile() {
     if (!val) return;
     fruitList.push(val);
     fruitInput.value = "";
-    localStorage.setItem("dishhelp_fruitList", JSON.stringify(fruitList));
+    localStorage.setItem("dishelp_fruitList", JSON.stringify(fruitList));
     renderFruitList();
   });
 
@@ -349,7 +349,7 @@ function initProfile() {
     if (!val) return;
     vegList.push(val);
     vegInput.value = "";
-    localStorage.setItem("dishhelp_vegList", JSON.stringify(vegList));
+    localStorage.setItem("dishelp_vegList", JSON.stringify(vegList));
     renderVegList();
   });
 
@@ -358,7 +358,7 @@ function initProfile() {
     if (e.target.classList.contains("list-del")) {
       const i = parseInt(e.target.dataset.i, 10);
       fruitList.splice(i, 1);
-      localStorage.setItem("dishhelp_fruitList", JSON.stringify(fruitList));
+      localStorage.setItem("dishelp_fruitList", JSON.stringify(fruitList));
       renderFruitList();
     }
   });
@@ -367,7 +367,7 @@ function initProfile() {
     if (e.target.classList.contains("list-del")) {
       const i = parseInt(e.target.dataset.i, 10);
       vegList.splice(i, 1);
-      localStorage.setItem("dishhelp_vegList", JSON.stringify(vegList));
+      localStorage.setItem("dishelp_vegList", JSON.stringify(vegList));
       renderVegList();
     }
   });
@@ -406,7 +406,7 @@ function saveProfile(event) {
   const allergensSelect = document.getElementById("allergens");
   const selectedAllergens = Array.from(allergensSelect.selectedOptions).map(option => option.value);
 
-  localStorage.setItem("dishhelp_allergens", JSON.stringify(selectedAllergens));
+  localStorage.setItem("dishelp_allergens", JSON.stringify(selectedAllergens));
 
   // Only show toast for the save button
   const message = document.createElement("div");
