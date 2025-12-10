@@ -437,7 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================================
 
 function generateDailyMenu() {
-    const pantry = JSON.parse(localStorage.getItem("pantry")) || [];
+    const pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
     const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
 
     // Filtrer les recettes compatibles
