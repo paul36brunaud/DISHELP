@@ -396,6 +396,9 @@ function initProfile() {
   const savedAllergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
   const allergensSelect = document.getElementById("allergens");
 
+  // 🔥 AJOUT IMPORTANT → force le multi-select (fix mobile)
+  allergensSelect.setAttribute("multiple", "multiple");
+
   Array.from(allergensSelect.options).forEach(opt => {
     if (savedAllergens.includes(opt.value)) {
       opt.selected = true;
@@ -408,7 +411,7 @@ function initProfile() {
     form.removeEventListener && form.removeEventListener("submit", saveProfile);
     form.addEventListener("submit", saveProfile);
   }
-} // ← FIN MANQUANTE CORRIGÉE
+} // ← FIN FIXÉE
 
 
 // --- Enregistrement du profil ---
