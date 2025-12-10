@@ -1,7 +1,6 @@
 // --- Sélecteurs principaux ---
 const buttons = document.querySelectorAll(".menu-btn");
 const content = document.getElementById("content");
-const filtersContainer = document.getElementById("filters-container");
 
 // --- Données stockées ---
 let pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
@@ -9,39 +8,32 @@ let favorites = JSON.parse(localStorage.getItem("dishelp_favorites")) || [];
 let fruitList = JSON.parse(localStorage.getItem("dishelp_fruitList")) || [];
 let vegList = JSON.parse(localStorage.getItem("dishelp_vegList")) || [];
 
-const DB = { // Simulation de la base de données
-    recipes: [
-        {
-            name: "Salade fraîcheur",
-            ingredients: ["Tomates", "Concombres", "Feta", "Huile d'olive"],
-            type: "Entrée",
-            time: 10,
-            description: "Tomates, concombres, feta et huile d'olive.",
-        },
-        {
-            name: "Pâtes à la tomate",
-            ingredients: ["Pâtes", "Tomates", "Basilic", "Parmesan"],
-            type: "Plat principal",
-            time: 25,
-            description: "Pâtes, tomate, basilic et parmesan.",
-        },
-        {
-            name: "Omelette de légumes",
-            ingredients: ["Œufs", "Carottes", "Courgettes", "Oignons"],
-            type: "Plat principal",
-            time: 15,
-            description: "Œufs, carottes, courgettes et oignons.",
-        },
-        // Ajoute d'autres recettes ici
-    ]
-};
-
 // --- Pages ---
 const pages = {
   home: `
     <h2>🍽️ Bienvenue sur Dishelp</h2>
     <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
-    <div id="recipe-list"></div>
+    <div id="recipe-list">
+
+      <div class="recipe-card" data-recipe="Salade fraîcheur">
+        <h3>🥗 Salade fraîcheur</h3>
+        <p>Tomates, concombres, feta et huile d'olive.</p>
+        <button class="fav-btn">Ajouter aux favoris</button>
+      </div>
+
+      <div class="recipe-card" data-recipe="Pâtes à la tomate">
+        <h3>🍝 Pâtes à la tomate</h3>
+        <p>Pâtes, tomate, basilic et parmesan.</p>
+        <button class="fav-btn">Ajouter aux favoris</button>
+      </div>
+
+      <div class="recipe-card" data-recipe="Omelette de légumes">
+        <h3>🍛 Omelette de légumes</h3>
+        <p>Œufs, carottes, courgettes et oignons.</p>
+        <button class="fav-btn">Ajouter aux favoris</button>
+      </div>
+
+    </div>
   `,
 
   favorites: `
@@ -59,8 +51,54 @@ const pages = {
   `,
 
   profile: `
-    <h2>Mon Profil</h2>
-    <!-- Formulaire de profil ici -->
+    <h2 class="title-profile">Mon Profil</h2>
+
+    <div class="profile-card">
+
+      <div class="profile-photo">
+        <div class="photo-circle">👤</div>
+      </div>
+
+      <form id="profile-form" class="profile-form">
+
+        <div class="profile-section">
+          <label class="section-label">⚠️ Allergènes :</label>
+          <select id="allergens" multiple class="profile-select">
+            <option value="Arachides">Arachides</option>
+            <option value="Fruits à coque">Fruits à coque</option>
+            <option value="Œufs">Œufs</option>
+            <option value="Lait">Lait</option>
+            <option value="Poissons">Poissons</option>
+            <option value="Crustacés">Crustacés</option>
+            <option value="Blé">Blé</option>
+            <option value="Gluten">Gluten</option>
+            <option value="Soja">Soja</option>
+          </select>
+        </div>
+
+        <div class="profile-section">
+          <label class="section-label">🍎 Fruits :</label>
+          <div class="small-input-row">
+            <input type="text" id="fruits" placeholder="Ajouter un fruit" class="profile-input" />
+            <button type="button" id="add-fruit" class="add-small">+</button>
+          </div>
+          <ul id="fruit-list" class="list-box"></ul>
+        </div>
+
+        <div class="profile-section">
+          <label class="section-label">🥕 Légumes :</label>
+          <div class="small-input-row">
+            <input type="text" id="vegetables" placeholder="Ajouter un légume" class="profile-input" />
+            <button type="button" id="add-veg" class="add-small">+</button>
+          </div>
+          <ul id="veg-list" class="list-box"></ul>
+        </div>
+
+        <button type="submit" class="profile-btn">💾 Enregistrer</button>
+      </form>
+
+      <div id="profile-summary" class="profile-summary"></div>
+    </div>
   `
 };
 
@@ -68,119 +106,319 @@ const pages = {
 function showPage(target) {
   content.innerHTML = pages[target] || "<p>Page introuvable.</p>";
 
+  const introText = document.getElementById("intro-text");
+  if (introText && (target === "home" || target === "pantry" || target === "favorites")) {
+    if (!introText.classList.contains("interacted")) {
+      introText.style.display = "block";
+    }
+  }
+
   buttons.forEach(btn => btn.classList.remove("active"));
   const activeBtn = document.querySelector(`[data-target="${target}"]`);
   if (activeBtn) activeBtn.classList.add("active");
 
-  if (target === "home") initHome();
-  if (target === "favorites") renderFavorites();
   if (target === "pantry") renderPantry();
+  if (target === "favorites") renderFavorites();
+  if (target === "home") initHome();
   if (target === "profile") initProfile();
+}
+
+function renderPantry() {
+  const list = document.getElementById("ing-list");
+  const input = document.getElementById("ing-input");
+  const addBtn = document.getElementById("add-ing");
+
+  pantry = pantry.map(item => typeof item === "string" ? { name: item, qty: 1 } : item);
+
+  function renderList() {
+    list.innerHTML = "";
+
+    pantry.forEach((item, idx) => {
+      const li = document.createElement("li");
+      li.classList.add("pantry-item");
+
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = item.name;
+
+      const qtyInput = document.createElement("input");
+      qtyInput.type = "number";
+      qtyInput.min = 1;
+      qtyInput.max = 100;
+      qtyInput.value = item.qty;
+      qtyInput.classList.add("qty-input");
+
+      qtyInput.addEventListener("change", () => {
+        item.qty = parseInt(qtyInput.value) || 1;
+        localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
+      });
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.textContent = "❌";
+      delBtn.classList.add("del-ing");
+
+      delBtn.addEventListener("click", () => {
+        pantry.splice(idx, 1);
+        localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
+        renderList();
+      });
+
+      li.appendChild(nameSpan);
+      li.appendChild(qtyInput);
+      li.appendChild(delBtn);
+
+      list.appendChild(li);
+    });
+  }
+
+  const addIngredient = () => {
+    const val = input.value.trim();
+    if (!val) return;
+
+    pantry.push({ name: val, qty: 1 });
+    localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
+
+    input.value = "";
+    renderList();
+
+    const introText = document.getElementById("intro-text");
+    if (introText) {
+      introText.style.display = "none";
+      introText.classList.add("interacted");
+    }
+  };
+
+  addBtn.addEventListener("click", addIngredient);
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addIngredient();
+    }
+  });
+
+  renderList();
+}
+
+function saveFavorites() {
+  localStorage.setItem("dishelp_favorites", JSON.stringify(favorites));
 }
 
 function renderFavorites() {
   const list = document.getElementById("fav-list");
-  list.innerHTML = favorites.length ? 
-    favorites.map(f => `<div class="recipe-card"><h3>${f.name}</h3><p>${f.description}</p></div>`).join('') : 
-    "<p>Aucun favori pour le moment.</p>";
-}
 
-// --- Affichage des recettes à l'accueil ---
-function initHome() {
-  const recipeList = document.getElementById("recipe-list");
-  
-  const recipes = DB.recipes;
-  renderRecipes(recipes);
+  if (!favorites || favorites.length === 0) {
+    list.innerHTML = "<p>Aucun favori pour le moment.</p>";
+    return;
+  }
 
-  // Fonction pour afficher les recettes
-  function renderRecipes(recipes) {
-    recipeList.innerHTML = recipes.map(recipe => `
-      <div class="recipe-card">
-        <h3>${recipe.name}</h3>
-        <p>${recipe.description}</p>
-        <button class="fav-btn">Ajouter aux favoris</button>
+  list.innerHTML = favorites
+    .map((f, i) => `
+      <div class="recipe-card" data-recipe="${f.name}">
+        ${f.full}
+        <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">❌</button>
       </div>
-    `).join("");
-    
-    // Gérer l'ajout aux favoris
-    const favButtons = document.querySelectorAll(".fav-btn");
-    favButtons.forEach((btn, index) => {
-      btn.addEventListener("click", () => {
-        const recipe = recipes[index];
+    `)
+    .join("");
+
+  list.querySelectorAll(".fav-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const index = btn.dataset.index;
+      favorites.splice(index, 1);
+      saveFavorites();
+      renderFavorites();
+      updateHeartIcons();
+    });
+  });
+}
+
+function initHome() {
+  const favButtons = document.querySelectorAll(".fav-btn");
+
+  favButtons.forEach((btn) => {
+    const recipeCard = btn.closest(".recipe-card");
+    const recipeName = recipeCard.dataset.recipe;
+    const recipeDescription = recipeCard.querySelector("p").textContent;
+
+    const clone = recipeCard.cloneNode(true);
+    const favBtnInClone = clone.querySelector(".fav-btn");
+    if (favBtnInClone) favBtnInClone.remove();
+    const fullContent = clone.innerHTML;
+
+    if (favorites.some(fav => fav.name === recipeName)) {
+      setToCross(btn);
+    } else {
+      setToHeart(btn);
+    }
+
+    btn.addEventListener("click", () => {
+      btn.classList.add("anim-click");
+
+      const recipe = {
+        name: recipeName,
+        description: recipeDescription,
+        full: fullContent
+      };
+
+      if (favorites.some(fav => fav.name === recipeName)) {
+        favorites = favorites.filter(f => f.name !== recipeName);
+        setToHeart(btn);
+      } else {
         favorites.push(recipe);
-        localStorage.setItem("dishelp_favorites", JSON.stringify(favorites));
-        renderFavorites();
-      });
-    });
-  }
+        setToCross(btn);
+      }
 
-  // Générer les filtres
-  generateFilters();
+      saveFavorites();
+      updateHeartIcons();
+
+      setTimeout(() => btn.classList.remove("anim-click"), 300);
+    });
+  });
 }
 
-// --- Génération dynamique des filtres ---
-function generateFilters() {
-  const types = [...new Set(DB.recipes.map(recipe => recipe.type))];
-  const ingredients = [...new Set(DB.recipes.flatMap(recipe => recipe.ingredients))];
-  
-  const filterTypeHTML = types.map(type => `
-    <label>
-      <input type="checkbox" class="filter-type" value="${type}"> ${type}
-    </label>
-  `).join(" ");
-
-  const filterIngredientHTML = ingredients.map(ingredient => `
-    <label>
-      <input type="checkbox" class="filter-ingredient" value="${ingredient}"> ${ingredient}
-    </label>
-  `).join(" ");
-
-  filtersContainer.innerHTML = `
-    <h3>Filtres</h3>
-    <div class="filter-section">
-      <h4>Type de plat</h4>
-      ${filterTypeHTML}
-    </div>
-    <div class="filter-section">
-      <h4>Ingrédients</h4>
-      ${filterIngredientHTML}
-    </div>
-  `;
-
-  addFilterListeners();
+function setToHeart(btn) {
+  btn.textContent = "❤️";
+  btn.style.color = "#e63946";
 }
 
-// --- Ajouter les listeners de filtres ---
-function addFilterListeners() {
-  const typeFilters = document.querySelectorAll(".filter-type");
-  const ingredientFilters = document.querySelectorAll(".filter-ingredient");
+function setToCross(btn) {
+  btn.textContent = "❌";
+  btn.style.color = "#ff6b6b";
+}
 
-  const recipeList = document.getElementById("recipe-list");
+function updateHeartIcons() {
+  const favButtons = document.querySelectorAll(".fav-btn");
 
-  typeFilters.forEach(filter => {
-    filter.addEventListener("change", applyFilters);
+  favButtons.forEach((btn) => {
+    const recipeCard = btn.closest(".recipe-card");
+    const recipeName = recipeCard.dataset.recipe;
+
+    if (favorites.some(fav => fav.name === recipeName)) {
+      setToCross(btn);
+    } else {
+      setToHeart(btn);
+    }
   });
-  ingredientFilters.forEach(filter => {
-    filter.addEventListener("change", applyFilters);
+}
+
+// --- PROFIL ---
+function initProfile() {
+  const fruitInput = document.getElementById("fruits");
+  const vegInput = document.getElementById("vegetables");
+
+  const fruitListBox = document.getElementById("fruit-list");
+  const vegListBox = document.getElementById("veg-list");
+
+  const addFruitBtn = document.getElementById("add-fruit");
+  const addVegBtn = document.getElementById("add-veg");
+
+  function renderFruitList() {
+    fruitListBox.innerHTML = fruitList
+      .map((f, i) => `<li>${f}<button data-i="${i}" class="list-del" type="button">❌</button></li>`)
+      .join("");
+  }
+
+  function renderVegList() {
+    vegListBox.innerHTML = vegList
+      .map((v, i) => `<li>${v}<button data-i="${i}" class="list-del" type="button">❌</button></li>`)
+      .join("");
+  }
+
+  addFruitBtn.addEventListener("click", () => {
+    const val = fruitInput.value.trim();
+    if (!val) return;
+    fruitList.push(val);
+    fruitInput.value = "";
+    localStorage.setItem("dishelp_fruitList", JSON.stringify(fruitList));
+    renderFruitList();
   });
 
-  function applyFilters() {
-    const selectedTypes = Array.from(typeFilters)
-      .filter(filter => filter.checked)
-      .map(filter => filter.value);
+  addVegBtn.addEventListener("click", () => {
+    const val = vegInput.value.trim();
+    if (!val) return;
+    vegList.push(val);
+    vegInput.value = "";
+    localStorage.setItem("dishelp_vegList", JSON.stringify(vegList));
+    renderVegList();
+  });
 
-    const selectedIngredients = Array.from(ingredientFilters)
-      .filter(filter => filter.checked)
-      .map(filter => filter.value);
+  fruitListBox.addEventListener("click", (e) => {
+    if (e.target.classList.contains("list-del")) {
+      const i = parseInt(e.target.dataset.i, 10);
+      fruitList.splice(i, 1);
+      localStorage.setItem("dishelp_fruitList", JSON.stringify(fruitList));
+      renderFruitList();
+    }
+  });
 
-    const filteredRecipes = DB.recipes.filter(recipe => {
-      const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(recipe.type);
-      const ingredientsMatch = selectedIngredients.length === 0 || recipe.ingredients.some(ingredient => selectedIngredients.includes(ingredient));
-      return typeMatch && ingredientsMatch;
+  vegListBox.addEventListener("click", (e) => {
+    if (e.target.classList.contains("list-del")) {
+      const i = parseInt(e.target.dataset.i, 10);
+      vegList.splice(i, 1);
+      localStorage.setItem("dishelp_vegList", JSON.stringify(vegList));
+      renderVegList();
+    }
+  });
+
+  fruitInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addFruitBtn.click();
+    }
+  });
+
+  vegInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addVegBtn.click();
+    }
+  });
+
+  renderFruitList();
+  renderVegList();
+
+  // --- Allergènes ---
+  const savedAllergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
+  const allergensSelect = document.getElementById("allergens");
+
+  allergensSelect.setAttribute("multiple", "multiple");
+
+  Array.from(allergensSelect.options).forEach(option => {
+    option.addEventListener("mousedown", e => {
+      e.preventDefault();
+      option.selected = !option.selected;
     });
 
-    renderRecipes(filteredRecipes);
+    if (savedAllergens.includes(option.value)) {
+      option.selected = true;
+    }
+  });
+
+  const form = document.getElementById("profile-form");
+  if (form) {
+    form.removeEventListener && form.removeEventListener("submit", saveProfile);
+    form.addEventListener("submit", saveProfile);
   }
+}
+
+// --- Enregistrement du profil ---
+function saveProfile(event) {
+  event.preventDefault();
+
+  const allergensSelect = document.getElementById("allergens");
+  const selectedAllergens = Array.from(allergensSelect.selectedOptions).map(option => option.value);
+
+  localStorage.setItem("dishelp_allergens", JSON.stringify(selectedAllergens));
+
+  const message = document.createElement("div");
+  message.classList.add("save-confirm");
+  message.textContent = "✔ Profil enregistré avec succès !";
+
+  document.body.appendChild(message);
+
+  setTimeout(() => {
+    message.classList.add("hide");
+    setTimeout(() => message.remove(), 300);
+  }, 1800);
 }
 
 // --- Initialisation ---
@@ -194,16 +432,79 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// --- Sélecteurs pour le menu latéral ---
-const hamburgerBtn = document.querySelector('.hamburger-btn');
-const filtersContainer = document.querySelector('.filters-container');
-const content = document.querySelector('.content');
+// ================================
+//   MENU DU JOUR INTELLIGENT
+// ================================
 
-// Fonction pour ouvrir/fermer le menu latéral
-hamburgerBtn.addEventListener('click', () => {
-  filtersContainer.classList.toggle('open'); // Ajoute/retire la classe 'open'
-  hamburgerBtn.classList.toggle('active'); // Ajoute/retire la classe 'active'
+function generateDailyMenu() {
+    const pantry = JSON.parse(localStorage.getItem("pantry")) || [];
+    const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
 
-  // Ajuste la marge du contenu principal pour faire de la place au menu
-  content.classList.toggle('shifted'); // Ajoute/retire la classe 'shifted' au contenu
-});
+    // Filtrer les recettes compatibles
+    const availableRecipes = DB.recipes.filter(recipe => {
+        const hasAllIngredients = recipe.ingredients.every(ing =>
+            pantry.some(p => p.name.toLowerCase() === ing.toLowerCase())
+        );
+
+        const safeWithAllergens = !recipe.ingredients.some(ing =>
+            allergens.includes(ing.toLowerCase())
+        );
+
+        return hasAllIngredients && safeWithAllergens;
+    });
+
+    if (availableRecipes.length === 0) {
+        return {
+            error: "Aucune recette disponible avec votre garde-manger et vos allergènes."
+        };
+    }
+
+    // Choisir une recette au hasard
+    const chosen = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
+
+    return {
+        name: chosen.name,
+        ingredients: chosen.ingredients,
+        utensils: chosen.utensils,
+        steps: chosen.steps,
+        time: chosen.time
+    };
+}
+
+
+// ================================
+//   AFFICHE LE MENU DU JOUR
+// ================================
+
+function showDailyMenu() {
+    const menu = generateDailyMenu();
+    const content = document.getElementById("content");
+
+    if (menu.error) {
+        content.innerHTML = `
+            <div class="recipe-card">
+               <h2>Menu du jour</h2>
+               <p>${menu.error}</p>
+            </div>`;
+        return;
+    }
+
+    content.innerHTML = `
+        <div class="recipe-card">
+            <h2>${menu.name}</h2>
+
+            <h3>Ingrédients :</h3>
+            <ul>${menu.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
+
+            <h3>Ustensiles :</h3>
+            <ul>${menu.utensils.map(u => `<li>${u}</li>`).join("")}</ul>
+
+            <h3>Préparation :</h3>
+            <ol>${menu.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+            <p><strong>Temps total :</strong> ${menu.time} min</p>
+
+            <button class="profile-btn" onclick="showDailyMenu()">🔄 Nouveau Menu</button>
+        </div>
+    `;
+}
