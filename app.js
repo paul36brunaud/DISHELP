@@ -13,27 +13,20 @@ const pages = {
   home: `
     <h2>🍽️ Bienvenue sur Dishelp</h2>
     <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
-    <div id="recipe-list">
-
-      <div class="recipe-card" data-recipe="Salade fraîcheur">
-        <h3>🥗 Salade fraîcheur</h3>
-        <p>Tomates, concombres, feta et huile d'olive.</p>
-        <button class="fav-btn">Ajouter aux favoris</button>
-      </div>
-
-      <div class="recipe-card" data-recipe="Pâtes à la tomate">
-        <h3>🍝 Pâtes à la tomate</h3>
-        <p>Pâtes, tomate, basilic et parmesan.</p>
-        <button class="fav-btn">Ajouter aux favoris</button>
-      </div>
-
-      <div class="recipe-card" data-recipe="Omelette de légumes">
-        <h3>🍛 Omelette de légumes</h3>
-        <p>Œufs, carottes, courgettes et oignons.</p>
-        <button class="fav-btn">Ajouter aux favoris</button>
-      </div>
-
+    <div id="filters">
+      <h3>Filtrer les recettes</h3>
+      <label for="ingredient-filter">Ingrédient :</label>
+      <input type="text" id="ingredient-filter" placeholder="Ajouter un ingrédient" />
+      <label for="category-filter">Catégorie :</label>
+      <select id="category-filter">
+        <option value="">Sélectionner une catégorie</option>
+        <option value="Entrée">Entrée</option>
+        <option value="Plat principal">Plat principal</option>
+        <option value="Dessert">Dessert</option>
+      </select>
+      <button id="apply-filters">Appliquer les filtres</button>
     </div>
+    <div id="recipe-list"></div>
   `,
 
   favorites: `
@@ -52,15 +45,11 @@ const pages = {
 
   profile: `
     <h2 class="title-profile">Mon Profil</h2>
-
     <div class="profile-card">
-
       <div class="profile-photo">
         <div class="photo-circle">👤</div>
       </div>
-
       <form id="profile-form" class="profile-form">
-
         <div class="profile-section">
           <label class="section-label">⚠️ Allergènes :</label>
           <select id="allergens" multiple class="profile-select">
@@ -75,7 +64,6 @@ const pages = {
             <option value="Soja">Soja</option>
           </select>
         </div>
-
         <div class="profile-section">
           <label class="section-label">🍎 Fruits :</label>
           <div class="small-input-row">
@@ -84,7 +72,6 @@ const pages = {
           </div>
           <ul id="fruit-list" class="list-box"></ul>
         </div>
-
         <div class="profile-section">
           <label class="section-label">🥕 Légumes :</label>
           <div class="small-input-row">
@@ -93,10 +80,8 @@ const pages = {
           </div>
           <ul id="veg-list" class="list-box"></ul>
         </div>
-
         <button type="submit" class="profile-btn">💾 Enregistrer</button>
       </form>
-
       <div id="profile-summary" class="profile-summary"></div>
     </div>
   `
@@ -437,74 +422,68 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================================
 
 function generateDailyMenu() {
-    const pantry = JSON.parse(localStorage.getItem("pantry")) || [];
-    const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
+  const pantry = JSON.parse(localStorage.getItem("pantry")) || [];
+  const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
 
-    // Filtrer les recettes compatibles
-    const availableRecipes = DB.recipes.filter(recipe => {
-        const hasAllIngredients = recipe.ingredients.every(ing =>
-            pantry.some(p => p.name.toLowerCase() === ing.toLowerCase())
-        );
+  // Filtrer les recettes compatibles
+  const availableRecipes = DB.recipes.filter(recipe => {
+    const hasAllIngredients = recipe.ingredients.every(ing =>
+      pantry.some(p => p.name.toLowerCase() === ing.toLowerCase())
+    );
 
-        const safeWithAllergens = !recipe.ingredients.some(ing =>
-            allergens.includes(ing.toLowerCase())
-        );
+    const safeWithAllergens = !recipe.ingredients.some(ing =>
+      allergens.includes(ing.toLowerCase())
+    );
 
-        return hasAllIngredients && safeWithAllergens;
-    });
+    return hasAllIngredients && safeWithAllergens;
+  });
 
-    if (availableRecipes.length === 0) {
-        return {
-            error: "Aucune recette disponible avec votre garde-manger et vos allergènes."
-        };
-    }
-
-    // Choisir une recette au hasard
-    const chosen = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
-
+  if (availableRecipes.length === 0) {
     return {
-        name: chosen.name,
-        ingredients: chosen.ingredients,
-        utensils: chosen.utensils,
-        steps: chosen.steps,
-        time: chosen.time
+      error: "Aucune recette disponible avec votre garde-manger et vos allergènes."
     };
-}
+  }
 
+  // Choisir une recette au hasard
+  const chosen = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
+
+  return {
+    name: chosen.name,
+    ingredients: chosen.ingredients,
+    utensils: chosen.utensils,
+    steps: chosen.steps,
+    time: chosen.time
+  };
+}
 
 // ================================
 //   AFFICHE LE MENU DU JOUR
 // ================================
 
 function showDailyMenu() {
-    const menu = generateDailyMenu();
-    const content = document.getElementById("content");
+  const menu = generateDailyMenu();
+  const content = document.getElementById("content");
 
-    if (menu.error) {
-        content.innerHTML = `
-            <div class="recipe-card">
-               <h2>Menu du jour</h2>
-               <p>${menu.error}</p>
-            </div>`;
-        return;
-    }
-
+  if (menu.error) {
     content.innerHTML = `
-        <div class="recipe-card">
-            <h2>${menu.name}</h2>
+      <div class="recipe-card">
+        <h2>Menu du jour</h2>
+        <p>${menu.error}</p>
+      </div>`;
+    return;
+  }
 
-            <h3>Ingrédients :</h3>
-            <ul>${menu.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
-
-            <h3>Ustensiles :</h3>
-            <ul>${menu.utensils.map(u => `<li>${u}</li>`).join("")}</ul>
-
-            <h3>Préparation :</h3>
-            <ol>${menu.steps.map(s => `<li>${s}</li>`).join("")}</ol>
-
-            <p><strong>Temps total :</strong> ${menu.time} min</p>
-
-            <button class="profile-btn" onclick="showDailyMenu()">🔄 Nouveau Menu</button>
-        </div>
-    `;
+  content.innerHTML = `
+    <div class="recipe-card">
+      <h2>${menu.name}</h2>
+      <h3>Ingrédients :</h3>
+      <ul>${menu.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
+      <h3>Ustensiles :</h3>
+      <ul>${menu.utensils.map(u => `<li>${u}</li>`).join("")}</ul>
+      <h3>Préparation :</h3>
+      <ol>${menu.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+      <p><strong>Temps total :</strong> ${menu.time} min</p>
+      <button class="profile-btn" onclick="showDailyMenu()">🔄 Nouveau Menu</button>
+    </div>
+  `;
 }
