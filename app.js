@@ -13,17 +13,22 @@ const pages = {
   home: `
     <h2>🍽️ Bienvenue sur Dishelp</h2>
     <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
-    <div id="filters">
-      <h3>Filtrer les recettes</h3>
+    <div id="filters" class="filters">
+      <h3>Filtres disponibles</h3>
       <label for="ingredient-filter">Ingrédient :</label>
-      <input type="text" id="ingredient-filter" placeholder="Ajouter un ingrédient" />
+      <input type="text" id="ingredient-filter" placeholder="Rechercher un ingrédient" />
+
       <label for="category-filter">Catégorie :</label>
       <select id="category-filter">
-        <option value="">Sélectionner une catégorie</option>
+        <option value="">Choisir une catégorie</option>
         <option value="Entrée">Entrée</option>
         <option value="Plat principal">Plat principal</option>
         <option value="Dessert">Dessert</option>
       </select>
+
+      <label for="time-filter">Temps de préparation :</label>
+      <input type="number" id="time-filter" placeholder="Temps en minutes" />
+
       <button id="apply-filters">Appliquer les filtres</button>
     </div>
     <div id="recipe-list"></div>
@@ -217,72 +222,36 @@ function renderFavorites() {
 }
 
 function initHome() {
-  const favButtons = document.querySelectorAll(".fav-btn");
+  const filtersBtn = document.getElementById("apply-filters");
 
-  favButtons.forEach((btn) => {
-    const recipeCard = btn.closest(".recipe-card");
-    const recipeName = recipeCard.dataset.recipe;
-    const recipeDescription = recipeCard.querySelector("p").textContent;
+  filtersBtn.addEventListener("click", () => {
+    const ingredientFilter = document.getElementById("ingredient-filter").value.toLowerCase();
+    const categoryFilter = document.getElementById("category-filter").value;
+    const timeFilter = document.getElementById("time-filter").value;
 
-    const clone = recipeCard.cloneNode(true);
-    const favBtnInClone = clone.querySelector(".fav-btn");
-    if (favBtnInClone) favBtnInClone.remove();
-    const fullContent = clone.innerHTML;
-
-    if (favorites.some(fav => fav.name === recipeName)) {
-      setToCross(btn);
-    } else {
-      setToHeart(btn);
-    }
-
-    btn.addEventListener("click", () => {
-      btn.classList.add("anim-click");
-
-      const recipe = {
-        name: recipeName,
-        description: recipeDescription,
-        full: fullContent
-      };
-
-      if (favorites.some(fav => fav.name === recipeName)) {
-        favorites = favorites.filter(f => f.name !== recipeName);
-        setToHeart(btn);
-      } else {
-        favorites.push(recipe);
-        setToCross(btn);
-      }
-
-      saveFavorites();
-      updateHeartIcons();
-
-      setTimeout(() => btn.classList.remove("anim-click"), 300);
-    });
+    // Appliquer les filtres
+    applyFilters(ingredientFilter, categoryFilter, timeFilter);
   });
 }
 
-function setToHeart(btn) {
-  btn.textContent = "❤️";
-  btn.style.color = "#e63946";
-}
+function applyFilters(ingredientFilter, categoryFilter, timeFilter) {
+  const recipeListContainer = document.getElementById("recipe-list");
+  
+  const filteredRecipes = DB.recipes.filter((recipe) => {
+    const matchIngredient = ingredientFilter ? recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(ingredientFilter)) : true;
+    const matchCategory = categoryFilter ? recipe.category === categoryFilter : true;
+    const matchTime = timeFilter ? recipe.time <= timeFilter : true;
 
-function setToCross(btn) {
-  btn.textContent = "❌";
-  btn.style.color = "#ff6b6b";
-}
-
-function updateHeartIcons() {
-  const favButtons = document.querySelectorAll(".fav-btn");
-
-  favButtons.forEach((btn) => {
-    const recipeCard = btn.closest(".recipe-card");
-    const recipeName = recipeCard.dataset.recipe;
-
-    if (favorites.some(fav => fav.name === recipeName)) {
-      setToCross(btn);
-    } else {
-      setToHeart(btn);
-    }
+    return matchIngredient && matchCategory && matchTime;
   });
+
+  recipeListContainer.innerHTML = filteredRecipes.length > 0 ? filteredRecipes.map(recipe => `
+    <div class="recipe-card">
+      <h3>${recipe.name}</h3>
+      <p>${recipe.description}</p>
+      <button class="fav-btn">Ajouter aux favoris</button>
+    </div>
+  `).join("") : "<p>Aucune recette trouvée pour les critères sélectionnés.</p>";
 }
 
 // --- PROFIL ---
@@ -360,7 +329,7 @@ function initProfile() {
 
   renderFruitList();
   renderVegList();
-
+  
   // --- Allergènes ---
   const savedAllergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
   const allergensSelect = document.getElementById("allergens");
@@ -416,74 +385,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-
-// ================================
-//   MENU DU JOUR INTELLIGENT
-// ================================
-
-function generateDailyMenu() {
-  const pantry = JSON.parse(localStorage.getItem("pantry")) || [];
-  const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
-
-  // Filtrer les recettes compatibles
-  const availableRecipes = DB.recipes.filter(recipe => {
-    const hasAllIngredients = recipe.ingredients.every(ing =>
-      pantry.some(p => p.name.toLowerCase() === ing.toLowerCase())
-    );
-
-    const safeWithAllergens = !recipe.ingredients.some(ing =>
-      allergens.includes(ing.toLowerCase())
-    );
-
-    return hasAllIngredients && safeWithAllergens;
-  });
-
-  if (availableRecipes.length === 0) {
-    return {
-      error: "Aucune recette disponible avec votre garde-manger et vos allergènes."
-    };
-  }
-
-  // Choisir une recette au hasard
-  const chosen = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
-
-  return {
-    name: chosen.name,
-    ingredients: chosen.ingredients,
-    utensils: chosen.utensils,
-    steps: chosen.steps,
-    time: chosen.time
-  };
-}
-
-// ================================
-//   AFFICHE LE MENU DU JOUR
-// ================================
-
-function showDailyMenu() {
-  const menu = generateDailyMenu();
-  const content = document.getElementById("content");
-
-  if (menu.error) {
-    content.innerHTML = `
-      <div class="recipe-card">
-        <h2>Menu du jour</h2>
-        <p>${menu.error}</p>
-      </div>`;
-    return;
-  }
-
-  content.innerHTML = `
-    <div class="recipe-card">
-      <h2>${menu.name}</h2>
-      <h3>Ingrédients :</h3>
-      <ul>${menu.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
-      <h3>Ustensiles :</h3>
-      <ul>${menu.utensils.map(u => `<li>${u}</li>`).join("")}</ul>
-      <h3>Préparation :</h3>
-      <ol>${menu.steps.map(s => `<li>${s}</li>`).join("")}</ol>
-      <p><strong>Temps total :</strong> ${menu.time} min</p>
-      <button class="profile-btn" onclick="showDailyMenu()">🔄 Nouveau Menu</button>
-    </div>
-  `;
-}
