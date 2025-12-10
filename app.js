@@ -123,13 +123,11 @@ function showPage(target) {
   if (target === "profile") initProfile();
 }
 
-/// --- Garde-manger ---
 function renderPantry() {
   const list = document.getElementById("ing-list");
   const input = document.getElementById("ing-input");
   const addBtn = document.getElementById("add-ing");
 
-  // Normalize old string items into objects
   pantry = pantry.map(item => typeof item === "string" ? { name: item, qty: 1 } : item);
 
   function renderList() {
@@ -201,12 +199,10 @@ function renderPantry() {
   renderList();
 }
 
-// --- Sauvegarde des favoris ---
 function saveFavorites() {
   localStorage.setItem("dishelp_favorites", JSON.stringify(favorites));
 }
 
-// --- Affichage des favoris ---
 function renderFavorites() {
   const list = document.getElementById("fav-list");
 
@@ -235,7 +231,6 @@ function renderFavorites() {
   });
 }
 
-// --- Page d’accueil : favoris ---
 function initHome() {
   const favButtons = document.querySelectorAll(".fav-btn");
 
@@ -280,7 +275,6 @@ function initHome() {
   });
 }
 
-// --- Styles helpers ---
 function setToHeart(btn) {
   btn.textContent = "❤️";
   btn.style.color = "#e63946";
@@ -303,16 +297,6 @@ function updateHeartIcons() {
     } else {
       setToHeart(btn);
     }
-  });
-}
-
-// ⭐⭐⭐ AJOUT : sélectionner plusieurs allergènes SANS CTRL ⭐⭐⭐
-function enableMultiSelect(select) {
-  Array.from(select.options).forEach(option => {
-    option.addEventListener("mousedown", e => {
-      e.preventDefault();
-      option.selected = !option.selected;
-    });
   });
 }
 
@@ -392,27 +376,29 @@ function initProfile() {
   renderFruitList();
   renderVegList();
 
-  // --- Recharge les allergènes ---
+  // --- Allergènes ---
   const savedAllergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
   const allergensSelect = document.getElementById("allergens");
 
-  // 🔥 AJOUT IMPORTANT → force le multi-select (fix mobile)
   allergensSelect.setAttribute("multiple", "multiple");
 
-  Array.from(allergensSelect.options).forEach(opt => {
-    if (savedAllergens.includes(opt.value)) {
-      opt.selected = true;
+  Array.from(allergensSelect.options).forEach(option => {
+    option.addEventListener("mousedown", e => {
+      e.preventDefault();
+      option.selected = !option.selected;
+    });
+
+    if (savedAllergens.includes(option.value)) {
+      option.selected = true;
     }
   });
 
-  // Attache la sauvegarde
   const form = document.getElementById("profile-form");
   if (form) {
     form.removeEventListener && form.removeEventListener("submit", saveProfile);
     form.addEventListener("submit", saveProfile);
   }
-} // ← FIN FIXÉE
-
+}
 
 // --- Enregistrement du profil ---
 function saveProfile(event) {
@@ -434,7 +420,6 @@ function saveProfile(event) {
     setTimeout(() => message.remove(), 300);
   }, 1800);
 }
-
 
 // --- Initialisation ---
 document.addEventListener("DOMContentLoaded", () => {
