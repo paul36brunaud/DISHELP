@@ -8,6 +8,7 @@ let pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
 let favorites = JSON.parse(localStorage.getItem("dishelp_favorites")) || [];
 let fruitList = JSON.parse(localStorage.getItem("dishelp_fruitList")) || [];
 let vegList = JSON.parse(localStorage.getItem("dishelp_vegList")) || [];
+
 const DB = { // Simulation de la base de données
     recipes: [
         {
@@ -58,10 +59,8 @@ const pages = {
   `,
 
   profile: `
-    <h2 class="title-profile">Mon Profil</h2>
-    <div class="profile-card">
-      <!-- Ajoute ici les éléments du profil -->
-    </div>
+    <h2>Mon Profil</h2>
+    <!-- Formulaire de profil ici -->
   `
 };
 
@@ -128,13 +127,13 @@ function generateFilters() {
     <label>
       <input type="checkbox" class="filter-type" value="${type}"> ${type}
     </label>
-  `).join("");
+  `).join(" ");
 
   const filterIngredientHTML = ingredients.map(ingredient => `
     <label>
       <input type="checkbox" class="filter-ingredient" value="${ingredient}"> ${ingredient}
     </label>
-  `).join("");
+  `).join(" ");
 
   filtersContainer.innerHTML = `
     <h3>Filtres</h3>
@@ -193,4 +192,18 @@ document.addEventListener("DOMContentLoaded", () => {
       showPage(btn.dataset.target);
     });
   });
+});
+
+// --- Sélecteurs pour le menu latéral ---
+const hamburgerBtn = document.querySelector('.hamburger-btn');
+const filtersContainer = document.querySelector('.filters-container');
+const content = document.querySelector('.content');
+
+// Fonction pour ouvrir/fermer le menu latéral
+hamburgerBtn.addEventListener('click', () => {
+  filtersContainer.classList.toggle('open'); // Ajoute/retire la classe 'open'
+  hamburgerBtn.classList.toggle('active'); // Ajoute/retire la classe 'active'
+
+  // Ajuste la marge du contenu principal pour faire de la place au menu
+  content.classList.toggle('shifted'); // Ajoute/retire la classe 'shifted' au contenu
 });
