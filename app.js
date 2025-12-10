@@ -13,9 +13,6 @@ const pages = {
   home: `
     <h2>🍽️ Bienvenue sur Dishelp</h2>
     <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
-    <div id="recipe-list">
-
-    </div>
   `,
 
   favorites: `
@@ -454,63 +451,3 @@ function generateDailyMenu() {
 }
 
 
-// ================================
-//   AFFICHE LE MENU DU JOUR
-// ================================
-
-function showDailyMenu() {
-    const menu = generateDailyMenu();
-    const content = document.getElementById("content");
-
-    if (menu.error) {
-        content.innerHTML = `
-            <div class="recipe-card">
-               <h2>Menu du jour</h2>
-               <p>${menu.error}</p>
-            </div>`;
-        return;
-    }
-
-    content.innerHTML = `
-        <div class="recipe-card">
-            <h2>${menu.name}</h2>
-
-            <h3>Ingrédients :</h3>
-            <ul>${menu.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
-
-            <h3>Ustensiles :</h3>
-            <ul>${menu.utensils.map(u => `<li>${u}</li>`).join("")}</ul>
-
-            <h3>Préparation :</h3>
-            <ol>${menu.steps.map(s => `<li>${s}</li>`).join("")}</ol>
-
-            <p><strong>Temps total :</strong> ${menu.time} min</p>
-
-            <button class="profile-btn" onclick="showDailyMenu()">🔄 Nouveau Menu</button>
-        </div>
-    `;
-}
-// Fonction pour afficher un plat du jour
-function afficherPlatDuJour() {
-  // Sélectionner un plat au hasard ou tu peux choisir un plat spécifique ici
-  const platDuJour = DB.recipes[Math.floor(Math.random() * DB.recipes.length)];
-
-  // Créer un élément HTML pour afficher le plat du jour
-  const platContainer = document.getElementById("plat-details");
-
-  platContainer.innerHTML = `
-    <div class="plat-card">
-      <h3>${platDuJour.name}</h3>
-      <p><strong>Temps de préparation :</strong> ${platDuJour.time} minutes</p>
-      <p><strong>Ingrédients :</strong> ${platDuJour.ingredients.join(", ")}</p>
-      <h4>Étapes :</h4>
-      <ol>
-        ${platDuJour.steps.map(step => `<li>${step}</li>`).join("")}
-      </ol>
-      <p><strong>Allergènes :</strong> ${platDuJour.allergens.length > 0 ? platDuJour.allergens.join(", ") : "Aucun"}</p>
-    </div>
-  `;
-}
-
-// Appeler la fonction pour afficher le plat du jour dès le chargement de la page
-document.addEventListener("DOMContentLoaded", afficherPlatDuJour);
