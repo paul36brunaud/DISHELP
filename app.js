@@ -431,3 +431,80 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+// ================================
+//   MENU DU JOUR INTELLIGENT
+// ================================
+
+function generateDailyMenu() {
+    const pantry = JSON.parse(localStorage.getItem("pantry")) || [];
+    const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
+
+    // Filtrer les recettes compatibles
+    const availableRecipes = DB.recipes.filter(recipe => {
+        const hasAllIngredients = recipe.ingredients.every(ing =>
+            pantry.some(p => p.name.toLowerCase() === ing.toLowerCase())
+        );
+
+        const safeWithAllergens = !recipe.ingredients.some(ing =>
+            allergens.includes(ing.toLowerCase())
+        );
+
+        return hasAllIngredients && safeWithAllergens;
+    });
+
+    if (availableRecipes.length === 0) {
+        return {
+            error: "Aucune recette disponible avec votre garde-manger et vos allergènes."
+        };
+    }
+
+    // Choisir une recette au hasard
+    const chosen = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
+
+    return {
+        name: chosen.name,
+        ingredients: chosen.ingredients,
+        utensils: chosen.utensils,
+        steps: chosen.steps,
+        time: chosen.time
+    };
+}
+
+
+// ================================
+//   AFFICHE LE MENU DU JOUR
+// ================================
+
+function showDailyMenu() {
+    const menu = generateDailyMenu();
+    const content = document.getElementById("content");
+
+    if (menu.error) {
+        content.innerHTML = `
+            <div class="recipe-card">
+               <h2>Menu du jour</h2>
+               <p>${menu.error}</p>
+            </div>`;
+        return;
+    }
+
+    content.innerHTML = `
+        <div class="recipe-card">
+            <h2>${menu.name}</h2>
+
+            <h3>Ingrédients :</h3>
+            <ul>${menu.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
+
+            <h3>Ustensiles :</h3>
+            <ul>${menu.utensils.map(u => `<li>${u}</li>`).join("")}</ul>
+
+            <h3>Préparation :</h3>
+            <ol>${menu.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+            <p><strong>Temps total :</strong> ${menu.time} min</p>
+
+            <button class="profile-btn" onclick="showDailyMenu()">🔄 Nouveau Menu</button>
+        </div>
+    `;
+}
