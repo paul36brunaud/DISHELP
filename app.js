@@ -15,24 +15,6 @@ const pages = {
     <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
     <div id="recipe-list">
 
-      <div class="recipe-card" data-recipe="Salade fraîcheur">
-        <h3>🥗 Salade fraîcheur</h3>
-        <p>Tomates, concombres, feta et huile d'olive.</p>
-        <button class="fav-btn">Ajouter aux favoris</button>
-      </div>
-
-      <div class="recipe-card" data-recipe="Pâtes à la tomate">
-        <h3>🍝 Pâtes à la tomate</h3>
-        <p>Pâtes, tomate, basilic et parmesan.</p>
-        <button class="fav-btn">Ajouter aux favoris</button>
-      </div>
-
-      <div class="recipe-card" data-recipe="Omelette de légumes">
-        <h3>🍛 Omelette de légumes</h3>
-        <p>Œufs, carottes, courgettes et oignons.</p>
-        <button class="fav-btn">Ajouter aux favoris</button>
-      </div>
-
     </div>
   `,
 
