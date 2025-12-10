@@ -508,3 +508,27 @@ function showDailyMenu() {
         </div>
     `;
 }
+// Fonction pour afficher un plat du jour
+function afficherPlatDuJour() {
+  // Sélectionner un plat au hasard ou tu peux choisir un plat spécifique ici
+  const platDuJour = DB.recipes[Math.floor(Math.random() * DB.recipes.length)];
+
+  // Créer un élément HTML pour afficher le plat du jour
+  const platContainer = document.getElementById("plat-details");
+
+  platContainer.innerHTML = `
+    <div class="plat-card">
+      <h3>${platDuJour.name}</h3>
+      <p><strong>Temps de préparation :</strong> ${platDuJour.time} minutes</p>
+      <p><strong>Ingrédients :</strong> ${platDuJour.ingredients.join(", ")}</p>
+      <h4>Étapes :</h4>
+      <ol>
+        ${platDuJour.steps.map(step => `<li>${step}</li>`).join("")}
+      </ol>
+      <p><strong>Allergènes :</strong> ${platDuJour.allergens.length > 0 ? platDuJour.allergens.join(", ") : "Aucun"}</p>
+    </div>
+  `;
+}
+
+// Appeler la fonction pour afficher le plat du jour dès le chargement de la page
+document.addEventListener("DOMContentLoaded", afficherPlatDuJour);
