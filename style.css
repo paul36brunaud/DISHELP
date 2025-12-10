@@ -378,6 +378,23 @@ h1 {
   font-weight: 600;
 }
 
+/* FIX sélection multiple allergènes */
+.profile-select[multiple] {
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  height: auto !important;
+  min-height: 160px !important;
+  background: white !important;
+  overflow-y: auto !important;
+  padding-right: 0 !important;
+}
+
+/* Supprime la flèche uniquement pour le mode multiple */
+.profile-section.select-allergens::after {
+  display: none !important;
+}
+
+
 /* Save confirmation toast */
 .save-confirm {
   position: fixed;
