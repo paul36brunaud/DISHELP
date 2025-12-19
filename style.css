@@ -555,17 +555,6 @@ button,
    ACCUEIL – PLATS DU JOUR
 ================================ */
 
-
-.plat-du-jour {
-  margin-top: 1.2rem;
-}
-
-.plat-du-jour h2 {
-  text-align: center;
-  margin-bottom: 1.2rem;
-  font-size: 1.6rem;
-}
-
 .plat-card {
   background: white;
   border-radius: 18px;
