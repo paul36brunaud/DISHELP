@@ -36,24 +36,29 @@
       <button id="open-filters" class="hamburger-btn" aria-label="Ouvrir les filtres">☰</button>
 
       <!-- Menu filtres -->
-      <aside id="filters-menu" class="filters-container" aria-hidden="true">
-        <h4>Filtres</h4>
+        <aside id="filters-menu" class="filters-container" aria-hidden="true">
+      <h4>Filtres</h4>
 
-        <label>
-          <input type="checkbox" data-filter="vegetarien" />
-          Végétarien
-        </label>
+      <div class="filter-group">
+        <h5>🥗 Régime</h5>
+        <label><input type="checkbox" data-filter="vegetarien"> Végétarien</label>
+        <label><input type="checkbox" data-filter="vegan"> Vegan</label>
+        <label><input type="checkbox" data-filter="sans-gluten"> Sans gluten</label>
+      </div>
 
-        <label>
-          <input type="checkbox" data-filter="rapide" />
-          Rapide
-        </label>
+      <div class="filter-group">
+        <h5>⏱ Temps</h5>
+        <label><input type="checkbox" data-filter="rapide"> &lt; 20 min</label>
+        <label><input type="checkbox" data-filter="moyen"> 20–40 min</label>
+      </div>
 
-        <label>
-          <input type="checkbox" data-filter="sans-gluten" />
-          Sans gluten
-        </label>
-      </aside>
+      <div class="filter-group">
+        <h5>🍽 Type</h5>
+        <label><input type="checkbox" data-filter="plat"> Plat</label>
+        <label><input type="checkbox" data-filter="petit-dej"> Petit déjeuner</label>
+      </div>
+    </aside>
+
     </header>
 
     <!-- Plat du jour -->

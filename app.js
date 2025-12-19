@@ -10,10 +10,13 @@ let vegList = JSON.parse(localStorage.getItem("dishelp_vegList")) || [];
 
 // --- Pages ---
 const pages = {
-  home: `
-    <h2>🍽️ Bienvenue sur Dishelp</h2>
-    <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
-  `,
+ home: `
+  <h2>🍽️ Bienvenue sur Dishelp</h2>
+  <p id="intro-text">Découvrez des recettes adaptées à vos goûts.</p>
+
+  <section class="menus-home" id="menus-home"></section>
+`,
+
 
   favorites: `
     <h2>❤️ Mes favoris</h2>
@@ -192,15 +195,14 @@ function renderFavorites() {
 
 // --- HOME ---
 function initHome() {
+  renderHomeMenus();
+
   document.querySelectorAll(".fav-btn").forEach(btn => {
     const card = btn.closest(".recipe-card");
+    if (!card) return;
     const name = card.dataset.recipe;
 
-    if (favorites.some(f => f.name === name)) {
-      btn.textContent = "❌";
-    } else {
-      btn.textContent = "❤️";
-    }
+    btn.textContent = favorites.some(f => f.name === name) ? "❌" : "❤️";
 
     btn.addEventListener("click", () => {
       if (favorites.some(f => f.name === name)) {
@@ -214,6 +216,7 @@ function initHome() {
     });
   });
 }
+
 
 // --- PROFIL ---
 function initProfile() {
@@ -297,3 +300,15 @@ document.addEventListener("DOMContentLoaded", () => {
     menu.setAttribute("aria-hidden", (!open).toString());
   });
 });
+
+function renderHomeMenus() {
+  const container = document.getElementById("menus-home");
+  if (!container || !window.DB?.menus) return;
+
+  container.innerHTML = DB.menus.slice(0, 3).map(menu => `
+    <div class="menu-card">
+      <h3>${menu.name}</h3>
+      <span>${menu.type} • ${menu.tags.join(", ")}</span>
+    </div>
+  `).join("");
+}

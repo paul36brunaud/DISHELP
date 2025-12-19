@@ -587,3 +587,50 @@ button,
 body.menu-open {
   overflow-x: hidden;
 }
+/* ===== MENU FILTRES AMÉLIORÉ ===== */
+.filters-container {
+  left: -360px;
+  width: 360px;
+  padding: 2.5rem 2rem;
+}
+
+.app.menu-open {
+  transform: translateX(360px);
+}
+
+.filter-group {
+  margin-bottom: 1.6rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
+.filter-group h5 {
+  margin-bottom: 0.6rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* ===== ACCUEIL : MENUS ===== */
+.menus-home {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.menu-card {
+  background: white;
+  border-radius: 18px;
+  padding: 1.2rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  animation: fadeUp 0.35s ease;
+}
+
+.menu-card h3 {
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+.menu-card span {
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
