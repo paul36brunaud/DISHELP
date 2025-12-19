@@ -623,3 +623,36 @@ button,
     transform: translateY(0);
   }
 }
+/* ===============================
+   BOUTON MENU BLANC
+================================ */
+
+.hamburger-btn {
+  background: white;
+  color: var(--accent);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ===============================
+   MENU SLIDE AVEC PUSH DU CONTENU
+================================ */
+
+.filters-container {
+  left: -280px;
+}
+
+.filters-container.open {
+  left: 0;
+}
+
+/* Quand le menu est ouvert, tout le contenu se décale */
+.app.menu-open {
+  transform: translateX(280px);
+  transition: transform 0.35s ease;
+}
+
+/* Empêche le scroll parasite */
+body.menu-open {
+  overflow-x: hidden;
+}
