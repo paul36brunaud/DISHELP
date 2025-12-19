@@ -524,3 +524,102 @@ button,
   margin-bottom: 0.5rem;
   color: var(--accent);
 }
+/* ===============================
+   MENU FILTRES – ACCUEIL
+================================ */
+
+.hamburger-btn {
+  position: fixed;
+  top: 1.1rem;
+  left: 1rem;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 1002;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+
+.filters-container {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
+  background: linear-gradient(180deg, #67db8c, #4caf6c);
+  color: white;
+  padding: 2rem 1.5rem;
+  transition: left 0.35s ease;
+  z-index: 1001;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+.filters-container.open {
+  left: 0;
+}
+
+.filters-container h4 {
+  font-size: 1.3rem;
+  margin-bottom: 1.4rem;
+  text-align: center;
+}
+
+.filters-container label {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filters-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: white;
+}
+
+/* ===============================
+   ACCUEIL – PLATS DU JOUR
+================================ */
+
+.plat-du-jour {
+  margin-top: 1.2rem;
+}
+
+.plat-du-jour h2 {
+  text-align: center;
+  margin-bottom: 1.2rem;
+  font-size: 1.6rem;
+}
+
+.plat-card {
+  background: white;
+  border-radius: 18px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  animation: fadeUp 0.35s ease;
+}
+
+.plat-card h3 {
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

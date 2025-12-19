@@ -504,3 +504,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const plats = getRandomRecipes(3);
   renderPlatsDuJour(plats);
 });
+function toggleFiltersMenu(show) {
+  const filtersMenu = document.getElementById("filters-menu");
+  const btn = document.getElementById("open-filters");
+
+  if (!filtersMenu || !btn) return;
+
+  if (show) {
+    btn.style.display = "block";
+  } else {
+    btn.style.display = "none";
+    filtersMenu.classList.remove("open");
+    filtersMenu.setAttribute("aria-hidden", "true");
+  }
+}
