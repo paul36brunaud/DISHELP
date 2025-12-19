@@ -24,25 +24,33 @@
     <!-- Header -->
     <header class="header">
       <h1>Dishelp</h1>
+
       <nav class="menu" aria-label="Navigation principale">
         <button class="menu-btn active" data-target="home" aria-label="Page d'accueil">Accueil</button>
         <button class="menu-btn" data-target="favorites" aria-label="Mes favoris">Favoris</button>
         <button class="menu-btn" data-target="pantry" aria-label="Mon garde-manger">Garde-manger</button>
         <button class="menu-btn" data-target="profile" aria-label="Mon profil">Profil</button>
       </nav>
+
+      <!-- Bouton filtres -->
       <button id="open-filters" class="hamburger-btn" aria-label="Ouvrir les filtres">
         ☰
       </button>
+
+      <!-- Menu filtres -->
       <aside id="filters-menu" class="filters-container" aria-hidden="true">
         <h4>Filtres</h4>
+
         <label>
           <input type="checkbox" data-filter="vegetarien" />
           Végétarien
         </label>
+
         <label>
           <input type="checkbox" data-filter="rapide" />
           Rapide
         </label>
+
         <label>
           <input type="checkbox" data-filter="sans-gluten" />
           Sans gluten
@@ -56,20 +64,11 @@
       <div id="plat-details"></div>
     </section>
 
-    <!-- Menu Latéral -->
-    <div class="filters-container" id="filters-container" aria-hidden="true">
-      <h4>Filtres</h4>
-      <button>Type de plat</button>
-      <button>Catégorie</button>
-      <button>Végétarien</button>
-      <!-- D'autres filtres peuvent être ajoutés ici -->
-    </div>
-
-    <!-- Content dynamique (plat du jour, etc.) -->
+    <!-- Content dynamique -->
     <main id="content" class="content" role="main" aria-live="polite"></main>
   </div>
 
-  <!-- App script -->
+  <!-- Scripts -->
   <script src="database.js"></script>
   <script src="app.js"></script>
 

@@ -451,7 +451,9 @@ button,
   .menu { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; padding: 0 0.6rem; }
   #ing-input { width: 65%; }
   .profile-card { width: 95%; padding: 1rem; }
-}/* ===============================
+}
+
+/* ===============================
    MENU FILTRES SLIDE (ACCUEIL)
 ================================ */
 
