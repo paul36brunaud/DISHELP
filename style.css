@@ -459,30 +459,20 @@ button,
 
 .hamburger-btn {
   position: fixed;
-  top: 1rem;
+  top: 1.1rem;
   left: 1rem;
-  background: var(--accent);
-  color: white;
-  border: none;
-  font-size: 1.6rem;
-  padding: 0.5rem 0.7rem;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
+  border: none;
+  font-size: 1.5rem;
   cursor: pointer;
-  z-index: 1001;
+  z-index: 1002;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  background: white;
+  color: var(--accent);
 }
 
-.filters-container {
-  position: fixed;
-  top: 0;
-  left: -260px;
-  width: 260px;
-  height: 100%;
-  background: var(--accent);
-  color: white;
-  padding: 1.5rem;
-  transition: left 0.35s ease;
-  z-index: 1000;
-}
 
 .filters-container.open {
   left: 0;
@@ -503,14 +493,6 @@ button,
    PLATS DU JOUR
 ================================ */
 
-.plat-du-jour {
-  margin-top: 1rem;
-}
-
-.plat-du-jour h2 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
 
 .plat-card {
   background: white;
@@ -528,21 +510,8 @@ button,
    MENU FILTRES – ACCUEIL
 ================================ */
 
-.hamburger-btn {
-  position: fixed;
-  top: 1.1rem;
-  left: 1rem;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: white;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  z-index: 1002;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-}
+
+
 
 .filters-container {
   position: fixed;
@@ -554,14 +523,11 @@ button,
   color: white;
   padding: 2rem 1.5rem;
   transition: left 0.35s ease;
-  z-index: 1001;
   border-top-right-radius: 24px;
   border-bottom-right-radius: 24px;
+  z-index: 1000;
 }
 
-.filters-container.open {
-  left: 0;
-}
 
 .filters-container h4 {
   font-size: 1.3rem;
@@ -588,6 +554,7 @@ button,
 /* ===============================
    ACCUEIL – PLATS DU JOUR
 ================================ */
+
 
 .plat-du-jour {
   margin-top: 1.2rem;
@@ -622,28 +589,6 @@ button,
     opacity: 1;
     transform: translateY(0);
   }
-}
-/* ===============================
-   BOUTON MENU BLANC
-================================ */
-
-.hamburger-btn {
-  background: white;
-  color: var(--accent);
-  border: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-/* ===============================
-   MENU SLIDE AVEC PUSH DU CONTENU
-================================ */
-
-.filters-container {
-  left: -280px;
-}
-
-.filters-container.open {
-  left: 0;
 }
 
 /* Quand le menu est ouvert, tout le contenu se décale */
