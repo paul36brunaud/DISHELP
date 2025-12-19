@@ -16,35 +16,43 @@ self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
-  self.skipWaiting(); // Le service worker prend immédiatement le contrôle
+  self.skipWaiting();
 });
 
 // Écoute l'événement d'activation
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => 
+    caches.keys().then(keys =>
       Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)) // Supprime les anciens caches
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
       )
     )
   );
-  self.clients.claim(); // Prendre le contrôle des clients immédiatement
+  self.clients.claim();
 });
 
 // Écoute l'événement de récupération des ressources
 self.addEventListener("fetch", event => {
+  // ✅ Ne gérer que les requêtes GET (correction nécessaire)
+  if (event.request.method !== "GET") {
+    return;
+  }
+
   event.respondWith(
-    fetch(event.request) // Toujours essayer d'abord de récupérer depuis le réseau
+    fetch(event.request)
       .then(response => {
-        // Mettez à jour le cache avec la réponse récupérée
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        // ✅ Ne mettre en cache que les réponses valides (correction nécessaire)
+        if (response && response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache =>
+            cache.put(event.request, clone)
+          );
+        }
         return response;
       })
       .catch(() =>
-        // Si la récupération échoue (par exemple hors ligne), servez les ressources du cache
         caches.match(event.request).then(
-          res => res || caches.match(`${PREFIX}/index.html`) // Par défaut, servir index.html
+          res => res || caches.match(`${PREFIX}/index.html`)
         )
       )
   );

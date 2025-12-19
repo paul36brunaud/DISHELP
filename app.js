@@ -85,13 +85,6 @@ const pages = {
 function showPage(target) {
   content.innerHTML = pages[target] || "<p>Page introuvable.</p>";
 
-  const introText = document.getElementById("intro-text");
-  if (introText && (target === "home" || target === "pantry" || target === "favorites")) {
-    if (!introText.classList.contains("interacted")) {
-      introText.style.display = "block";
-    }
-  }
-
   buttons.forEach(btn => btn.classList.remove("active"));
   const activeBtn = document.querySelector(`[data-target="${target}"]`);
   if (activeBtn) activeBtn.classList.add("active");
@@ -102,12 +95,15 @@ function showPage(target) {
   if (target === "profile") initProfile();
 }
 
+// --- PANTRY ---
 function renderPantry() {
   const list = document.getElementById("ing-list");
   const input = document.getElementById("ing-input");
   const addBtn = document.getElementById("add-ing");
 
-  pantry = pantry.map(item => typeof item === "string" ? { name: item, qty: 1 } : item);
+  pantry = pantry.map(item =>
+    typeof item === "string" ? { name: item, qty: 1 } : item
+  );
 
   function renderList() {
     list.innerHTML = "";
@@ -122,7 +118,6 @@ function renderPantry() {
       const qtyInput = document.createElement("input");
       qtyInput.type = "number";
       qtyInput.min = 1;
-      qtyInput.max = 100;
       qtyInput.value = item.qty;
       qtyInput.classList.add("qty-input");
 
@@ -132,43 +127,30 @@ function renderPantry() {
       });
 
       const delBtn = document.createElement("button");
-      delBtn.type = "button";
       delBtn.textContent = "❌";
-      delBtn.classList.add("del-ing");
-
       delBtn.addEventListener("click", () => {
         pantry.splice(idx, 1);
         localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
         renderList();
       });
 
-      li.appendChild(nameSpan);
-      li.appendChild(qtyInput);
-      li.appendChild(delBtn);
-
+      li.append(nameSpan, qtyInput, delBtn);
       list.appendChild(li);
     });
   }
 
-  const addIngredient = () => {
+  function addIngredient() {
     const val = input.value.trim();
     if (!val) return;
 
     pantry.push({ name: val, qty: 1 });
     localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
-
     input.value = "";
     renderList();
-
-    const introText = document.getElementById("intro-text");
-    if (introText) {
-      introText.style.display = "none";
-      introText.classList.add("interacted");
-    }
-  };
+  }
 
   addBtn.addEventListener("click", addIngredient);
-  input.addEventListener("keypress", (e) => {
+  input.addEventListener("keydown", e => {
     if (e.key === "Enter") {
       e.preventDefault();
       addIngredient();
@@ -178,6 +160,7 @@ function renderPantry() {
   renderList();
 }
 
+// --- FAVORIS ---
 function saveFavorites() {
   localStorage.setItem("dishelp_favorites", JSON.stringify(favorites));
 }
@@ -185,24 +168,21 @@ function saveFavorites() {
 function renderFavorites() {
   const list = document.getElementById("fav-list");
 
-  if (!favorites || favorites.length === 0) {
+  if (!favorites.length) {
     list.innerHTML = "<p>Aucun favori pour le moment.</p>";
     return;
   }
 
-  list.innerHTML = favorites
-    .map((f, i) => `
-      <div class="recipe-card" data-recipe="${f.name}">
-        ${f.full}
-        <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">❌</button>
-      </div>
-    `)
-    .join("");
+  list.innerHTML = favorites.map((f, i) => `
+    <div class="recipe-card" data-recipe="${f.name}">
+      ${f.full}
+      <button data-index="${i}" class="fav-toggle">❌</button>
+    </div>
+  `).join("");
 
-  list.querySelectorAll(".fav-toggle").forEach((btn) => {
+  list.querySelectorAll(".fav-toggle").forEach(btn => {
     btn.addEventListener("click", () => {
-      const index = btn.dataset.index;
-      favorites.splice(index, 1);
+      favorites.splice(btn.dataset.index, 1);
       saveFavorites();
       renderFavorites();
       updateHeartIcons();
@@ -210,335 +190,110 @@ function renderFavorites() {
   });
 }
 
+// --- HOME ---
 function initHome() {
-  const favButtons = document.querySelectorAll(".fav-btn");
+  document.querySelectorAll(".fav-btn").forEach(btn => {
+    const card = btn.closest(".recipe-card");
+    const name = card.dataset.recipe;
 
-  favButtons.forEach((btn) => {
-    const recipeCard = btn.closest(".recipe-card");
-    const recipeName = recipeCard.dataset.recipe;
-    const recipeDescription = recipeCard.querySelector("p").textContent;
-
-    const clone = recipeCard.cloneNode(true);
-    const favBtnInClone = clone.querySelector(".fav-btn");
-    if (favBtnInClone) favBtnInClone.remove();
-    const fullContent = clone.innerHTML;
-
-    if (favorites.some(fav => fav.name === recipeName)) {
-      setToCross(btn);
+    if (favorites.some(f => f.name === name)) {
+      btn.textContent = "❌";
     } else {
-      setToHeart(btn);
+      btn.textContent = "❤️";
     }
 
     btn.addEventListener("click", () => {
-      btn.classList.add("anim-click");
-
-      const recipe = {
-        name: recipeName,
-        description: recipeDescription,
-        full: fullContent
-      };
-
-      if (favorites.some(fav => fav.name === recipeName)) {
-        favorites = favorites.filter(f => f.name !== recipeName);
-        setToHeart(btn);
+      if (favorites.some(f => f.name === name)) {
+        favorites = favorites.filter(f => f.name !== name);
+        btn.textContent = "❤️";
       } else {
-        favorites.push(recipe);
-        setToCross(btn);
+        favorites.push({ name, full: card.innerHTML });
+        btn.textContent = "❌";
       }
-
       saveFavorites();
-      updateHeartIcons();
-
-      setTimeout(() => btn.classList.remove("anim-click"), 300);
     });
-  });
-}
-
-function setToHeart(btn) {
-  btn.textContent = "❤️";
-  btn.style.color = "#e63946";
-}
-
-function setToCross(btn) {
-  btn.textContent = "❌";
-  btn.style.color = "#ff6b6b";
-}
-
-function updateHeartIcons() {
-  const favButtons = document.querySelectorAll(".fav-btn");
-
-  favButtons.forEach((btn) => {
-    const recipeCard = btn.closest(".recipe-card");
-    const recipeName = recipeCard.dataset.recipe;
-
-    if (favorites.some(fav => fav.name === recipeName)) {
-      setToCross(btn);
-    } else {
-      setToHeart(btn);
-    }
   });
 }
 
 // --- PROFIL ---
 function initProfile() {
-  const fruitInput = document.getElementById("fruits");
-  const vegInput = document.getElementById("vegetables");
-
-  const fruitListBox = document.getElementById("fruit-list");
-  const vegListBox = document.getElementById("veg-list");
-
-  const addFruitBtn = document.getElementById("add-fruit");
-  const addVegBtn = document.getElementById("add-veg");
-
-  function renderFruitList() {
-    fruitListBox.innerHTML = fruitList
-      .map((f, i) => `<li>${f}<button data-i="${i}" class="list-del" type="button">❌</button></li>`)
-      .join("");
-  }
-
-  function renderVegList() {
-    vegListBox.innerHTML = vegList
-      .map((v, i) => `<li>${v}<button data-i="${i}" class="list-del" type="button">❌</button></li>`)
-      .join("");
-  }
-
-  addFruitBtn.addEventListener("click", () => {
-    const val = fruitInput.value.trim();
-    if (!val) return;
-    fruitList.push(val);
-    fruitInput.value = "";
-    localStorage.setItem("dishelp_fruitList", JSON.stringify(fruitList));
-    renderFruitList();
-  });
-
-  addVegBtn.addEventListener("click", () => {
-    const val = vegInput.value.trim();
-    if (!val) return;
-    vegList.push(val);
-    vegInput.value = "";
-    localStorage.setItem("dishelp_vegList", JSON.stringify(vegList));
-    renderVegList();
-  });
-
-  fruitListBox.addEventListener("click", (e) => {
-    if (e.target.classList.contains("list-del")) {
-      const i = parseInt(e.target.dataset.i, 10);
-      fruitList.splice(i, 1);
-      localStorage.setItem("dishelp_fruitList", JSON.stringify(fruitList));
-      renderFruitList();
-    }
-  });
-
-  vegListBox.addEventListener("click", (e) => {
-    if (e.target.classList.contains("list-del")) {
-      const i = parseInt(e.target.dataset.i, 10);
-      vegList.splice(i, 1);
-      localStorage.setItem("dishelp_vegList", JSON.stringify(vegList));
-      renderVegList();
-    }
-  });
-
-  fruitInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addFruitBtn.click();
-    }
-  });
-
-  vegInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addVegBtn.click();
-    }
-  });
-
-  renderFruitList();
-  renderVegList();
-
-  // --- Allergènes ---
-  const savedAllergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
   const allergensSelect = document.getElementById("allergens");
+  const saved = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
 
-  allergensSelect.setAttribute("multiple", "multiple");
-
-  Array.from(allergensSelect.options).forEach(option => {
-    option.addEventListener("mousedown", e => {
+  Array.from(allergensSelect.options).forEach(opt => {
+    opt.selected = saved.includes(opt.value);
+    opt.addEventListener("mousedown", e => {
       e.preventDefault();
-      option.selected = !option.selected;
+      opt.selected = !opt.selected;
     });
-
-    if (savedAllergens.includes(option.value)) {
-      option.selected = true;
-    }
   });
 
-  const form = document.getElementById("profile-form");
-  if (form) {
-    form.removeEventListener && form.removeEventListener("submit", saveProfile);
-    form.addEventListener("submit", saveProfile);
-  }
+  document.getElementById("profile-form").addEventListener("submit", saveProfile);
 }
 
-// --- Enregistrement du profil ---
-function saveProfile(event) {
-  event.preventDefault();
+function saveProfile(e) {
+  e.preventDefault();
+  const select = document.getElementById("allergens");
+  const values = Array.from(select.selectedOptions).map(o => o.value);
+  localStorage.setItem("dishelp_allergens", JSON.stringify(values));
 
-  const allergensSelect = document.getElementById("allergens");
-  const selectedAllergens = Array.from(allergensSelect.selectedOptions).map(option => option.value);
+  const msg = document.createElement("div");
+  msg.className = "save-confirm";
+  msg.textContent = "✔ Profil enregistré";
+  document.body.appendChild(msg);
 
-  localStorage.setItem("dishelp_allergens", JSON.stringify(selectedAllergens));
-
-  const message = document.createElement("div");
-  message.classList.add("save-confirm");
-  message.textContent = "✔ Profil enregistré avec succès !";
-
-  document.body.appendChild(message);
-
-  setTimeout(() => {
-    message.classList.add("hide");
-    setTimeout(() => message.remove(), 300);
-  }, 1800);
+  setTimeout(() => msg.remove(), 1800);
 }
 
-// --- Initialisation ---
+// --- INIT ---
 document.addEventListener("DOMContentLoaded", () => {
   showPage("home");
-
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      showPage(btn.dataset.target);
-    });
-  });
+  buttons.forEach(btn =>
+    btn.addEventListener("click", () => showPage(btn.dataset.target))
+  );
 });
 
 // ================================
 //   MENU DU JOUR INTELLIGENT
 // ================================
-
 function generateDailyMenu() {
-    const pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
-    const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
+  const pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
+  const allergens = (JSON.parse(localStorage.getItem("dishelp_allergens")) || [])
+    .map(a => a.toLowerCase());
 
-    // Filtrer les recettes compatibles
-    const availableRecipes = DB.recipes.filter(recipe => {
-        const hasAllIngredients = recipe.ingredients.every(ing =>
-            pantry.some(p => p.name.toLowerCase() === ing.toLowerCase())
-        );
+  const available = DB.recipes.filter(recipe => {
+    const hasIngredients = recipe.ingredients.every(ing =>
+      pantry.some(p => p.name.toLowerCase() === ing.toLowerCase())
+    );
 
-        const safeWithAllergens = !recipe.ingredients.some(ing =>
-            allergens.includes(ing.toLowerCase())
-        );
+    const safe = !recipe.ingredients.some(ing =>
+      allergens.includes(ing.toLowerCase())
+    );
 
-        return hasAllIngredients && safeWithAllergens;
-    });
+    return hasIngredients && safe;
+  });
 
-    if (availableRecipes.length === 0) {
-        return {
-            error: "Aucune recette disponible avec votre garde-manger et vos allergènes."
-        };
-    }
-
-    // Choisir une recette au hasard
-    const chosen = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
-
-    return {
-        name: chosen.name,
-        ingredients: chosen.ingredients,
-        utensils: chosen.utensils,
-        steps: chosen.steps,
-        time: chosen.time
-    };
-}
-
-function getRandomRecipes(count = 3) {
-  const shuffled = [...DB.recipes].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
-}
-
-function renderPlatsDuJour(recipes) {
-  const content = document.getElementById("content");
-
-  content.innerHTML = `
-    <section class="plat-du-jour">
-      <h2>Plats du jour</h2>
-      ${recipes.map(r => `
-        <div class="plat-card">
-          <h3>${r.name}</h3>
-          <p><strong>Temps :</strong> ${r.time} min</p>
-          <p><strong>Ingrédients :</strong> ${r.ingredients.join(", ")}</p>
-        </div>
-      `).join("")}
-    </section>
-  `;
-}
-const filtersMenu = document.getElementById("filters-menu");
-const openFiltersBtn = document.getElementById("open-filters");
-
-openFiltersBtn.addEventListener("click", () => {
-  filtersMenu.classList.toggle("open");
-  filtersMenu.setAttribute(
-    "aria-hidden",
-    !filtersMenu.classList.contains("open")
-  );
-});
-function applyFilters() {
-  const checkedFilters = [...document.querySelectorAll("#filters-menu input:checked")]
-    .map(i => i.dataset.filter);
-
-  let filtered = DB.recipes;
-
-  if (checkedFilters.includes("vegetarien")) {
-    filtered = filtered.filter(r => r.tags.includes("végétarien"));
+  if (!available.length) {
+    return { error: "Aucune recette disponible." };
   }
 
-  if (checkedFilters.includes("rapide")) {
-    filtered = filtered.filter(r => r.time <= 20);
-  }
-
-  renderPlatsDuJour(filtered.slice(0, 3));
+  return available[Math.floor(Math.random() * available.length)];
 }
 
-document.querySelectorAll("#filters-menu input")
-  .forEach(input => input.addEventListener("change", applyFilters));
+// ================================
+//   MENU FILTRES (UNE SEULE LOGIQUE)
+// ================================
 document.addEventListener("DOMContentLoaded", () => {
-  const plats = getRandomRecipes(3);
-  renderPlatsDuJour(plats);
-});
-function toggleFiltersMenu(show) {
-  const filtersMenu = document.getElementById("filters-menu");
   const btn = document.getElementById("open-filters");
-
-  if (!filtersMenu || !btn) return;
-
-  if (show) {
-    btn.style.display = "block";
-  } else {
-    btn.style.display = "none";
-    filtersMenu.classList.remove("open");
-    filtersMenu.setAttribute("aria-hidden", "true");
-  }
-}
-// ================================
-//   MENU SLIDE SANS RECOUVREMENT
-// ================================
-
-document.addEventListener("DOMContentLoaded", () => {
-  const openBtn = document.getElementById("open-filters");
   const menu = document.getElementById("filters-menu");
   const app = document.querySelector(".app");
 
-  if (!openBtn || !menu || !app) return;
+  if (!btn || !menu || !app) return;
 
-  openBtn.addEventListener("click", () => {
-    const isOpen = menu.classList.toggle("open");
-
-    // Décale toute l'app
-    app.classList.toggle("menu-open", isOpen);
-
-    // Bloque le scroll horizontal
-    document.body.classList.toggle("menu-open", isOpen);
-
-    // Accessibilité
-    menu.setAttribute("aria-hidden", (!isOpen).toString());
+  btn.addEventListener("click", () => {
+    const open = menu.classList.toggle("open");
+    app.classList.toggle("menu-open", open);
+    document.body.classList.toggle("menu-open", open);
+    menu.setAttribute("aria-hidden", (!open).toString());
   });
 });
