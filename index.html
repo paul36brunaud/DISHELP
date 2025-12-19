@@ -30,6 +30,24 @@
         <button class="menu-btn" data-target="pantry" aria-label="Mon garde-manger">Garde-manger</button>
         <button class="menu-btn" data-target="profile" aria-label="Mon profil">Profil</button>
       </nav>
+      <button id="open-filters" class="hamburger-btn" aria-label="Ouvrir les filtres">
+        ☰
+      </button>
+      <aside id="filters-menu" class="filters-container" aria-hidden="true">
+        <h4>Filtres</h4>
+        <label>
+          <input type="checkbox" data-filter="vegetarien" />
+          Végétarien
+        </label>
+        <label>
+          <input type="checkbox" data-filter="rapide" />
+          Rapide
+        </label>
+        <label>
+          <input type="checkbox" data-filter="sans-gluten" />
+          Sans gluten
+        </label>
+      </aside>
     </header>
 
     <!-- Plat du jour -->

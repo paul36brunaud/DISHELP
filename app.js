@@ -450,4 +450,57 @@ function generateDailyMenu() {
     };
 }
 
+function getRandomRecipes(count = 3) {
+  const shuffled = [...DB.recipes].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
 
+function renderPlatsDuJour(recipes) {
+  const content = document.getElementById("content");
+
+  content.innerHTML = `
+    <section class="plat-du-jour">
+      <h2>Plats du jour</h2>
+      ${recipes.map(r => `
+        <div class="plat-card">
+          <h3>${r.name}</h3>
+          <p><strong>Temps :</strong> ${r.time} min</p>
+          <p><strong>Ingrédients :</strong> ${r.ingredients.join(", ")}</p>
+        </div>
+      `).join("")}
+    </section>
+  `;
+}
+const filtersMenu = document.getElementById("filters-menu");
+const openFiltersBtn = document.getElementById("open-filters");
+
+openFiltersBtn.addEventListener("click", () => {
+  filtersMenu.classList.toggle("open");
+  filtersMenu.setAttribute(
+    "aria-hidden",
+    !filtersMenu.classList.contains("open")
+  );
+});
+function applyFilters() {
+  const checkedFilters = [...document.querySelectorAll("#filters-menu input:checked")]
+    .map(i => i.dataset.filter);
+
+  let filtered = DB.recipes;
+
+  if (checkedFilters.includes("vegetarien")) {
+    filtered = filtered.filter(r => r.tags.includes("végétarien"));
+  }
+
+  if (checkedFilters.includes("rapide")) {
+    filtered = filtered.filter(r => r.time <= 20);
+  }
+
+  renderPlatsDuJour(filtered.slice(0, 3));
+}
+
+document.querySelectorAll("#filters-menu input")
+  .forEach(input => input.addEventListener("change", applyFilters));
+document.addEventListener("DOMContentLoaded", () => {
+  const plats = getRandomRecipes(3);
+  renderPlatsDuJour(plats);
+});

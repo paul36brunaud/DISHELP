@@ -451,4 +451,74 @@ button,
   .menu { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; padding: 0 0.6rem; }
   #ing-input { width: 65%; }
   .profile-card { width: 95%; padding: 1rem; }
+}/* ===============================
+   MENU FILTRES SLIDE (ACCUEIL)
+================================ */
+
+.hamburger-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  font-size: 1.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.filters-container {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background: var(--accent);
+  color: white;
+  padding: 1.5rem;
+  transition: left 0.35s ease;
+  z-index: 1000;
+}
+
+.filters-container.open {
+  left: 0;
+}
+
+.filters-container h4 {
+  margin-bottom: 1rem;
+}
+
+.filters-container label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===============================
+   PLATS DU JOUR
+================================ */
+
+.plat-du-jour {
+  margin-top: 1rem;
+}
+
+.plat-du-jour h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.plat-card {
+  background: white;
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.plat-card h3 {
+  margin-bottom: 0.5rem;
+  color: var(--accent);
 }
