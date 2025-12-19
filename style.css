@@ -9,9 +9,7 @@
   --card-bg-dark: #1a231b;
 }
 
-/* ===============================
-   BASE
-================================ */
+/* Base */
 body {
   font-family: "Poppins", sans-serif;
   margin: 0;
@@ -39,28 +37,26 @@ h1 {
   height: 100vh;
 }
 
-/* ===============================
-   HEADER
-================================ */
+/* HEADER */
 .header {
   text-align: center;
   background: var(--accent);
   color: white;
   padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* ===============================
-   MENU PRINCIPAL
-================================ */
+/* MENU */
 .menu {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.8rem;
-  padding: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0 1rem;
 }
 
 .menu-btn {
@@ -71,24 +67,22 @@ h1 {
   font-weight: 600;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
-  color: var(--accent);
-  transition: all 0.15s ease;
+  color: #4caf6c;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .menu-btn:hover {
-  background: var(--accent-hover);
   color: white;
   transform: scale(1.02);
+  background: #3d8855;
 }
 
 .menu-btn.active {
-  background: var(--accent);
+  background: #4caf6c;
   color: white;
 }
 
-/* ===============================
-   CONTENU
-================================ */
+/* CONTENT */
 .content {
   flex: 1;
   overflow-y: auto;
@@ -102,53 +96,90 @@ h1 {
   }
 }
 
-/* ===============================
-   CARTES RECETTES / PLATS
-================================ */
-.recipe-card,
-.plat-card {
-  background: white;
-  border-radius: 16px;
+/* RECIPE CARDS */
+.recipe-card {
+  background: rgba(103, 219, 140, 0.15);
+  border-radius: 10px;
   padding: 1rem;
   margin-bottom: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  animation: fadeUp 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .recipe-card:hover {
   transform: translateY(-3px);
 }
 
-.plat-card h3,
-.recipe-card h3 {
-  color: var(--accent);
-  margin-bottom: 0.4rem;
+.recipe-card button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
 }
 
-/* ===============================
-   PANTRY
-================================ */
+.recipe-card button:hover {
+  background: var(--accent-hover);
+}
+
+/* PANTRY input */
 .pantry-input {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 0.8rem;
   margin-top: 1rem;
 }
 
 #ing-input {
-  width: 60%;
+  width: 50%;
   padding: 0.6rem;
+  font-size: 1rem;
   border-radius: 8px;
   border: 1px solid #ccc;
 }
 
+/* Boutons + */
+#add-ing, .add-small {
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  font-size: 1.6em;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+#add-ing:hover,
+.add-small:hover {
+  background: var(--accent-hover);
+}
+
+/* Liste du garde-manger - inline, taille du fond s'adapte au texte */
 #ing-list {
   list-style: none;
   padding: 0;
   margin: 1.5rem auto;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 1rem;
+}
+
+#ing-list li {
+  background: white;
+  border-radius: 12px;
+  padding: 0.4rem 0.8rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent);
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  width: fit-content;
+  box-sizing: border-box;
 }
 
 .pantry-item {
@@ -160,7 +191,6 @@ h1 {
   color: var(--accent);
   border-radius: 12px;
   width: fit-content;
-  font-weight: 600;
 }
 
 .qty-input {
@@ -168,32 +198,62 @@ h1 {
   padding: 0.3rem;
   border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 1rem;
 }
 
-/* ===============================
-   BOUTONS +
-================================ */
-#add-ing,
-.add-small {
-  width: 3rem;
-  height: 3rem;
-  font-size: 1.6rem;
-  border-radius: 50%;
+/* remove default shadow from profile ingredient list */
+.list-box {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.list-box li {
   background: var(--accent);
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  border-left: 5px solid var(--accent-hover);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
   color: white;
+  box-shadow: none; /* remove shadow */
+}
+
+.list-del {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+/* Fav button */
+.fav-btn {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  font-size: 1.4rem;
+  background: none;
   border: none;
   cursor: pointer;
-  transition: all 0.15s ease;
 }
 
-#add-ing:hover,
-.add-small:hover {
-  background: var(--accent-hover);
+.fav-btn.anim-click {
+  transform: scale(1.3);
+  opacity: 0.7;
 }
 
-/* ===============================
-   PROFIL
-================================ */
+/* Profile visual */
+.title-profile {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
 .profile-card {
   background: white;
   border-radius: 18px;
@@ -203,9 +263,9 @@ h1 {
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
-.title-profile {
-  text-align: center;
-  font-size: 1.8rem;
+.profile-photo {
+  display: flex;
+  justify-content: center;
   margin-bottom: 1rem;
 }
 
@@ -214,30 +274,274 @@ h1 {
   height: 90px;
   background: var(--accent);
   border-radius: 50%;
-  color: white;
-  font-size: 2.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 2.4rem;
+  color: white;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.section-label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+  color: #4caf6c;
+}
+
+.profile-input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: #fafafa;
+}
+
+.small-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.profile-btn {
+  margin-top: 0.8rem;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.profile-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* Improved allergens select */
+.profile-select {
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: 14px;
+  border: 1px solid #c8c8c8;
+  background: #fafafa;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  outline: none;
+  height: auto;
+  cursor: pointer;
+  appearance: none;
+  position: relative;
+}
+
+.profile-section {
+  position: relative;
+}
+
+.profile-section.select-allergens::after {
+  content: "▼";
+  font-size: 0.9rem;
+  color: #4caf6c;
+  position: absolute;
+  right: 1rem;
+  top: 48%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.profile-select option {
+  padding: 0.6rem;
+  background: white;
+  color: #333;
+}
+
+.profile-select:focus {
+  border-color: #67db8c;
+  box-shadow: 0 0 8px rgba(103, 219, 140, 0.35);
+}
+
+.profile-select[multiple] {
+  min-height: 150px;
+}
+
+.profile-select option:checked {
+  background: #67db8c !important;
+  color: white;
+  font-weight: 600;
+}
+
+/* FIX sélection multiple allergènes */
+.profile-select[multiple] {
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  height: auto !important;
+  min-height: 160px !important;
+  background: white !important;
+  overflow-y: auto !important;
+  padding-right: 0 !important;
+}
+
+/* Supprime la flèche uniquement pour le mode multiple */
+.profile-section.select-allergens::after {
+  display: none !important;
+}
+
+
+/* Save confirmation toast */
+.save-confirm {
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4caf6c;
+  color: white;
+  padding: 0.8rem 1.4rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  animation: popIn 0.25s ease;
+  z-index: 9999;
+}
+
+.save-confirm.hide {
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+@keyframes popIn {
+  0% { transform: translateX(-50%) scale(0.7); opacity: 0; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+/* hide profile summary area (no textual summary) */
+.profile-summary {
+  display: none;
+}
+
+/* Press effect on buttons */
+button:active,
+.menu-btn:active,
+.profile-btn:active,
+#add-ing:active,
+.add-small:active {
+  transform: scale(0.94);
+  opacity: 0.8;
+  transition: transform 0.08s, opacity 0.08s;
+}
+
+button,
+.menu-btn,
+.profile-btn,
+#add-ing,
+.add-small {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+/* Responsive tweaks */
+@media (max-width: 520px) {
+  .menu { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; padding: 0 0.6rem; }
+  #ing-input { width: 65%; }
+  .profile-card { width: 95%; padding: 1rem; }
 }
 
 /* ===============================
    MENU FILTRES SLIDE (ACCUEIL)
 ================================ */
+
 .hamburger-btn {
   position: fixed;
   top: 1rem;
   left: 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  font-size: 1.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.filters-container {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background: var(--accent);
+  color: white;
+  padding: 1.5rem;
+  transition: left 0.35s ease;
+  z-index: 1000;
+}
+
+.filters-container.open {
+  left: 0;
+}
+
+.filters-container h4 {
+  margin-bottom: 1rem;
+}
+
+.filters-container label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===============================
+   PLATS DU JOUR
+================================ */
+
+.plat-du-jour {
+  margin-top: 1rem;
+}
+
+.plat-du-jour h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.plat-card {
+  background: white;
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.plat-card h3 {
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+}
+/* ===============================
+   MENU FILTRES – ACCUEIL
+================================ */
+
+.hamburger-btn {
+  position: fixed;
+  top: 1.1rem;
+  left: 1rem;
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: white;
-  color: var(--accent);
+  background: var(--accent);
+  color: white;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
   z-index: 1002;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
 }
 
 .filters-container {
@@ -251,7 +555,8 @@ h1 {
   padding: 2rem 1.5rem;
   transition: left 0.35s ease;
   z-index: 1001;
-  border-radius: 0 24px 24px 0;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
 }
 
 .filters-container.open {
@@ -259,25 +564,55 @@ h1 {
 }
 
 .filters-container h4 {
-  text-align: center;
+  font-size: 1.3rem;
   margin-bottom: 1.4rem;
+  text-align: center;
 }
 
 .filters-container label {
   display: flex;
   align-items: center;
   gap: 0.8rem;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
   font-weight: 600;
   cursor: pointer;
 }
 
-.filters-container input {
+.filters-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
   accent-color: white;
 }
 
 /* ===============================
-   ANIMATIONS
+   ACCUEIL – PLATS DU JOUR
 ================================ */
+
+.plat-du-jour {
+  margin-top: 1.2rem;
+}
+
+.plat-du-jour h2 {
+  text-align: center;
+  margin-bottom: 1.2rem;
+  font-size: 1.6rem;
+}
+
+.plat-card {
+  background: white;
+  border-radius: 18px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  animation: fadeUp 0.35s ease;
+}
+
+.plat-card h3 {
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -288,11 +623,36 @@ h1 {
     transform: translateY(0);
   }
 }
+/* ===============================
+   BOUTON MENU BLANC
+================================ */
+
+.hamburger-btn {
+  background: white;
+  color: var(--accent);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
 
 /* ===============================
-   RESPONSIVE
+   MENU SLIDE AVEC PUSH DU CONTENU
 ================================ */
-@media (max-width: 520px) {
-  #ing-input { width: 65%; }
-  .profile-card { width: 95%; padding: 1rem; }
+
+.filters-container {
+  left: -280px;
+}
+
+.filters-container.open {
+  left: 0;
+}
+
+/* Quand le menu est ouvert, tout le contenu se décale */
+.app.menu-open {
+  transform: translateX(280px);
+  transition: transform 0.35s ease;
+}
+
+/* Empêche le scroll parasite */
+body.menu-open {
+  overflow-x: hidden;
 }
