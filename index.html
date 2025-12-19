@@ -21,7 +21,8 @@
 
 <body>
   <div class="app">
-    <!-- Header -->
+    
+    <!-- HEADER -->
     <header class="header">
       <h1>Dishelp</h1>
 
@@ -32,10 +33,23 @@
         <button class="menu-btn" data-target="profile" aria-label="Mon profil">Profil</button>
       </nav>
 
-      <!-- Bouton filtres -->
-    <button id="open-filters" class="hamburger-btn" aria-label="Ouvrir les filtres">☰</button>
+      <!-- Bouton menu filtres (Accueil) -->
+      <button
+        id="open-filters"
+        class="hamburger-btn"
+        aria-label="Ouvrir les filtres"
+        aria-controls="filters-menu"
+        aria-expanded="false">
+        ☰
+      </button>
+    </header>
 
-    <aside id="filters-menu" class="filters-container" aria-hidden="true">
+    <!-- MENU FILTRES SLIDE -->
+    <aside
+      id="filters-menu"
+      class="filters-container"
+      aria-hidden="true">
+      
       <h4>Filtres</h4>
 
       <label>
@@ -54,16 +68,20 @@
       </label>
     </aside>
 
-    </header>
-
-    <!-- Plat du jour -->
+    <!-- PLATS DU JOUR -->
     <section id="plat-du-jour" class="plat-du-jour">
       <h2>Plat du jour</h2>
       <div id="plat-details"></div>
     </section>
 
-    <!-- Content dynamique -->
-    <main id="content" class="content" role="main" aria-live="polite"></main>
+    <!-- CONTENU DYNAMIQUE -->
+    <main
+      id="content"
+      class="content"
+      role="main"
+      aria-live="polite">
+    </main>
+
   </div>
 
   <!-- Scripts -->
