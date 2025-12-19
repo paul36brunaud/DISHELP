@@ -1,22 +1,26 @@
-// --- Sélecteurs principaux ---
+// ================================
+//   SÉLECTEURS PRINCIPAUX
+// ================================
 const buttons = document.querySelectorAll(".menu-btn");
 const content = document.getElementById("content");
 
-// --- Données stockées ---
+// ================================
+//   DONNÉES STOCKÉES
+// ================================
 let pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
 let favorites = JSON.parse(localStorage.getItem("dishelp_favorites")) || [];
 let fruitList = JSON.parse(localStorage.getItem("dishelp_fruitList")) || [];
 let vegList = JSON.parse(localStorage.getItem("dishelp_vegList")) || [];
 
-// --- Pages ---
+// ================================
+//   PAGES
+// ================================
 const pages = {
- home: `
-  <h2>🍽️ Bienvenue sur Dishelp</h2>
-  <p id="intro-text">Découvrez des recettes adaptées à vos goûts.</p>
-
-  <section class="menus-home" id="menus-home"></section>
-`,
-
+  home: `
+    <h2>🍽️ Bienvenue sur Dishelp</h2>
+    <p id="intro-text">Découvrez des recettes adaptées à vos goûts.</p>
+    <section class="menus-home" id="menus-home"></section>
+  `,
 
   favorites: `
     <h2>❤️ Mes favoris</h2>
@@ -36,7 +40,6 @@ const pages = {
     <h2 class="title-profile">Mon Profil</h2>
 
     <div class="profile-card">
-
       <div class="profile-photo">
         <div class="photo-circle">👤</div>
       </div>
@@ -84,7 +87,9 @@ const pages = {
   `
 };
 
-// --- Navigation ---
+// ================================
+//   NAVIGATION
+// ================================
 function showPage(target) {
   content.innerHTML = pages[target] || "<p>Page introuvable.</p>";
 
@@ -98,7 +103,9 @@ function showPage(target) {
   if (target === "profile") initProfile();
 }
 
-// --- PANTRY ---
+// ================================
+//   PANTRY
+// ================================
 function renderPantry() {
   const list = document.getElementById("ing-list");
   const input = document.getElementById("ing-input");
@@ -163,7 +170,9 @@ function renderPantry() {
   renderList();
 }
 
-// --- FAVORIS ---
+// ================================
+//   FAVORIS
+// ================================
 function saveFavorites() {
   localStorage.setItem("dishelp_favorites", JSON.stringify(favorites));
 }
@@ -188,20 +197,21 @@ function renderFavorites() {
       favorites.splice(btn.dataset.index, 1);
       saveFavorites();
       renderFavorites();
-      updateHeartIcons();
     });
   });
 }
 
-// --- HOME ---
+// ================================
+//   HOME
+// ================================
 function initHome() {
   renderHomeMenus();
 
   document.querySelectorAll(".fav-btn").forEach(btn => {
     const card = btn.closest(".recipe-card");
     if (!card) return;
-    const name = card.dataset.recipe;
 
+    const name = card.dataset.recipe;
     btn.textContent = favorites.some(f => f.name === name) ? "❌" : "❤️";
 
     btn.addEventListener("click", () => {
@@ -217,8 +227,9 @@ function initHome() {
   });
 }
 
-
-// --- PROFIL ---
+// ================================
+//   PROFIL
+// ================================
 function initProfile() {
   const allergensSelect = document.getElementById("allergens");
   const saved = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
@@ -231,11 +242,14 @@ function initProfile() {
     });
   });
 
-  document.getElementById("profile-form").addEventListener("submit", saveProfile);
+  document
+    .getElementById("profile-form")
+    .addEventListener("submit", saveProfile);
 }
 
 function saveProfile(e) {
   e.preventDefault();
+
   const select = document.getElementById("allergens");
   const values = Array.from(select.selectedOptions).map(o => o.value);
   localStorage.setItem("dishelp_allergens", JSON.stringify(values));
@@ -248,16 +262,8 @@ function saveProfile(e) {
   setTimeout(() => msg.remove(), 1800);
 }
 
-// --- INIT ---
-document.addEventListener("DOMContentLoaded", () => {
-  showPage("home");
-  buttons.forEach(btn =>
-    btn.addEventListener("click", () => showPage(btn.dataset.target))
-  );
-});
-
 // ================================
-//   MENU DU JOUR INTELLIGENT
+//   MENU DU JOUR
 // ================================
 function generateDailyMenu() {
   const pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
@@ -284,9 +290,9 @@ function generateDailyMenu() {
 }
 
 // ================================
-//   MENU FILTRES (UNE SEULE LOGIQUE)
+//   MENU FILTRES
 // ================================
-document.addEventListener("DOMContentLoaded", () => {
+function initFiltersMenu() {
   const btn = document.getElementById("open-filters");
   const menu = document.getElementById("filters-menu");
   const app = document.querySelector(".app");
@@ -299,8 +305,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.toggle("menu-open", open);
     menu.setAttribute("aria-hidden", (!open).toString());
   });
-});
+}
 
+// ================================
+//   MENUS ACCUEIL
+// ================================
 function renderHomeMenus() {
   const container = document.getElementById("menus-home");
   if (!container || !window.DB?.menus) return;
@@ -312,3 +321,16 @@ function renderHomeMenus() {
     </div>
   `).join("");
 }
+
+// ================================
+//   INIT GLOBAL
+// ================================
+document.addEventListener("DOMContentLoaded", () => {
+  showPage("home");
+
+  buttons.forEach(btn =>
+    btn.addEventListener("click", () => showPage(btn.dataset.target))
+  );
+
+  initFiltersMenu();
+});
