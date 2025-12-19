@@ -518,3 +518,27 @@ function toggleFiltersMenu(show) {
     filtersMenu.setAttribute("aria-hidden", "true");
   }
 }
+// ================================
+//   MENU SLIDE SANS RECOUVREMENT
+// ================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  const openBtn = document.getElementById("open-filters");
+  const menu = document.getElementById("filters-menu");
+  const app = document.querySelector(".app");
+
+  if (!openBtn || !menu || !app) return;
+
+  openBtn.addEventListener("click", () => {
+    const isOpen = menu.classList.toggle("open");
+
+    // Décale toute l'app
+    app.classList.toggle("menu-open", isOpen);
+
+    // Bloque le scroll horizontal
+    document.body.classList.toggle("menu-open", isOpen);
+
+    // Accessibilité
+    menu.setAttribute("aria-hidden", (!isOpen).toString());
+  });
+});
