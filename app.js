@@ -450,10 +450,37 @@ function generateDailyMenu() {
     };
 }
 
+
+
+function initHomeMenu() {
 const toggleButton = document.getElementById("togglebtn");
 const menu = document.getElementById("menu");
 
-toggleButton.addEventListener("click", () => {
-  menu.classList.toggle("open");
+  if (!toggleButton || !menu) return;
+
+  toggleButton.addEventListener("click", () => {
+    menu.classList.toggle("open");
+  });
+}
+
+// Observe les changements de page (SPA)
+const observer = new MutationObserver(() => {
+  const isHome =
+    document.querySelector('.menu-btn.active')?.dataset.target === "home";
+
+  const toggleButton = document.getElementById("toggle-btn");
+  const menu = document.getElementById("side-menu");
+
+  if (isHome) {
+    // Afficher le bouton seulement sur l'accueil
+    if (toggleButton) toggleButton.style.display = "block";
+    initHomeMenu();
+  } else {
+    // Cacher le bouton et fermer le menu ailleurs
+    if (toggleButton) toggleButton.style.display = "none";
+    if (menu) menu.classList.remove("open");
+  }
 });
 
+// Lance l’observation du contenu
+observer.observe(document.body, { childList: true, subtree: true });
