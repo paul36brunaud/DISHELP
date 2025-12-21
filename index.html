@@ -21,31 +21,38 @@
 
 <body>
   <div class="app">
+
     <!-- Header -->
     <header class="header">
       <h1>Dishelp</h1>
+
       <nav class="menu" aria-label="Navigation principale">
         <button class="menu-btn active" data-target="home" aria-label="Page d'accueil">Accueil</button>
         <button class="menu-btn" data-target="favorites" aria-label="Mes favoris">Favoris</button>
         <button class="menu-btn" data-target="pantry" aria-label="Mon garde-manger">Garde-manger</button>
         <button class="menu-btn" data-target="profile" aria-label="Mon profil">Profil</button>
       </nav>
-      <button id="toggleBtn">☰</button>
-      <div id="menu">
-        <ul>
-          <li>Préférences</li>
-          <li>Favoris</li>
-          <li>Allergènes</li>
-          <li>Paramètres</li>
-        </ul>
-      </div>
     </header>
 
-    <!-- Content dynamique (plat du jour, etc.) -->
+    <!-- Bouton hamburger (affiché uniquement sur Accueil via JS) -->
+    <button id="toggleBtn" aria-label="Ouvrir le menu">☰</button>
+
+    <!-- Menu coulissant -->
+    <aside id="menu" role="navigation" aria-label="Menu secondaire">
+      <ul>
+        <li>Préférences</li>
+        <li>Favoris</li>
+        <li>Allergènes</li>
+        <li>Paramètres</li>
+      </ul>
+    </aside>
+
+    <!-- Contenu dynamique -->
     <main id="content" class="content" role="main" aria-live="polite"></main>
+
   </div>
 
-  <!-- App script -->
+  <!-- App scripts -->
   <script src="database.js"></script>
   <script src="app.js"></script>
 

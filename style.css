@@ -455,58 +455,62 @@ button,
   .profile-card { width: 95%; padding: 1rem; }
 }
 
-
+/* ===============================
+   BOUTON HAMBURGER
+=============================== */
 #toggleBtn {
-  cursor: pointer;
-  background: white;
-  color: #4caf6c;
-  padding: 0.8rem 1.4rem;
-  font-size: 1.1rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-  animation: popIn 0.25s ease;
-  top: 16px;
-  left: 16px;
-  width: 48px;
-  height: 48px;
-  border: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
-  display: flex;
+  border: none;
+  background-color: #ffffff;
+  color: #67db8c;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none; /* visible seulement sur Accueil */
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1001;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-#toggle-btn:hover {
-  background-color: #3d8855;
-  color: white;
-}
-
+/* ===============================
+   MENU COULISSANT
+=============================== */
 #menu {
-  width: 220px;
-  background: #4caf6c;
-  color: white;
   position: fixed;
   top: 0;
-  left: -220px; /* caché */
-  height: 100%;
-  transition: left 0.3s ease;
-  padding-top: 60px;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background-color: #67db8c;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  padding: 5rem 1.5rem 1.5rem;
 }
 
 #menu.open {
-  left: 0; /* visible */
+  transform: translateX(0);
 }
 
 #menu ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 #menu li {
-  padding: 15px;
+  color: white;
+  font-size: 1.1rem;
+  padding: 0.8rem 0;
   cursor: pointer;
+  font-weight: 600;
 }
 
 #menu li:hover {
-  background: rgba(255,255,255,0.15);
+  opacity: 0.8;
 }

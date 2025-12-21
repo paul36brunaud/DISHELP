@@ -14,12 +14,10 @@ const pages = {
     <h2>🍽️ Bienvenue sur Dishelp</h2>
     <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
   `,
-
   favorites: `
     <h2>❤️ Mes favoris</h2>
     <div id="fav-list"></div>
   `,
-
   pantry: `
     <h2>🧺 Mon garde-manger</h2>
     <div class="pantry-input">
@@ -28,18 +26,14 @@ const pages = {
     </div>
     <ul id="ing-list"></ul>
   `,
-
   profile: `
     <h2 class="title-profile">Mon Profil</h2>
-
     <div class="profile-card">
-
       <div class="profile-photo">
         <div class="photo-circle">👤</div>
       </div>
 
       <form id="profile-form" class="profile-form">
-
         <div class="profile-section">
           <label class="section-label">⚠️ Allergènes :</label>
           <select id="allergens" multiple class="profile-select">
@@ -58,7 +52,7 @@ const pages = {
         <div class="profile-section">
           <label class="section-label">🍎 Fruits :</label>
           <div class="small-input-row">
-            <input type="text" id="fruits" placeholder="Ajouter un fruit" class="profile-input" />
+            <input type="text" id="fruits" class="profile-input" />
             <button type="button" id="add-fruit" class="add-small">+</button>
           </div>
           <ul id="fruit-list" class="list-box"></ul>
@@ -67,7 +61,7 @@ const pages = {
         <div class="profile-section">
           <label class="section-label">🥕 Légumes :</label>
           <div class="small-input-row">
-            <input type="text" id="vegetables" placeholder="Ajouter un légume" class="profile-input" />
+            <input type="text" id="vegetables" class="profile-input" />
             <button type="button" id="add-veg" class="add-small">+</button>
           </div>
           <ul id="veg-list" class="list-box"></ul>
@@ -75,8 +69,6 @@ const pages = {
 
         <button type="submit" class="profile-btn">💾 Enregistrer</button>
       </form>
-
-      <div id="profile-summary" class="profile-summary"></div>
     </div>
   `
 };
@@ -84,13 +76,6 @@ const pages = {
 // --- Navigation ---
 function showPage(target) {
   content.innerHTML = pages[target] || "<p>Page introuvable.</p>";
-
-  const introText = document.getElementById("intro-text");
-  if (introText && (target === "home" || target === "pantry" || target === "favorites")) {
-    if (!introText.classList.contains("interacted")) {
-      introText.style.display = "block";
-    }
-  }
 
   buttons.forEach(btn => btn.classList.remove("active"));
   const activeBtn = document.querySelector(`[data-target="${target}"]`);
@@ -100,387 +85,121 @@ function showPage(target) {
   if (target === "favorites") renderFavorites();
   if (target === "home") initHome();
   if (target === "profile") initProfile();
+
+  // --- Bouton hamburger visible UNIQUEMENT sur Accueil ---
+  const toggleBtn = document.getElementById("toggleBtn");
+  const sideMenu = document.getElementById("menu");
+
+  if (toggleBtn && sideMenu) {
+    if (target === "home") {
+      toggleBtn.style.display = "flex";
+    } else {
+      toggleBtn.style.display = "none";
+      sideMenu.classList.remove("open");
+    }
+  }
 }
 
+// --- PANTRY ---
 function renderPantry() {
   const list = document.getElementById("ing-list");
   const input = document.getElementById("ing-input");
   const addBtn = document.getElementById("add-ing");
 
-  pantry = pantry.map(item => typeof item === "string" ? { name: item, qty: 1 } : item);
-
   function renderList() {
     list.innerHTML = "";
-
     pantry.forEach((item, idx) => {
       const li = document.createElement("li");
-      li.classList.add("pantry-item");
-
-      const nameSpan = document.createElement("span");
-      nameSpan.textContent = item.name;
-
-      const qtyInput = document.createElement("input");
-      qtyInput.type = "number";
-      qtyInput.min = 1;
-      qtyInput.max = 100;
-      qtyInput.value = item.qty;
-      qtyInput.classList.add("qty-input");
-
-      qtyInput.addEventListener("change", () => {
-        item.qty = parseInt(qtyInput.value) || 1;
-        localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
-      });
-
-      const delBtn = document.createElement("button");
-      delBtn.type = "button";
-      delBtn.textContent = "❌";
-      delBtn.classList.add("del-ing");
-
-      delBtn.addEventListener("click", () => {
+      li.className = "pantry-item";
+      li.innerHTML = `
+        <span>${item.name}</span>
+        <input type="number" value="${item.qty}" min="1" class="qty-input"/>
+        <button>❌</button>
+      `;
+      li.querySelector("button").onclick = () => {
         pantry.splice(idx, 1);
         localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
         renderList();
-      });
-
-      li.appendChild(nameSpan);
-      li.appendChild(qtyInput);
-      li.appendChild(delBtn);
-
+      };
       list.appendChild(li);
     });
   }
 
-  const addIngredient = () => {
-    const val = input.value.trim();
-    if (!val) return;
-
-    pantry.push({ name: val, qty: 1 });
+  addBtn.onclick = () => {
+    if (!input.value.trim()) return;
+    pantry.push({ name: input.value, qty: 1 });
     localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
-
     input.value = "";
     renderList();
-
-    const introText = document.getElementById("intro-text");
-    if (introText) {
-      introText.style.display = "none";
-      introText.classList.add("interacted");
-    }
   };
-
-  addBtn.addEventListener("click", addIngredient);
-  input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addIngredient();
-    }
-  });
 
   renderList();
 }
 
+// --- FAVORIS ---
 function saveFavorites() {
   localStorage.setItem("dishelp_favorites", JSON.stringify(favorites));
 }
 
 function renderFavorites() {
   const list = document.getElementById("fav-list");
-
-  if (!favorites || favorites.length === 0) {
-    list.innerHTML = "<p>Aucun favori pour le moment.</p>";
+  if (!favorites.length) {
+    list.innerHTML = "<p>Aucun favori.</p>";
     return;
   }
 
-  list.innerHTML = favorites
-    .map((f, i) => `
-      <div class="recipe-card" data-recipe="${f.name}">
-        ${f.full}
-        <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">❌</button>
-      </div>
-    `)
-    .join("");
+  list.innerHTML = favorites.map((f, i) => `
+    <div class="recipe-card">
+      ${f.full}
+      <button data-i="${i}">❌</button>
+    </div>
+  `).join("");
 
-  list.querySelectorAll(".fav-toggle").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const index = btn.dataset.index;
-      favorites.splice(index, 1);
+  list.querySelectorAll("button").forEach(btn => {
+    btn.onclick = () => {
+      favorites.splice(btn.dataset.i, 1);
       saveFavorites();
       renderFavorites();
-      updateHeartIcons();
-    });
+    };
   });
 }
 
-function initHome() {
-  const favButtons = document.querySelectorAll(".fav-btn");
-
-  favButtons.forEach((btn) => {
-    const recipeCard = btn.closest(".recipe-card");
-    const recipeName = recipeCard.dataset.recipe;
-    const recipeDescription = recipeCard.querySelector("p").textContent;
-
-    const clone = recipeCard.cloneNode(true);
-    const favBtnInClone = clone.querySelector(".fav-btn");
-    if (favBtnInClone) favBtnInClone.remove();
-    const fullContent = clone.innerHTML;
-
-    if (favorites.some(fav => fav.name === recipeName)) {
-      setToCross(btn);
-    } else {
-      setToHeart(btn);
-    }
-
-    btn.addEventListener("click", () => {
-      btn.classList.add("anim-click");
-
-      const recipe = {
-        name: recipeName,
-        description: recipeDescription,
-        full: fullContent
-      };
-
-      if (favorites.some(fav => fav.name === recipeName)) {
-        favorites = favorites.filter(f => f.name !== recipeName);
-        setToHeart(btn);
-      } else {
-        favorites.push(recipe);
-        setToCross(btn);
-      }
-
-      saveFavorites();
-      updateHeartIcons();
-
-      setTimeout(() => btn.classList.remove("anim-click"), 300);
-    });
-  });
-}
-
-function setToHeart(btn) {
-  btn.textContent = "❤️";
-  btn.style.color = "#e63946";
-}
-
-function setToCross(btn) {
-  btn.textContent = "❌";
-  btn.style.color = "#ff6b6b";
-}
-
-function updateHeartIcons() {
-  const favButtons = document.querySelectorAll(".fav-btn");
-
-  favButtons.forEach((btn) => {
-    const recipeCard = btn.closest(".recipe-card");
-    const recipeName = recipeCard.dataset.recipe;
-
-    if (favorites.some(fav => fav.name === recipeName)) {
-      setToCross(btn);
-    } else {
-      setToHeart(btn);
-    }
-  });
-}
+// --- HOME ---
+function initHome() {}
 
 // --- PROFIL ---
 function initProfile() {
-  const fruitInput = document.getElementById("fruits");
-  const vegInput = document.getElementById("vegetables");
-
-  const fruitListBox = document.getElementById("fruit-list");
-  const vegListBox = document.getElementById("veg-list");
-
-  const addFruitBtn = document.getElementById("add-fruit");
-  const addVegBtn = document.getElementById("add-veg");
-
-  function renderFruitList() {
-    fruitListBox.innerHTML = fruitList
-      .map((f, i) => `<li>${f}<button data-i="${i}" class="list-del" type="button">❌</button></li>`)
-      .join("");
-  }
-
-  function renderVegList() {
-    vegListBox.innerHTML = vegList
-      .map((v, i) => `<li>${v}<button data-i="${i}" class="list-del" type="button">❌</button></li>`)
-      .join("");
-  }
-
-  addFruitBtn.addEventListener("click", () => {
-    const val = fruitInput.value.trim();
-    if (!val) return;
-    fruitList.push(val);
-    fruitInput.value = "";
-    localStorage.setItem("dishelp_fruitList", JSON.stringify(fruitList));
-    renderFruitList();
-  });
-
-  addVegBtn.addEventListener("click", () => {
-    const val = vegInput.value.trim();
-    if (!val) return;
-    vegList.push(val);
-    vegInput.value = "";
-    localStorage.setItem("dishelp_vegList", JSON.stringify(vegList));
-    renderVegList();
-  });
-
-  fruitListBox.addEventListener("click", (e) => {
-    if (e.target.classList.contains("list-del")) {
-      const i = parseInt(e.target.dataset.i, 10);
-      fruitList.splice(i, 1);
-      localStorage.setItem("dishelp_fruitList", JSON.stringify(fruitList));
-      renderFruitList();
-    }
-  });
-
-  vegListBox.addEventListener("click", (e) => {
-    if (e.target.classList.contains("list-del")) {
-      const i = parseInt(e.target.dataset.i, 10);
-      vegList.splice(i, 1);
-      localStorage.setItem("dishelp_vegList", JSON.stringify(vegList));
-      renderVegList();
-    }
-  });
-
-  fruitInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addFruitBtn.click();
-    }
-  });
-
-  vegInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addVegBtn.click();
-    }
-  });
-
-  renderFruitList();
-  renderVegList();
-
-  // --- Allergènes ---
-  const savedAllergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
   const allergensSelect = document.getElementById("allergens");
+  const saved = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
 
-  allergensSelect.setAttribute("multiple", "multiple");
-
-  Array.from(allergensSelect.options).forEach(option => {
-    option.addEventListener("mousedown", e => {
+  [...allergensSelect.options].forEach(opt => {
+    if (saved.includes(opt.value)) opt.selected = true;
+    opt.onmousedown = e => {
       e.preventDefault();
-      option.selected = !option.selected;
-    });
-
-    if (savedAllergens.includes(option.value)) {
-      option.selected = true;
-    }
+      opt.selected = !opt.selected;
+    };
   });
 
-  const form = document.getElementById("profile-form");
-  if (form) {
-    form.removeEventListener && form.removeEventListener("submit", saveProfile);
-    form.addEventListener("submit", saveProfile);
-  }
+  document.getElementById("profile-form").onsubmit = e => {
+    e.preventDefault();
+    const values = [...allergensSelect.selectedOptions].map(o => o.value);
+    localStorage.setItem("dishelp_allergens", JSON.stringify(values));
+    alert("Profil enregistré !");
+  };
 }
 
-// --- Enregistrement du profil ---
-function saveProfile(event) {
-  event.preventDefault();
+// --- HAMBURGER ---
+const toggleBtn = document.getElementById("toggleBtn");
+const sideMenu = document.getElementById("menu");
 
-  const allergensSelect = document.getElementById("allergens");
-  const selectedAllergens = Array.from(allergensSelect.selectedOptions).map(option => option.value);
-
-  localStorage.setItem("dishelp_allergens", JSON.stringify(selectedAllergens));
-
-  const message = document.createElement("div");
-  message.classList.add("save-confirm");
-  message.textContent = "✔ Profil enregistré avec succès !";
-
-  document.body.appendChild(message);
-
-  setTimeout(() => {
-    message.classList.add("hide");
-    setTimeout(() => message.remove(), 300);
-  }, 1800);
+if (toggleBtn && sideMenu) {
+  toggleBtn.onclick = () => sideMenu.classList.toggle("open");
 }
 
-// --- Initialisation ---
+// --- INIT ---
 document.addEventListener("DOMContentLoaded", () => {
   showPage("home");
-
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      showPage(btn.dataset.target);
-    });
-  });
+  buttons.forEach(btn =>
+    btn.onclick = () => showPage(btn.dataset.target)
+  );
 });
-
-// ================================
-//   MENU DU JOUR INTELLIGENT
-// ================================
-
-function generateDailyMenu() {
-    const pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
-    const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
-
-    // Filtrer les recettes compatibles
-    const availableRecipes = DB.recipes.filter(recipe => {
-        const hasAllIngredients = recipe.ingredients.every(ing =>
-            pantry.some(p => p.name.toLowerCase() === ing.toLowerCase())
-        );
-
-        const safeWithAllergens = !recipe.ingredients.some(ing =>
-            allergens.includes(ing.toLowerCase())
-        );
-
-        return hasAllIngredients && safeWithAllergens;
-    });
-
-    if (availableRecipes.length === 0) {
-        return {
-            error: "Aucune recette disponible avec votre garde-manger et vos allergènes."
-        };
-    }
-
-    // Choisir une recette au hasard
-    const chosen = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
-
-    return {
-        name: chosen.name,
-        ingredients: chosen.ingredients,
-        utensils: chosen.utensils,
-        steps: chosen.steps,
-        time: chosen.time
-    };
-}
-
-
-
-function initHomeMenu() {
-const toggleButton = document.getElementById("togglebtn");
-const menu = document.getElementById("menu");
-
-  if (!toggleButton || !menu) return;
-
-  toggleButton.addEventListener("click", () => {
-    menu.classList.toggle("open");
-  });
-}
-
-// Observe les changements de page (SPA)
-const observer = new MutationObserver(() => {
-  const isHome =
-    document.querySelector('.menu-btn.active')?.dataset.target === "home";
-
-  const toggleButton = document.getElementById("toggle-btn");
-  const menu = document.getElementById("side-menu");
-
-  if (isHome) {
-    // Afficher le bouton seulement sur l'accueil
-    if (toggleButton) toggleButton.style.display = "block";
-    initHomeMenu();
-  } else {
-    // Cacher le bouton et fermer le menu ailleurs
-    if (toggleButton) toggleButton.style.display = "none";
-    if (menu) menu.classList.remove("open");
-  }
-});
-
-// Lance l’observation du contenu
-observer.observe(document.body, { childList: true, subtree: true });
