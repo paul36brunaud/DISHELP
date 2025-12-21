@@ -473,7 +473,7 @@ button,
   display: none; /* visible seulement sur Accueil */
   align-items: center;
   justify-content: center;
-  z-index: 1001;
+  z-index: 2000;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
@@ -531,9 +531,10 @@ button,
   background: #fff;
   transition: transform 0.3s ease;
   will-change: transform;
+  transform-origin: right;
 }
 
 body.menu-open .app {
-  transform: translateX(260px) scale(0.98);
+  transform: translateX(20px) scaleX(0.88);
   border-radius: 16px;
 }
