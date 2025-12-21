@@ -496,6 +496,7 @@ button,
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   padding: 5rem 1.5rem 1.5rem;
+  box-shadow: 6px 0 20px rgba(0, 0, 0, 0.25);
 }
 
 #menu.open {
@@ -525,10 +526,14 @@ button,
 =============================== */
 
 .app {
+  position: relative;
+  min-height: 100vh;
+  background: #fff;
   transition: transform 0.3s ease;
   will-change: transform;
 }
 
 body.menu-open .app {
-  transform: translateX(260px); /* même largeur que le menu */
+  transform: translateX(260px) scale(0.98);
+  border-radius: 16px;
 }
