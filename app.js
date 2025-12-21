@@ -502,12 +502,6 @@ function renderBurgerMenu() {
   container.innerHTML = `
     <li class="burger-title">⚙️ Préférences</li>
 
-    <li class="burger-section">
-      <strong>⚠️ Allergènes</strong>
-      <ul>
-        ${allergens.length ? allergens.map(a => `<li>${a}</li>`).join("") : "<li>Aucun</li>"}
-      </ul>
-    </li>
 
     <li class="burger-section" data-target="profile">
       <strong>👤 Profil</strong>
