@@ -449,3 +449,11 @@ function generateDailyMenu() {
         time: chosen.time
     };
 }
+
+const toggleButton = document.getElementById("toggle-btn");
+const menu = document.getElementById("side-menu");
+
+toggleButton.addEventListener("click", () => {
+  menu.classList.toggle("open");
+});
+
