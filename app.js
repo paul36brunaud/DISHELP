@@ -474,10 +474,15 @@ if (toggleBtn && sideMenu) {
   toggleBtn.addEventListener("click", (e) => {
     e.stopPropagation();
 
-    sideMenu.classList.toggle("open");
-    toggleBtn.textContent = sideMenu.classList.contains("open") ? "❌" : "☰";
+    const isOpen = sideMenu.classList.toggle("open");
 
-    if (sideMenu.classList.contains("open")) {
+    // ➜ décalage de toute la page
+    document.body.classList.toggle("menu-open", isOpen);
+
+    // ➜ animation icône
+    toggleBtn.textContent = isOpen ? "❌" : "☰";
+
+    if (isOpen) {
       renderBurgerMenu();
     }
   });
@@ -499,7 +504,9 @@ function renderBurgerMenu() {
 
     <li class="burger-section">
       <strong>⚠️ Allergènes</strong>
-      <ul>${allergens.length ? allergens.map(a => `<li>${a}</li>`).join("") : "<li>Aucun</li>"}</ul>
+      <ul>
+        ${allergens.length ? allergens.map(a => `<li>${a}</li>`).join("") : "<li>Aucun</li>"}
+      </ul>
     </li>
 
     <li class="burger-section" data-target="profile">
@@ -519,7 +526,9 @@ function renderBurgerMenu() {
   container.querySelectorAll("[data-target]").forEach(item => {
     item.addEventListener("click", () => {
       showPage(item.dataset.target);
+
       sideMenu.classList.remove("open");
+      document.body.classList.remove("menu-open");
       toggleBtn.textContent = "☰";
     });
   });
@@ -533,6 +542,7 @@ document.addEventListener("click", (e) => {
 
   if (!sideMenu.contains(e.target) && !toggleBtn.contains(e.target)) {
     sideMenu.classList.remove("open");
+    document.body.classList.remove("menu-open");
     toggleBtn.textContent = "☰";
   }
 });
