@@ -462,8 +462,8 @@ button,
   position: fixed;
   top: 1rem;
   left: 1rem;
-  width: 3rem;
-  height: 3rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   border: none;
   background-color: #ffffff;
@@ -477,6 +477,11 @@ button,
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
+#toggleBtn:hover {
+  background-color: #aaaaaa;
+  color: #ffffff;
+}
+
 /* ===============================
    MENU COULISSANT
 =============================== */
@@ -488,7 +493,7 @@ button,
   height: 100vh;
   background-color: #67db8c;
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
+transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   padding: 5rem 1.5rem 1.5rem;
 }
