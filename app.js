@@ -450,8 +450,8 @@ function generateDailyMenu() {
     };
 }
 
-const toggleButton = document.getElementById("toggle-btn");
-const menu = document.getElementById("side-menu");
+const toggleButton = document.getElementById("togglebtn");
+const menu = document.getElementById("menu");
 
 toggleButton.addEventListener("click", () => {
   menu.classList.toggle("open");
