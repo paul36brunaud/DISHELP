@@ -20,6 +20,12 @@
 </head>
 
 <body>
+
+  <!-- MENU COULISSANT (DOIT ÊTRE AVANT .app) -->
+  <aside id="menu" role="navigation" aria-label="Menu secondaire">
+    <ul id="burger-content"></ul>
+  </aside>
+
   <div class="app">
 
     <!-- Header -->
@@ -27,38 +33,23 @@
       <h1>Dishelp</h1>
 
       <nav class="menu" aria-label="Navigation principale">
-        <button class="menu-btn active" data-target="home" aria-label="Page d'accueil">Accueil</button>
-        <button class="menu-btn" data-target="favorites" aria-label="Mes favoris">Favoris</button>
-        <button class="menu-btn" data-target="pantry" aria-label="Mon garde-manger">Garde-manger</button>
-        <button class="menu-btn" data-target="profile" aria-label="Mon profil">Profil</button>
+        <button class="menu-btn active" data-target="home">Accueil</button>
+        <button class="menu-btn" data-target="favorites">Favoris</button>
+        <button class="menu-btn" data-target="pantry">Garde-manger</button>
+        <button class="menu-btn" data-target="profile">Profil</button>
       </nav>
     </header>
 
-    <!-- Bouton hamburger (affiché uniquement sur Accueil via JS) -->
+    <!-- Bouton hamburger -->
     <button id="toggleBtn" aria-label="Ouvrir le menu">☰</button>
 
-    <!-- Menu coulissant -->
-    <aside id="menu" role="navigation" aria-label="Menu secondaire">
-      <ul id="burger-content"></ul>
-    </aside>
-
     <!-- Contenu dynamique -->
-    <main id="content" class="content" role="main" aria-live="polite"></main>
+    <main id="content" class="content" role="main"></main>
 
   </div>
 
-  <!-- App scripts -->
   <script src="database.js"></script>
   <script src="app.js"></script>
-
-  <!-- Service Worker -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("service-worker.js")
-        .then(() => console.log("✅ Service Worker enregistré"))
-        .catch(err => console.error("❌ Erreur Service Worker :", err));
-    }
-  </script>
 </body>
+
 </html>

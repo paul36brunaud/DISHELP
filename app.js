@@ -546,3 +546,32 @@ document.addEventListener("click", (e) => {
     toggleBtn.textContent = "☰";
   }
 });
+
+// ===============================
+// SWIPE POUR FERMER LE MENU
+// ===============================
+let touchStartX = 0;
+let touchEndX = 0;
+
+sideMenu.addEventListener("touchstart", (e) => {
+  if (!sideMenu.classList.contains("open")) return;
+  touchStartX = e.touches[0].clientX;
+});
+
+sideMenu.addEventListener("touchmove", (e) => {
+  if (!sideMenu.classList.contains("open")) return;
+  touchEndX = e.touches[0].clientX;
+});
+
+sideMenu.addEventListener("touchend", () => {
+  if (!sideMenu.classList.contains("open")) return;
+
+  const swipeDistance = touchEndX - touchStartX;
+
+  // swipe gauche suffisamment large
+  if (swipeDistance < -60) {
+    sideMenu.classList.remove("open");
+    document.body.classList.remove("menu-open");
+    toggleBtn.textContent = "☰";
+  }
+});
