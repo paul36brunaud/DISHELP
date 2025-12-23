@@ -619,15 +619,24 @@ function renderBurgerMenu() {
     saveBurgerSettings(settings);
   });
 
-  // étoiles
   container.querySelectorAll(".star").forEach(star => {
     star.addEventListener("click", e => {
       e.stopPropagation();
-      settings.difficulty = +star.dataset.star;
+
+      const value = +star.dataset.star;
+
+      if (settings.difficulty === value) {
+        // 🔒 minimum 1 étoile
+        settings.difficulty = Math.max(1, value - 1);
+      } else {
+        settings.difficulty = value;
+      }
+
       saveBurgerSettings(settings);
       renderBurgerMenu();
     });
   });
+
 
   // garde-manger
   container.querySelector("#usePantry").addEventListener("change", e => {
