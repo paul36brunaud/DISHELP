@@ -28,19 +28,6 @@ home: `
       <h3>Recettes</h3>
       <p>Toutes les idées disponibles</p>
     </div>
-
-    <div class="home-card" data-action="favoris">
-      <span class="home-icon">❤️</span>
-      <h3>Favoris</h3>
-      <p>Retrouve tes recettes préférées</p>
-    </div>
-
-    <div class="home-card" data-action="pantry">
-      <span class="home-icon">🧺</span>
-      <h3>Garde-manger</h3>
-      <p>Gère tes ingrédients</p>
-    </div>
-  </div>
 `,
 
 

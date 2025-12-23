@@ -551,7 +551,7 @@ button,
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 56px;
+  height: 10px;
   padding: 0 1rem;
   font-size: 2rem;
   font-weight: 100; /* ← plus gras */
@@ -559,10 +559,6 @@ button,
   background: #67db8c;
   z-index: 10;
 }
-
-
-
-
 
 /* ===============================
    DECALAGE DE L'APP QUAND MENU OUVERT
