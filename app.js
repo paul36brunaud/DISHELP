@@ -10,10 +10,39 @@ let vegList = JSON.parse(localStorage.getItem("dishelp_vegList")) || [];
 
 // --- Pages ---
 const pages = {
-  home: `
-    <h2>🍽️ Bienvenue sur Dishelp</h2>
-    <p id="intro-text">Découvrez des recettes adaptées à vos goûts et à votre garde-manger.</p>
-  `,
+home: `
+  <h2 class="home-title">🍽️ Bienvenue sur Dishelp</h2>
+  <p id="intro-text" class="home-subtitle">
+    Découvrez des recettes adaptées à vos goûts et à votre garde-manger.
+  </p>
+
+  <div class="home-menus">
+    <div class="home-card" data-action="menu-jour">
+      <span class="home-icon">📅</span>
+      <h3>Menu du jour</h3>
+      <p>Un repas adapté à ton garde-manger</p>
+    </div>
+
+    <div class="home-card" data-action="recettes">
+      <span class="home-icon">📖</span>
+      <h3>Recettes</h3>
+      <p>Toutes les idées disponibles</p>
+    </div>
+
+    <div class="home-card" data-action="favoris">
+      <span class="home-icon">❤️</span>
+      <h3>Favoris</h3>
+      <p>Retrouve tes recettes préférées</p>
+    </div>
+
+    <div class="home-card" data-action="pantry">
+      <span class="home-icon">🧺</span>
+      <h3>Garde-manger</h3>
+      <p>Gère tes ingrédients</p>
+    </div>
+  </div>
+`,
+
 
   favorites: `
     <h2>❤️ Mes favoris</h2>
@@ -107,12 +136,29 @@ function showPage(target) {
     if (target === "home") {
       initHome();
       renderBurgerMenu();
+      initHomeMenus(); // ✅ IMPORTANT
       toggleBtn.style.display = "flex";
-    } else {
+    }else {
       toggleBtn.style.display = "none";
       sideMenu.classList.remove("open");
     }
   }
+}
+
+function initHomeMenus() {
+  document.querySelectorAll(".home-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const action = card.dataset.action;
+
+      if (action === "pantry") showPage("pantry");
+      if (action === "favoris") showPage("favorites");
+      if (action === "recettes") showPage("home"); // futur
+      if (action === "menu-jour") {
+        const menu = generateDailyMenu();
+        alert(menu.error || `Menu du jour : ${menu.name}`);
+      }
+    });
+  });
 }
 
 
@@ -503,7 +549,7 @@ function renderBurgerMenu() {
 
   container.innerHTML = `
 
-    <h3 class="title-FILTRES">FILTRES</h3>
+    <li class="burger-title title-FILTRES">FILTRES</li>
 
     <!-- RÉGIME -->
     <li class="burger-section">
@@ -702,3 +748,4 @@ sideMenu.addEventListener("touchend", () => {
     toggleBtn.textContent = "☰";
   }
 });
+
