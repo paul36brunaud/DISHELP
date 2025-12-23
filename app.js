@@ -502,7 +502,8 @@ function renderBurgerMenu() {
   };
 
   container.innerHTML = `
-    <li class="burger-title">Préférences</li>
+
+    <h3 class="title-FILTRES">FILTRES</h3>
 
     <!-- RÉGIME -->
     <li class="burger-section">
