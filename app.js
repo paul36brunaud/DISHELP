@@ -488,45 +488,168 @@ if (toggleBtn && sideMenu) {
   });
 }
 
-// ===============================
-// REMPLISSAGE MENU AVEC LA DB
-// ===============================
 function renderBurgerMenu() {
   const container = document.getElementById("burger-content");
   if (!container) return;
 
-  const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
-  const fruits = JSON.parse(localStorage.getItem("dishelp_fruitList")) || [];
-  const vegetables = JSON.parse(localStorage.getItem("dishelp_vegList")) || [];
+  const settings = JSON.parse(localStorage.getItem("dishelp_settings")) || {
+    diet: null,
+    preferences: [],
+    price: 20,
+    time: 30,
+    difficulty: 2,
+    usePantry: true
+  };
 
   container.innerHTML = `
-    <li class="burger-title">⚙️ Préférences</li>
+    <li class="burger-title">Préférences</li>
 
-
-    <li class="burger-section" data-target="profile">
-      <strong>👤 Profil</strong>
+    <!-- RÉGIME -->
+    <li class="burger-section">
+      <strong>Régime</strong>
+      ${["Classique", "Végétarien", "Vegan"].map(r => `
+        <button class="burger-btn diet-btn ${settings.diet === r ? "active" : ""}"
+                data-diet="${r}">
+          ${r}
+        </button>
+      `).join("")}
     </li>
 
-    <li class="burger-section" data-target="pantry">
-      <strong>🧺 Garde-manger</strong>
+    <!-- PRÉFÉRENCES -->
+    <li class="burger-section">
+      <strong>Préférences rapides</strong>
+      ${["Rapide", "Healthy", "Gourmand", "Économique"].map(p => `
+        <button class="burger-btn pref-btn ${settings.preferences.includes(p) ? "active" : ""}"
+                data-pref="${p}">
+          ${p}
+        </button>
+      `).join("")}
     </li>
 
-    <li class="burger-section" data-target="favorites">
-      <strong>❤️ Favoris</strong>
+    <!-- TEMPS -->
+    <li class="burger-section">
+      <strong>Temps ( <span class="time-value">${settings.time}</span> min )</strong>
+      <input type="range" min="5" max="120" step="5"
+             value="${settings.time}" id="timeRange">
+    </li>
+
+    <!-- PRIX -->
+    <li class="burger-section">
+      <strong>Coût ( <span class="price-value">${settings.price}</span> € )</strong>
+      <input type="range" min="5" max="100" step="5"
+             value="${settings.price}" id="priceRange">
+    </li>
+
+    <!-- DIFFICULTÉ -->
+    <li class="burger-section">
+      <strong>Difficulté</strong>
+      <div class="stars">
+        ${[1,2,3,4,5].map(i => `
+          <span class="star ${i <= settings.difficulty ? "active" : ""}"
+                data-star="${i}">★</span>
+        `).join("")}
+      </div>
+    </li>
+
+    <!-- GARDE-MANGER -->
+    <li class="burger-section pantry-switch">
+  <label class="pantry-label">
+    <input type="checkbox" id="usePantry" ${settings.usePantry ? "checked" : ""}>
+    <span class="pantry-slider"></span>
+    <span class="pantry-text">Garde-manger</span>
+  </label>
+</li>
+
+    <!-- RESET -->
+    <li class="burger-section">
+      <button id="resetPreferences" class="reset-btn">
+        RÉINITIALISER
+      </button>
     </li>
   `;
 
-  // navigation APRÈS génération
-  container.querySelectorAll("[data-target]").forEach(item => {
-    item.addEventListener("click", () => {
-      showPage(item.dataset.target);
+  /* ===== EVENTS ===== */
 
-      sideMenu.classList.remove("open");
-      document.body.classList.remove("menu-open");
-      toggleBtn.textContent = "☰";
+  // empêcher la fermeture du menu
+  container.addEventListener("click", e => e.stopPropagation());
+
+  // régime
+  container.querySelectorAll(".diet-btn").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      settings.diet = btn.dataset.diet;
+      saveBurgerSettings(settings);
+      renderBurgerMenu();
     });
   });
+
+  // préférences
+  container.querySelectorAll(".pref-btn").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      const v = btn.dataset.pref;
+      settings.preferences.includes(v)
+        ? settings.preferences = settings.preferences.filter(x => x !== v)
+        : settings.preferences.push(v);
+
+      saveBurgerSettings(settings);
+      btn.classList.toggle("active");
+    });
+  });
+
+  // slider temps (FLUIDE)
+  const timeRange = container.querySelector("#timeRange");
+  const timeValue = container.querySelector(".time-value");
+
+  timeRange.addEventListener("input", e => {
+    e.stopPropagation();
+    settings.time = +e.target.value;
+    timeValue.textContent = settings.time;
+    saveBurgerSettings(settings);
+  });
+
+  // slider prix (FLUIDE)
+  const priceRange = container.querySelector("#priceRange");
+  const priceValue = container.querySelector(".price-value");
+
+  priceRange.addEventListener("input", e => {
+    e.stopPropagation();
+    settings.price = +e.target.value;
+    priceValue.textContent = settings.price;
+    saveBurgerSettings(settings);
+  });
+
+  // étoiles
+  container.querySelectorAll(".star").forEach(star => {
+    star.addEventListener("click", e => {
+      e.stopPropagation();
+      settings.difficulty = +star.dataset.star;
+      saveBurgerSettings(settings);
+      renderBurgerMenu();
+    });
+  });
+
+  // garde-manger
+  container.querySelector("#usePantry").addEventListener("change", e => {
+    e.stopPropagation();
+    settings.usePantry = e.target.checked;
+    saveBurgerSettings(settings);
+  });
+
+  // reset
+  container.querySelector("#resetPreferences").addEventListener("click", e => {
+    e.stopPropagation();
+    localStorage.removeItem("dishelp_settings");
+    renderBurgerMenu();
+  });
 }
+
+
+// sauvegarde
+function saveBurgerSettings(settings) {
+  localStorage.setItem("dishelp_settings", JSON.stringify(settings));
+}
+
 
 // ===============================
 // FERMETURE MENU AU CLIC EXTERIEUR
