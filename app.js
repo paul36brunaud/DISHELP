@@ -3,10 +3,19 @@ const buttons = document.querySelectorAll(".menu-btn");
 const content = document.getElementById("content");
 
 // --- Données stockées ---
-let pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
-let favorites = JSON.parse(localStorage.getItem("dishelp_favorites")) || [];
-let fruitList = JSON.parse(localStorage.getItem("dishelp_fruitList")) || [];
-let vegList = JSON.parse(localStorage.getItem("dishelp_vegList")) || [];
+function safeParse(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key)) || [];
+  } catch {
+    return [];
+  }
+}
+
+let pantry = safeParse("dishelp_pantry");
+let favorites = safeParse("dishelp_favorites");
+let fruitList = safeParse("dishelp_fruitList");
+let vegList = safeParse("dishelp_vegList");
+
 
 // --- Pages ---
 const pages = {
@@ -41,9 +50,11 @@ home: `
     <div class="pantry-input">
       <input id="ing-input" type="text" placeholder="Ajouter un ingrédient..." />
       <button id="add-ing" type="button">+</button>
+      <button id="clear-pantry" class="clear-btn">VIDER</button>
     </div>
     <ul id="ing-list"></ul>
   `,
+
 
   profile: `
     <h2 class="title-profile">Mon Profil</h2>
@@ -120,15 +131,23 @@ function showPage(target) {
   const sideMenu = document.getElementById("menu");
 
   if (toggleBtn && sideMenu) {
+
+    // ✅ Toujours visible
+    toggleBtn.style.display = "flex";
+
+    // ✅ Fermer le menu quand on change de page
+    sideMenu.classList.remove("open");
+    document.body.classList.remove("menu-open");
+    toggleBtn.textContent = "☰";
+
+    // ✅ Spécifique accueil seulement
     if (target === "home") {
       initHome();
-      renderBurgerMenu();
-      initHomeMenus(); // ✅ IMPORTANT
-      toggleBtn.style.display = "flex";
-    }else {
-      toggleBtn.style.display = "none";
-      sideMenu.classList.remove("open");
+      initHomeMenus();
     }
+
+    // ✅ Toujours actif
+    renderBurgerMenu();
   }
 }
 
@@ -137,9 +156,8 @@ function initHomeMenus() {
     card.addEventListener("click", () => {
       const action = card.dataset.action;
 
-      if (action === "pantry") showPage("pantry");
-      if (action === "favoris") showPage("favorites");
-      if (action === "recettes") showPage("home"); // futur
+      if (action === "recettes") showPage("home");
+
       if (action === "menu-jour") {
         const menu = generateDailyMenu();
         alert(menu.error || `Menu du jour : ${menu.name}`);
@@ -153,8 +171,15 @@ function renderPantry() {
   const list = document.getElementById("ing-list");
   const input = document.getElementById("ing-input");
   const addBtn = document.getElementById("add-ing");
+  const clearBtn = document.getElementById("clear-pantry");
 
-  pantry = pantry.map(item => typeof item === "string" ? { name: item, qty: 1 } : item);
+  // Sécurité si un élément n'existe pas
+  if (!list || !input || !addBtn) return;
+
+  // Convertir ancien format string en objet { name, qty }
+  pantry = pantry.map(item =>
+    typeof item === "string" ? { name: item, qty: 1 } : item
+  );
 
   function renderList() {
     list.innerHTML = "";
@@ -215,6 +240,7 @@ function renderPantry() {
   };
 
   addBtn.addEventListener("click", addIngredient);
+
   input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -222,8 +248,25 @@ function renderPantry() {
     }
   });
 
+  // 🔥 BOUTON VIDER
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (pantry.length === 0) return;
+
+      const confirmClear = confirm(
+        "Voulez-vous vraiment vider le garde-manger ?"
+      );
+      if (!confirmClear) return;
+
+      pantry = [];
+      localStorage.setItem("dishelp_pantry", JSON.stringify(pantry));
+      renderList();
+    });
+  }
+
   renderList();
 }
+
 
 function saveFavorites() {
   localStorage.setItem("dishelp_favorites", JSON.stringify(favorites));
@@ -698,6 +741,7 @@ function saveBurgerSettings(settings) {
 // FERMETURE MENU AU CLIC EXTERIEUR
 // ===============================
 document.addEventListener("click", (e) => {
+  if (!sideMenu || !toggleBtn) return;
   if (!sideMenu.classList.contains("open")) return;
 
   if (!sideMenu.contains(e.target) && !toggleBtn.contains(e.target)) {
@@ -735,4 +779,3 @@ sideMenu.addEventListener("touchend", () => {
     toggleBtn.textContent = "☰";
   }
 });
-

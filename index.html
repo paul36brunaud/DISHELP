@@ -22,13 +22,13 @@
 
 <body>
 
-  <!-- MENU COULISSANT (DOIT ÊTRE AVANT .app) -->
+  <!-- MENU COULISSANT -->
   <aside id="menu" role="navigation" aria-label="Menu secondaire">
     <ul id="burger-content"></ul>
   </aside>
 
   <!-- Bouton hamburger -->
-    <button id="toggleBtn" aria-label="Ouvrir le menu">☰</button>
+  <button id="toggleBtn" aria-label="Ouvrir le menu">☰</button>
 
   <div class="app">
 
@@ -44,14 +44,23 @@
       </nav>
     </header>
 
-    
     <!-- Contenu dynamique -->
     <main id="content" class="content" role="main"></main>
 
   </div>
 
-  <script src="database.js"></script>
-  <script src="app.js"></script>
-</body>
+  <!-- Scripts -->
+  <script src="database.js" defer></script>
+  <script src="app.js" defer></script>
 
+  <!-- Service Worker -->
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js');
+    });
+  }
+  </script>
+
+</body>
 </html>
