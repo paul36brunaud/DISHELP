@@ -200,7 +200,11 @@ select {
   color: white;
   cursor: pointer;
   transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
+  display: flex;              /* ← AJOUTE */
+  align-items: center;        /* ← AJOUTE */
+  justify-content: center;    /* ← AJOUTE */
 }
+
 
 #add-ing:hover,
 .add-small:hover {
