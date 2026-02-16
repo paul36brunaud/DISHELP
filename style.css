@@ -43,12 +43,23 @@ h1 {
   letter-spacing: 2.5px;
 }
 
+
+
+
 body {
   margin: 0;
-  font-family: "Lilita One", sans-serif;
+  font-family: "Fredoka", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 110;
   background: var(--bg);
   color: var(--text);
   transition: background 0.3s, color 0.3s;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.8px;
 }
 
 button,
@@ -56,8 +67,21 @@ input,
 select,
 textarea {
   font-family: inherit;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 110;
 }
 
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  font-weight: 400;
+}
 
 /* HEADER */
 .header {
@@ -89,18 +113,26 @@ textarea {
   border: none;
   border-radius: 12px;
   color: var(--primary-green);
-  transition: 0.2s ease;
+  transition: 
+    transform 1.55s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 1.55s cubic-bezier(0.22, 1, 0.36, 1),
+    background 1.55s ease,
+    color 1.25s ease;
+  letter-spacing: 1px;
 }
 
 .menu-btn:hover {
   background: var(--accent-hover);
   color: white;
+  transform: scale(1.015);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.39);
 }
 
 .menu-btn.active {
   background: var(--primary-green);
   color: white;
 }
+
 
 /* CONTENT */
 .content {
@@ -210,6 +242,7 @@ textarea {
   width: fit-content;
   border: 1px solid var(--border);
 }
+
 .qty-input {
   width: 60px;
   padding: 0.3rem;
@@ -343,6 +376,7 @@ textarea {
 .profile-btn:hover {
   background: var(--accent-hover);
 }
+
 /* Improved allergens select */
 .profile-select {
   width: 100%;
@@ -376,6 +410,9 @@ textarea {
   padding: 0.6rem;
   background: var(--white-matte);
   color: var(--primary-green);
+  font-weight: 475;
+  font-variation-settings:
+    "wdth" 90;
 }
 
 .profile-select:focus {
@@ -497,6 +534,7 @@ button,
   background-color: var(--accent-hover);
   color: white;
 }
+
 /* ===============================
    MENU COULISSANT
 =============================== */
@@ -567,12 +605,13 @@ button,
   color: white;
   background: var(--accent);
   z-index: 20;
+  letter-spacing: 2.5px;
+  font-family: "Bowlby One", sans-serif
 }
 
 /* ===============================
    DECALAGE DE L'APP QUAND MENU OUVERT
 =============================== */
-
 .app {
   display: flex;
   flex-direction: column;
@@ -585,7 +624,7 @@ button,
 }
 
 body.menu-open .app {
-  transform: translateX(20px) scaleX(0.88);
+  transform: translateX(20px);
   border-radius: 16px;
 }
 
@@ -758,6 +797,8 @@ input[type="range"]::-moz-range-thumb:hover {
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 .reset-btn:hover {
