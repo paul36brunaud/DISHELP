@@ -45,9 +45,17 @@ h1 {
 
 body {
   margin: 0;
+  font-family: "Lilita One", sans-serif;
   background: var(--bg);
   color: var(--text);
   transition: background 0.3s, color 0.3s;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 
