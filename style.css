@@ -189,7 +189,6 @@ textarea {
   background: var(--input-bg);
   border-radius: 12px;
   padding: 0.4rem 0.8rem;
-  font-weight: 700;
   font-size: 1.1rem;
   color: var(--accent);
   display: inline-flex;
@@ -239,7 +238,6 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: 600;
   color: white;
   box-shadow: none;
 }
@@ -353,7 +351,6 @@ textarea {
   border: 1px solid var(--border);
   background: var(--input-bg);
   font-size: 1rem;
-  font-weight: 900;
   color: var(--text);
   outline: none;
   height: auto;
@@ -390,7 +387,6 @@ textarea {
 .profile-select option:checked {
   background: var(--accent);
   color: white;
-  font-weight: 600;
 }
 
 /* FIX sélection multiple allergènes */
