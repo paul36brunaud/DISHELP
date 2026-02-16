@@ -37,19 +37,19 @@
   }
 }
 
-body {
+h1 {
   font-family: "Bowlby One", sans-serif;
+  font-size: clamp(1.8rem, 5vw, 3.8rem);
+  letter-spacing: 2.5px;
+}
+
+body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   transition: background 0.3s, color 0.3s;
 }
 
-h1 {
-  font-family: "Bowlby One", sans-serif;
-  font-size: clamp(1.8rem, 5vw, 3.8rem);
-  letter-spacing: 2.5px;
-}
 
 /* HEADER */
 .header {
@@ -75,7 +75,6 @@ h1 {
 
 .menu-btn {
   padding: 1rem 0;
-  font-weight: 600;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
   background: var(--white-pure);
@@ -102,6 +101,7 @@ h1 {
   padding: 1rem;
   background: var(--bg);
 }
+
 /* RECIPE CARDS */
 .recipe-card {
   background: rgba(103, 219, 140, 0.15);
@@ -203,7 +203,6 @@ h1 {
   width: fit-content;
   border: 1px solid var(--border);
 }
-
 .qty-input {
   width: 60px;
   padding: 0.3rem;
@@ -213,6 +212,7 @@ h1 {
   background: var(--input-bg);
   color: var(--text);
 }
+
 /* remove default shadow from profile ingredient list */
 .list-box {
   list-style: none;
@@ -264,7 +264,6 @@ h1 {
   text-align: center;
   margin-bottom: 1rem;
   font-size: 1.8rem;
-  font-weight: 700;
   color: var(--text);
 }
 
@@ -302,11 +301,11 @@ h1 {
 }
 
 .section-label {
-  font-weight: 600;
   margin-bottom: 0.3rem;
   display: block;
   color: var(--primary-green);
 }
+
 .profile-input {
   width: 100%;
   padding: 0.6rem;
@@ -332,14 +331,12 @@ h1 {
   border: none;
   border-radius: 14px;
   cursor: pointer;
-  font-weight: 600;
   transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .profile-btn:hover {
   background: var(--accent-hover);
 }
-
 /* Improved allergens select */
 .profile-select {
   width: 100%;
@@ -348,12 +345,11 @@ h1 {
   border: 1px solid var(--border);
   background: var(--input-bg);
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 900;
   color: var(--text);
   outline: none;
   height: auto;
   cursor: pointer;
-  appearance: none;
   position: relative;
 }
 
@@ -373,17 +369,13 @@ h1 {
 
 .profile-select option {
   padding: 0.6rem;
-  background: var(--inpuhite-matte);
+  background: var(--white-matte);
   color: var(--primary-green);
 }
 
 .profile-select:focus {
   border-color: var(--accent);
   box-shadow: 0 0 8px rgba(103, 219, 140, 0.35);
-}
-
-.profile-select[multiple] {
-  min-height: 150px;
 }
 
 /* Sélection multiple allergènes */
@@ -403,6 +395,7 @@ h1 {
   overflow-y: auto;
   padding-right: 0;
 }
+
 /* Save confirmation toast */
 .save-confirm {
   position: fixed;
@@ -500,7 +493,6 @@ button,
   background-color: var(--accent-hover);
   color: white;
 }
-
 /* ===============================
    MENU COULISSANT
 =============================== */
@@ -518,7 +510,10 @@ button,
   box-shadow: 6px 0 20px var(--shadow-strong);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--shadow-light) transparent;
 }
+
 #menu.open {
   transform: translateX(0);
 }
@@ -537,7 +532,6 @@ button,
   font-size: 1.1rem;
   padding: 0.8rem 0;
   cursor: pointer;
-  font-weight: 600;
 }
 
 #menu::-webkit-scrollbar {
@@ -557,26 +551,18 @@ button,
   background-color: var(--shadow-strong);
 }
 
-#menu {
-  scrollbar-width: thin;
-  scrollbar-color: var(--shadow-light) transparent;
-}
-
 .title-FILTRES {
   position: sticky;
   top: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "BBH Hegarty", sans-serif;
   font-size: 35px !important;
-  font-weight: 100;
   padding: 16px 0;
   margin: 0;
   color: white;
   background: var(--accent);
   z-index: 20;
-  letter-spacing: 2.5px;
 }
 
 /* ===============================
@@ -603,9 +589,9 @@ body.menu-open .app {
 .burger-title {
   color: white;
   font-size: 1.6rem;
-  font-weight: 700;
   margin-bottom: 1.4rem;
 }
+
 /* sections */
 .burger-section {
   margin-bottom: 1.5rem;
@@ -615,8 +601,7 @@ body.menu-open .app {
   color: white;
   display: block;
   margin-bottom: 0.7rem;
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: 1.17rem;
 }
 
 /* ===== BOUTONS ===== */
@@ -628,7 +613,6 @@ body.menu-open .app {
   border: none;
   background: var(--white-pure);
   color: var(--primary-green);
-  font-weight: 600;
   cursor: pointer;
   font-size: 0.9rem;
   transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
@@ -667,7 +651,6 @@ body.menu-open .app {
   text-shadow: 0 0 8px var(--shadow-light);
   transform: scale(1.25);
 }
-
 /* ===== SLIDERS (TEMPS / PRIX) ===== */
 input[type="range"] {
   width: 100%;
@@ -706,6 +689,7 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]::-moz-range-thumb:hover {
   transform: scale(1.12);
 }
+
 /* ===== GARDE-MANGER SWITCH ===== */
 .pantry-label {
   display: flex;
@@ -756,7 +740,6 @@ input[type="range"]::-moz-range-thumb:hover {
 /* texte */
 .pantry-text {
   color: white;
-  font-weight: 700;
   font-size: 1rem;
 }
 
@@ -768,7 +751,6 @@ input[type="range"]::-moz-range-thumb:hover {
   border: none;
   background: var(--white-pure);
   color: var(--primary-green);
-  font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
@@ -837,14 +819,12 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .clear-btn {
   width: 5rem;
-  font-family: "Poppins", sans-serif;
   margin-left: 1rem;
   padding: 0.5rem 0.1rem;
   border-radius: 15px;
   border: none;
   background: var(--primary-green);
   color: white;
-  font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
   transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
