@@ -11,6 +11,11 @@
   --accent: #67db8c;
   --accent-hover: #3d8855;
   --primary-green: #4caf6c;
+  --white-matte: #f5f5f5;
+  --white-pure: #ffffff;
+  --yellow-star: #ffd84d;
+  --soft-color: #aaaaaa;
+
 
   /* Ombres */
   --shadow-light: rgba(0,0,0,0.08);
@@ -25,6 +30,7 @@
     --input-bg: #111111;
     --muted-text: #aaaaaa;
     --border: #333333;
+    --soft-color: #1f502e;
 
     --shadow-light: rgba(0,0,0,0.25);
     --shadow-strong: rgba(0,0,0,0.4);
@@ -32,7 +38,7 @@
 }
 
 body {
-  font-family: "Poppins", sans-serif;
+  font-family: "Bowlby One", sans-serif;
   margin: 0;
   background: var(--bg);
   color: var(--text);
@@ -72,8 +78,8 @@ h1 {
   font-weight: 600;
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   cursor: pointer;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
+  background: var(--white-pure);
+  border: none;
   border-radius: 12px;
   color: var(--primary-green);
   transition: 0.2s ease;
@@ -137,8 +143,8 @@ h1 {
   font-size: 1rem;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--input-bg);
-  color: var(--text);
+  background: var(--white-matte);
+  color: #000000;
 }
 
 /* Boutons + */
@@ -263,7 +269,7 @@ h1 {
 }
 
 .profile-card {
-  background: var(--card-bg);
+  background: var(--soft-color);
   border-radius: 18px;
   padding: 1.5rem;
   width: 90%;
@@ -307,8 +313,8 @@ h1 {
   border: 1px solid var(--border);
   border-radius: 12px;
   font-size: 1rem;
-  background: var(--input-bg);
-  color: var(--text);
+  background: var(--white-matte);
+  color: #000000;
 }
 
 .small-input-row {
@@ -367,8 +373,8 @@ h1 {
 
 .profile-select option {
   padding: 0.6rem;
-  background: var(--input-bg);
-  color: var(--text);
+  background: var(--inpuhite-matte);
+  color: var(--primary-green);
 }
 
 .profile-select:focus {
@@ -393,7 +399,7 @@ h1 {
   -webkit-appearance: auto;
   height: auto;
   min-height: 160px;
-  background: var(--input-bg);
+  background: var(--white-matte);
   overflow-y: auto;
   padding-right: 0;
 }
@@ -620,7 +626,7 @@ body.menu-open .app {
   padding: 0.45rem 1rem;
   border-radius: 22px;
   border: none;
-  background: var(--input-bg);
+  background: var(--white-pure);
   color: var(--primary-green);
   font-weight: 600;
   cursor: pointer;
@@ -657,7 +663,7 @@ body.menu-open .app {
 }
 
 .star.active {
-  color: var(--accent);
+  color: var(--yellow-star);
   text-shadow: 0 0 8px var(--shadow-light);
   transform: scale(1.25);
 }
@@ -718,7 +724,7 @@ input[type="range"]::-moz-range-thumb:hover {
 .pantry-slider {
   width: 54px;
   height: 28px;
-  background: var(--border);
+  background: var(--muted-text);
   border-radius: 30px;
   position: relative;
   transition: background 0.25s ease;
@@ -732,7 +738,7 @@ input[type="range"]::-moz-range-thumb:hover {
   height: 22px;
   left: 3px;
   top: 3px;
-  background: var(--input-bg);
+  background: var(--white-pure);
   border-radius: 50%;
   transition: transform 0.25s ease;
   box-shadow: 0 3px 8px var(--shadow-strong);
@@ -760,7 +766,7 @@ input[type="range"]::-moz-range-thumb:hover {
   padding: 0.85rem;
   border-radius: 14px;
   border: none;
-  background: var(--input-bg);
+  background: var(--white-pure);
   color: var(--primary-green);
   font-weight: 700;
   font-size: 1rem;
@@ -797,7 +803,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* cartes */
 .home-card {
-  background: var(--card-bg);
+  background: var(--soft-color);
   border-radius: 18px;
   padding: 1.5rem 1.2rem;
   text-align: center;
@@ -830,7 +836,7 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .clear-btn {
-  width: 6%;
+  width: 5rem;
   font-family: "Poppins", sans-serif;
   margin-left: 1rem;
   padding: 0.5rem 0.1rem;
