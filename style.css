@@ -113,11 +113,11 @@ select {
   border: none;
   border-radius: 12px;
   color: var(--primary-green);
-  transition: 
-    transform 1.55s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 1.55s cubic-bezier(0.22, 1, 0.36, 1),
-    background 1.55s ease,
-    color 1.25s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    color 0.25s ease;
   letter-spacing: 1px;
 }
 
@@ -188,27 +188,48 @@ select {
 }
 
 /* Boutons + */
+#add-ing:hover,
+.add-small:hover {
+  background: var(--accent-hover);
+}
+
 #add-ing,
 .add-small {
   width: 3rem;
   height: 3rem;
-  padding: 0;
-  font-size: 1.6em;
   border: none;
   border-radius: 50%;
   background: var(--primary-green);
-  color: white;
   cursor: pointer;
-  transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
-  display: flex;              /* ← AJOUTE */
-  align-items: center;        /* ← AJOUTE */
-  justify-content: center;    /* ← AJOUTE */
+  position: relative;
 }
 
+/* barre horizontale */
+#add-ing::before,
+.add-small::before {
+  content: "";
+  position: absolute;
+  width: 40%;
+  height: 4px;
+  background: white;
+  border-radius: 2px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
-#add-ing:hover,
-.add-small:hover {
-  background: var(--accent-hover);
+/* barre verticale */
+#add-ing::after,
+.add-small::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 40%;
+  background: white;
+  border-radius: 2px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Liste du garde-manger */
@@ -222,17 +243,31 @@ select {
 }
 
 #ing-list li {
-  background: var(--input-bg);
+  background: var(--primary-green);
   border-radius: 12px;
-  padding: 0.4rem 0.8rem;
-  font-size: 1.1rem;
-  color: var(--accent);
-  display: inline-flex;
-  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+  font-size: 1.05rem;
+  color: white;
+  display: flex;
   align-items: center;
+  gap: 0.6rem;
   width: fit-content;
-  box-sizing: border-box;
   border: 1px solid var(--border);
+}
+
+.ing-del {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 0.3rem;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.ing-del:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
 }
 
 .pantry-item {
@@ -248,14 +283,28 @@ select {
 }
 
 .qty-input {
-  width: 60px;
-  padding: 0.3rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
+  width: 55px;
+  height: 32px;
+  text-align: center;
+  font-weight: 700;        /* chiffre en gras */
+  font-family: inherit;    
   font-size: 1rem;
-  background: var(--input-bg);
-  color: var(--text);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);   /* tes couleurs d'origine */
+  color: var(--primary-green);   /* ta couleur d'origine */
+  padding: 0 6px;  /* espace pour éviter que le chiffre colle aux flèches */
+  appearance: auto;
+  -webkit-appearance: auto;
 }
+
+/* Force l'affichage des flèches */
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+  opacity: 1;
+  display: block;
+}
+
 
 /* remove default shadow from profile ingredient list */
 .list-box {
@@ -485,12 +534,7 @@ button:active,
   transition: transform 0.08s, opacity 0.08s;
 }
 
-button,
-.menu-btn,
-.profile-btn,
-#toggleBtn,
-#add-ing,
-.add-small {
+button {
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
@@ -614,22 +658,59 @@ button,
 }
 
 /* ===============================
-   DECALAGE DE L'APP QUAND MENU OUVERT
+   APP PRINCIPALE
 =============================== */
+
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   position: relative;
   background: var(--bg);
-  transition: transform 0.3s ease;
-  will-change: transform;
-  transform-origin: right;
+  transition: background 0.3s ease;
 }
 
-body.menu-open .app {
-  transform: translateX(20px);
-  border-radius: 16px;
+/* ===============================
+   OVERLAY SOMBRE QUAND MENU OUVERT
+=============================== */
+
+.app::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease;
+  z-index: 900;
+}
+
+/* Quand le menu est ouvert */
+body.menu-open .app::after {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(1px); /* optionnel mais premium */
+}
+
+/* ===============================
+   MENU (doit être au-dessus)
+=============================== */
+
+#menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background-color: var(--accent);
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000; /* au-dessus de l’overlay */
+  padding: 5rem 1.5rem 1.5rem;
+  box-shadow: 6px 0 20px var(--shadow-strong);
+  overflow-y: auto;
+}
+
+#menu.open {
+  transform: translateX(0);
 }
 
 /* ===== MENU BURGER CONTENU ===== */
@@ -886,4 +967,13 @@ input[type="range"]::-moz-range-thumb:hover {
 .clear-btn:active {
   transform: scale(0.95);
   opacity: 0.8;
+}
+
+button,
+.menu-btn,
+.profile-btn,
+#toggleBtn,
+#add-ing,
+.add-small {
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }

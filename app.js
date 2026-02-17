@@ -49,7 +49,7 @@ home: `
     <h2>🧺 Mon garde-manger</h2>
     <div class="pantry-input">
       <input id="ing-input" type="text" placeholder="Ajouter un ingrédient..." />
-      <button id="add-ing" type="button">+</button>
+      <button id="add-ing" type="button"></button>
       <button id="clear-pantry" class="clear-btn">VIDER</button>
     </div>
     <ul id="ing-list"></ul>
@@ -86,7 +86,7 @@ home: `
           <label class="section-label">🍎 Fruits :</label>
           <div class="small-input-row">
             <input type="text" id="fruits" placeholder="Ajouter un fruit" class="profile-input" />
-            <button type="button" id="add-fruit" class="add-small">+</button>
+            <button type="button" id="add-fruit" class="add-small"></button>
           </div>
           <ul id="fruit-list" class="list-box"></ul>
         </div>
@@ -95,7 +95,7 @@ home: `
           <label class="section-label">🥕 Légumes :</label>
           <div class="small-input-row">
             <input type="text" id="vegetables" placeholder="Ajouter un légume" class="profile-input" />
-            <button type="button" id="add-veg" class="add-small">+</button>
+            <button type="button" id="add-veg" class="add-small"></button>
           </div>
           <ul id="veg-list" class="list-box"></ul>
         </div>
