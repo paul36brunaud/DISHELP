@@ -152,25 +152,42 @@ function showPage(target, filter = null) {
     const menu = generateDailyMenu();
     const warningHtml = menu.warning ? `<p class="warning-text">${menu.warning}</p>` : "";
 
+    if (menu.error) {
+      container.innerHTML = `
+        <div class="home-daily-card">
+          <div class="home-daily-card-top">
+            <span class="home-daily-badge">Recette du jour</span>
+          </div>
+          <p class="warning-text">${menu.error}</p>
+        </div>
+      `;
+      return;
+    }
+
     container.innerHTML = `
       <div class="home-daily-card">
         <div class="home-daily-card-top">
           <span class="home-daily-badge">Recette du jour</span>
-          <span class="home-daily-time">⏱ ${menu.time} min</span>
+          <span class="home-daily-time">⏱ ${menu.recipe.time} min</span>
         </div>
         ${warningHtml}
-        <h3>${menu.name}</h3>
-        <p class="home-daily-ingredients">${menu.ingredients.join(", ")}</p>
+        <h3>${menu.recipe.name}</h3>
+        <p class="home-daily-ingredients">${menu.recipe.ingredients.join(", ")}</p>
         <div class="home-daily-actions">
-          <button type="button" class="home-daily-view">Voir les recettes</button>
+          <button type="button" class="home-daily-view">Voir la recette du jour</button>
         </div>
       </div>
+      <div id="home-recipe-detail"></div>
     `;
 
     const button = container.querySelector(".home-daily-view");
     if (button) {
       button.addEventListener("click", () => {
-        showPage("recipes", { adapted: true });
+        renderHomeRecipeDetail(menu.recipe);
+        const detailContainer = document.getElementById("home-recipe-detail");
+        if (detailContainer) {
+          detailContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       });
     }
   }
@@ -195,6 +212,62 @@ function showPage(target, filter = null) {
     // ✅ Toujours actif
     renderBurgerMenu();
   }
+}
+
+function renderHomeRecipeDetail(recipe) {
+  const container = document.getElementById("home-recipe-detail");
+  if (!container || !recipe) return;
+
+  container.innerHTML = `
+    <div class="home-recipe-detail-panel">
+      <div class="home-recipe-detail-header">
+        <div>
+          <span class="recipe-detail-pill">Recette du jour</span>
+          <h3>${recipe.name}</h3>
+        </div>
+        <button type="button" class="recipe-detail-close">✕ Fermer</button>
+      </div>
+      <div class="recipe-detail-meta">
+        <span>⏱ ${recipe.time} min</span>
+        <span>${formatDifficulty(recipe)}</span>
+        <span>${formatRegime(recipe)}</span>
+      </div>
+      <div class="recipe-tags">${(recipe.tags || []).map(tag => `<span class="recipe-tag">${tag}</span>`).join("")}</div>
+      <div class="recipe-section">
+        <h4>Ingrédients</h4>
+        <p>${recipe.ingredients.join(", ")}</p>
+      </div>
+      <div class="recipe-section">
+        <h4>Ustensiles</h4>
+        <p>${recipe.utensils.join(", ")}</p>
+      </div>
+      <div class="recipe-section">
+        <h4>Préparation</h4>
+        <ol>${recipe.steps.map(step => `<li>${step}</li>`).join("")}</ol>
+      </div>
+    </div>
+  `;
+
+  const closeButton = container.querySelector(".recipe-detail-close");
+  if (closeButton) {
+    closeButton.addEventListener("click", () => {
+      container.innerHTML = "";
+    });
+  }
+}
+
+function formatDifficulty(recipe) {
+  if (!recipe || typeof recipe.time !== "number") return "Difficulté inconnue";
+  if (recipe.time <= 15) return "Facile";
+  if (recipe.time <= 30) return "Moyen";
+  return "Difficile";
+}
+
+function formatRegime(recipe) {
+  const regimeTags = ["végétarien", "vegan", "sans gluten", "léger", "salade", "sucré", "poisson", "italienne", "asiatique"];
+  const tags = (recipe.tags || []).map(t => t.toLowerCase());
+  const found = regimeTags.filter(tag => tags.includes(tag));
+  return found.length ? found.join(" · ") : "Tous régimes";
 }
 
 function initHomeMenus() {
@@ -338,7 +411,7 @@ function renderFavorites() {
             <div class="recipe-summary" role="button" tabindex="0" aria-expanded="false">
               <h3>${fav.name}</h3>
               <p>${fav.description || "Favori"}</p>
-              <button class="fav-remove" data-index="${i}" type="button">Supprimer</button>
+              <button class="fav-remove" data-index="${i}" type="button">✕</button>
             </div>
           </div>
         `;
@@ -350,7 +423,7 @@ function renderFavorites() {
             <h3>${recipe.name}</h3>
             <p>${recipe.tags ? recipe.tags.join(", ") : ""}</p>
             <p><strong>⏱ ${recipe.time} min</strong></p>
-            <button class="fav-remove" data-index="${i}" type="button">Supprimer</button>
+            <button class="fav-remove" data-index="${i}" type="button">✕</button>
           </div>
           <div class="recipe-details" hidden>
             <p><strong>Ingrédients :</strong> ${recipe.ingredients.join(", ")}</p>
@@ -415,14 +488,23 @@ function renderRecipes(filter = null) {
     .map(recipe => `
       <div class="recipe-card" data-recipe="${recipe.name}">
         <div class="recipe-summary" role="button" tabindex="0" aria-expanded="false">
-          <h3>${recipe.name}</h3>
-          <p>${recipe.tags ? recipe.tags.join(", ") : ""}</p>
-          <p><strong>⏱ ${recipe.time} min</strong></p>
-          <button class="fav-btn" type="button" aria-label="Ajouter aux favoris"></button>
+          <div class="recipe-card-head">
+            <div>
+              <h3>${recipe.name}</h3>
+              <div class="recipe-meta">
+                <span>⏱ ${recipe.time} min</span>
+                <span>${formatDifficulty(recipe)}</span>
+              </div>
+              <div class="recipe-tags">${(recipe.tags || []).map(tag => `<span class="recipe-tag">${tag}</span>`).join("")}</div>
+            </div>
+            <button class="fav-btn" type="button" aria-label="Ajouter aux favoris"></button>
+          </div>
         </div>
         <div class="recipe-details" hidden>
-          <p><strong>Ingrédients :</strong> ${recipe.ingredients.join(", ")}</p>
-          <p><strong>Ustensiles :</strong> ${recipe.utensils.join(", ")}</p>
+          <div class="recipe-detail-grid">
+            <div><strong>Ingrédients :</strong> ${recipe.ingredients.join(", ")}</div>
+            <div><strong>Ustensiles :</strong> ${recipe.utensils.join(", ")}</div>
+          </div>
           <ol>${recipe.steps.map(step => `<li>${step}</li>`).join("")}</ol>
         </div>
       </div>
@@ -695,66 +777,28 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================================
 
 function generateDailyMenu() {
-    const pantryRaw = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
     const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
     const normalizedAllergens = allergens.map(a => a.toLowerCase());
-    const pantryNormalized = pantryRaw.map(item => {
-      if (typeof item === "string") return item.toLowerCase();
-      if (item && item.name) return item.name.toLowerCase();
-      return "";
-    });
-
-    // Filtrer les recettes compatibles
     const allRecipes = (window.DB && window.DB.recipes) || [];
 
-    const availableRecipes = allRecipes.filter(recipe => {
-        const hasAllIngredients = recipe.ingredients.every(ing =>
-            pantryNormalized.includes(ing.toLowerCase())
-        );
-
-        const safeWithAllergens = !recipe.allergens.some(allergen =>
-            normalizedAllergens.includes(allergen.toLowerCase())
-        );
-
-        return hasAllIngredients && safeWithAllergens;
-    });
-
-    if (availableRecipes.length === 0) {
-        const safeRecipes = allRecipes.filter(recipe => {
-            return !recipe.allergens.some(allergen => normalizedAllergens.includes(allergen.toLowerCase()));
-        });
-
-        let chosen;
-        let warning = "Aucune recette compatible avec ton garde-manger actuel. Voici une suggestion du jour.";
-
-        if (safeRecipes.length > 0) {
-            chosen = safeRecipes[Math.floor(Math.random() * safeRecipes.length)];
-        } else if (allRecipes.length > 0) {
-            chosen = allRecipes[Math.floor(Math.random() * allRecipes.length)];
-            warning = "Aucune recette sans allergènes trouvée. Voici une suggestion du jour.";
-        } else {
-            return { error: "Aucune recette disponible dans la base de données." };
-        }
-
-        return {
-            name: chosen.name,
-            ingredients: chosen.ingredients,
-            utensils: chosen.utensils,
-            steps: chosen.steps,
-            time: chosen.time,
-            warning
-        };
+    if (!allRecipes.length) {
+      return { error: "Aucune recette disponible dans la base de données." };
     }
 
-    // Choisir une recette au hasard
-    const chosen = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
+    const safeRecipes = allRecipes.filter(recipe => {
+      return !recipe.allergens.some(allergen => normalizedAllergens.includes(allergen.toLowerCase()));
+    });
+
+    const chosen = safeRecipes.length > 0
+      ? safeRecipes[Math.floor(Math.random() * safeRecipes.length)]
+      : allRecipes[Math.floor(Math.random() * allRecipes.length)];
+
+    const warning = safeRecipes.length === 0
+      ? "Aucune recette sans allergènes trouvée. Voici une suggestion du jour." : "";
 
     return {
-        name: chosen.name,
-        ingredients: chosen.ingredients,
-        utensils: chosen.utensils,
-        steps: chosen.steps,
-        time: chosen.time
+      recipe: chosen,
+      warning
     };
 }
 
