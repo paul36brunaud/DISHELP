@@ -15,7 +15,7 @@ let pantry = safeParse("dishelp_pantry");
 let favorites = safeParse("dishelp_favorites");
 let fruitList = safeParse("dishelp_fruitList");
 let vegList = safeParse("dishelp_vegList");
-
+let currentRecipeFilter = null;
 
 // --- Pages ---
 const pages = {
@@ -25,11 +25,13 @@ home: `
     Découvrez des recettes adaptées à vos goûts et à votre garde-manger.
   </p>
 
+  <div id="home-daily-menu"></div>
+
   <div class="home-menus">
-    <div class="home-card" data-action="menu-jour">
-      <span class="home-icon">📅</span>
-      <h3>Menu du jour</h3>
-      <p>Un repas adapté à ton garde-manger</p>
+    <div class="home-card" data-action="adapted-recipes">
+      <span class="home-icon">🧺</span>
+      <h3>Recettes adaptées</h3>
+      <p>Voir plus de recettes en fonction de ton garde-manger</p>
     </div>
 
     <div class="home-card" data-action="recettes">
@@ -115,7 +117,13 @@ home: `
 };
 
 // --- Navigation ---
-function showPage(target) {
+function showPage(target, filter = null) {
+  if (target !== "recipes") {
+    currentRecipeFilter = null;
+  } else {
+    currentRecipeFilter = filter;
+  }
+
   content.innerHTML = pages[target] || "<p>Page introuvable.</p>";
 
   const introText = document.getElementById("intro-text");
@@ -132,9 +140,43 @@ function showPage(target) {
   if (target === "pantry") renderPantry();
   if (target === "favorites") renderFavorites();
   if (target === "profile") initProfile();
-  if (target === "recipes") renderRecipes();
+  if (target === "recipes") renderRecipes(currentRecipeFilter);
+  if (target === "home") renderHomeDailyMenu();
 
   const toggleBtn = document.getElementById("toggleBtn");
+
+  function renderHomeDailyMenu() {
+    const container = document.getElementById("home-daily-menu");
+    if (!container) return;
+
+    const menu = generateDailyMenu();
+    if (menu.error) {
+      container.innerHTML = `
+        <div class="home-daily-card">
+          <h3>Menu du jour</h3>
+          <p>${menu.error}</p>
+          <button type="button" class="home-daily-more">Voir les recettes</button>
+        </div>
+      `;
+    } else {
+      container.innerHTML = `
+        <div class="home-daily-card">
+          <h3>Recette du jour</h3>
+          <p><strong>${menu.name}</strong></p>
+          <p>${menu.ingredients.join(", ")}</p>
+          <p><strong>⏱ ${menu.time} min</strong></p>
+          <button type="button" class="home-daily-more">Voir plus de recettes adaptées</button>
+        </div>
+      `;
+    }
+
+    const button = container.querySelector(".home-daily-more");
+    if (button) {
+      button.addEventListener("click", () => {
+        showPage("recipes", { adapted: true });
+      });
+    }
+  }
   const sideMenu = document.getElementById("menu");
 
   if (toggleBtn && sideMenu) {
@@ -168,9 +210,8 @@ function initHomeMenus() {
 
       if (action === "recettes") showPage("recipes");
 
-      if (action === "menu-jour") {
-        const menu = generateDailyMenu();
-        alert(menu.error || `Menu du jour : ${menu.name}`);
+      if (action === "adapted-recipes") {
+        showPage("recipes", { adapted: true });
       }
     });
   });
@@ -292,16 +333,46 @@ function renderFavorites() {
   }
 
   list.innerHTML = favorites
-    .map((f, i) => `
-      <div class="recipe-card" data-recipe="${f.name}">
-        ${f.full}
-        <button class="fav-toggle" data-index="${i}" style="margin-top:10px;">❌</button>
-      </div>
-    `)
+    .map((fav, i) => {
+      const recipe = (window.DB && window.DB.recipes.find(r => r.name === fav.name)) || null;
+      if (!recipe) {
+        return `
+          <div class="recipe-card" data-recipe="${fav.name}">
+            <div class="recipe-summary" role="button" tabindex="0" aria-expanded="false">
+              <h3>${fav.name}</h3>
+              <p>${fav.description || "Favori"}</p>
+              <button class="fav-remove" data-index="${i}" type="button">Supprimer</button>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="recipe-card" data-recipe="${recipe.name}">
+          <div class="recipe-summary" role="button" tabindex="0" aria-expanded="false">
+            <h3>${recipe.name}</h3>
+            <p>${recipe.tags ? recipe.tags.join(", ") : ""}</p>
+            <p><strong>⏱ ${recipe.time} min</strong></p>
+            <button class="fav-remove" data-index="${i}" type="button">Supprimer</button>
+          </div>
+          <div class="recipe-details" hidden>
+            <p><strong>Ingrédients :</strong> ${recipe.ingredients.join(", ")}</p>
+            <p><strong>Ustensiles :</strong> ${recipe.utensils.join(", ")}</p>
+            <ol>${recipe.steps.map(step => `<li>${step}</li>`).join("")}</ol>
+          </div>
+        </div>
+      `;
+    })
     .join("");
 
-  list.querySelectorAll(".fav-toggle").forEach((btn) => {
-    btn.addEventListener("click", () => {
+  initRecipeCards();
+  initFavoriteCards();
+}
+
+function initFavoriteCards() {
+  document.querySelectorAll(".fav-remove").forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      event.stopPropagation();
       const index = parseInt(btn.dataset.index, 10);
       if (Number.isNaN(index)) return;
       favorites.splice(index, 1);
@@ -312,13 +383,34 @@ function renderFavorites() {
   });
 }
 
-function renderRecipes() {
+function getAdaptedRecipes() {
+  const pantryRaw = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
+  const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
+  const normalizedAllergens = allergens.map(a => a.toLowerCase());
+  const pantryNormalized = pantryRaw.map(item => typeof item === "string" ? item.toLowerCase() : item.name?.toLowerCase() || "");
+
+  return (window.DB && window.DB.recipes || []).filter(recipe => {
+    const hasAllIngredients = recipe.ingredients.every(ing => pantryNormalized.includes(ing.toLowerCase()));
+    const safeWithAllergens = !recipe.allergens.some(allergen => normalizedAllergens.includes(allergen.toLowerCase()));
+    return hasAllIngredients && safeWithAllergens;
+  });
+}
+
+function renderRecipes(filter = null) {
   const container = document.getElementById("recipe-list");
   if (!container) return;
 
-  const recipes = (window.DB && window.DB.recipes) || [];
+  const allRecipes = (window.DB && window.DB.recipes) || [];
+  let recipes = allRecipes;
+  let header = "📚 Recettes";
+
+  if (filter && filter.adapted) {
+    recipes = getAdaptedRecipes();
+    header = "📚 Recettes adaptées";
+  }
+
   if (!recipes.length) {
-    container.innerHTML = "<p>Aucune recette disponible.</p>";
+    container.innerHTML = `<h2>${header}</h2><p>Aucune recette adaptée trouvée.</p>`;
     return;
   }
 
