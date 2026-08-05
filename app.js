@@ -497,8 +497,11 @@ function renderRecipes(filter = null) {
               </div>
               <div class="recipe-tags">${(recipe.tags || []).map(tag => `<span class="recipe-tag">${tag}</span>`).join("")}</div>
             </div>
-            <button class="fav-btn" type="button" aria-label="Ajouter aux favoris"></button>
           </div>
+        </div>
+        <div class="recipe-card-actions">
+          <button class="recipe-open-btn" type="button">Recette</button>
+          <button class="fav-btn" type="button" aria-label="Ajouter aux favoris">♥</button>
         </div>
         <div class="recipe-details" hidden>
           <div class="recipe-detail-grid">
@@ -519,13 +522,22 @@ function initRecipeCards() {
   document.querySelectorAll(".recipe-card").forEach((card) => {
     const summary = card.querySelector(".recipe-summary");
     const details = card.querySelector(".recipe-details");
+    const openBtn = card.querySelector(".recipe-open-btn");
     if (!summary || !details) return;
 
     summary.addEventListener("click", (event) => {
-      if (event.target.closest(".fav-btn")) return;
+      if (event.target.closest(".fav-btn") || event.target.closest(".recipe-open-btn")) return;
       details.hidden = !details.hidden;
       summary.setAttribute("aria-expanded", String(!details.hidden));
     });
+
+    if (openBtn) {
+      openBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        details.hidden = false;
+        summary.setAttribute("aria-expanded", "true");
+      });
+    }
 
     summary.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
