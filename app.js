@@ -150,27 +150,24 @@ function showPage(target, filter = null) {
     if (!container) return;
 
     const menu = generateDailyMenu();
-    if (menu.error) {
-      container.innerHTML = `
-        <div class="home-daily-card">
-          <h3>Menu du jour</h3>
-          <p>${menu.error}</p>
-          <button type="button" class="home-daily-more">Voir les recettes</button>
-        </div>
-      `;
-    } else {
-      container.innerHTML = `
-        <div class="home-daily-card">
-          <h3>Recette du jour</h3>
-          <p><strong>${menu.name}</strong></p>
-          <p>${menu.ingredients.join(", ")}</p>
-          <p><strong>⏱ ${menu.time} min</strong></p>
-          <button type="button" class="home-daily-more">Voir plus de recettes adaptées</button>
-        </div>
-      `;
-    }
+    const warningHtml = menu.warning ? `<p class="warning-text">${menu.warning}</p>` : "";
 
-    const button = container.querySelector(".home-daily-more");
+    container.innerHTML = `
+      <div class="home-daily-card">
+        <div class="home-daily-card-top">
+          <span class="home-daily-badge">Recette du jour</span>
+          <span class="home-daily-time">⏱ ${menu.time} min</span>
+        </div>
+        ${warningHtml}
+        <h3>${menu.name}</h3>
+        <p class="home-daily-ingredients">${menu.ingredients.join(", ")}</p>
+        <div class="home-daily-actions">
+          <button type="button" class="home-daily-view">Voir les recettes</button>
+        </div>
+      </div>
+    `;
+
+    const button = container.querySelector(".home-daily-view");
     if (button) {
       button.addEventListener("click", () => {
         showPage("recipes", { adapted: true });
@@ -708,7 +705,9 @@ function generateDailyMenu() {
     });
 
     // Filtrer les recettes compatibles
-    const availableRecipes = DB.recipes.filter(recipe => {
+    const allRecipes = (window.DB && window.DB.recipes) || [];
+
+    const availableRecipes = allRecipes.filter(recipe => {
         const hasAllIngredients = recipe.ingredients.every(ing =>
             pantryNormalized.includes(ing.toLowerCase())
         );
@@ -721,8 +720,29 @@ function generateDailyMenu() {
     });
 
     if (availableRecipes.length === 0) {
+        const safeRecipes = allRecipes.filter(recipe => {
+            return !recipe.allergens.some(allergen => normalizedAllergens.includes(allergen.toLowerCase()));
+        });
+
+        let chosen;
+        let warning = "Aucune recette compatible avec ton garde-manger actuel. Voici une suggestion du jour.";
+
+        if (safeRecipes.length > 0) {
+            chosen = safeRecipes[Math.floor(Math.random() * safeRecipes.length)];
+        } else if (allRecipes.length > 0) {
+            chosen = allRecipes[Math.floor(Math.random() * allRecipes.length)];
+            warning = "Aucune recette sans allergènes trouvée. Voici une suggestion du jour.";
+        } else {
+            return { error: "Aucune recette disponible dans la base de données." };
+        }
+
         return {
-            error: "Aucune recette disponible avec votre garde-manger et vos allergènes."
+            name: chosen.name,
+            ingredients: chosen.ingredients,
+            utensils: chosen.utensils,
+            steps: chosen.steps,
+            time: chosen.time,
+            warning
         };
     }
 
