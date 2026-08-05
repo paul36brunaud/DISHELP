@@ -169,6 +169,7 @@ function showPage(target, filter = null) {
         <div class="home-daily-card-top">
           <span class="home-daily-badge">Recette du jour</span>
           <span class="home-daily-time">⏱ ${menu.recipe.time} min</span>
+          <span class="home-daily-servings">Pour ${getBurgerSettings().people} personnes</span>
         </div>
         ${warningHtml}
         <h3>${menu.recipe.name}</h3>
@@ -177,17 +178,12 @@ function showPage(target, filter = null) {
           <button type="button" class="home-daily-view">Voir la recette du jour</button>
         </div>
       </div>
-      <div id="home-recipe-detail"></div>
     `;
 
     const button = container.querySelector(".home-daily-view");
     if (button) {
       button.addEventListener("click", () => {
-        renderHomeRecipeDetail(menu.recipe);
-        const detailContainer = document.getElementById("home-recipe-detail");
-        if (detailContainer) {
-          detailContainer.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        renderRecipeModal(menu.recipe);
       });
     }
   }
@@ -214,28 +210,45 @@ function showPage(target, filter = null) {
   }
 }
 
-function renderHomeRecipeDetail(recipe) {
-  const container = document.getElementById("home-recipe-detail");
-  if (!container || !recipe) return;
+function renderRecipeModal(recipe) {
+  if (!recipe) return;
+  closeRecipeModal();
 
-  container.innerHTML = `
-    <div class="home-recipe-detail-panel">
-      <div class="home-recipe-detail-header">
+  const initialPeople = getBurgerSettings().people || 2;
+  const scaledIngredients = scaleIngredients(recipe.ingredients, initialPeople);
+
+  const modal = document.createElement("div");
+  modal.id = "recipe-modal";
+  modal.dataset.recipe = recipe.name;
+  modal.className = "recipe-modal";
+  modal.innerHTML = `
+    <div class="recipe-modal-backdrop"></div>
+    <div class="recipe-modal-panel" role="dialog" aria-modal="true" aria-label="Détails de la recette">
+      <div class="recipe-modal-header">
         <div>
-          <span class="recipe-detail-pill">Recette du jour</span>
+          <span class="recipe-detail-pill">Recette</span>
           <h3>${recipe.name}</h3>
         </div>
-        <button type="button" class="recipe-detail-close">✕ Fermer</button>
+        <button type="button" class="recipe-modal-close" aria-label="Fermer la recette">✕</button>
       </div>
       <div class="recipe-detail-meta">
         <span>⏱ ${recipe.time} min</span>
         <span>${formatDifficulty(recipe)}</span>
-        <span>${formatRegime(recipe)}</span>
+        <span id="modalPeopleMeta">Pour ${initialPeople} personnes</span>
+      </div>
+      <div class="recipe-servings-control">
+        <label for="modalPeopleRange">Nombre de personnes</label>
+        <div class="recipe-servings-input">
+          <input id="modalPeopleRange" type="range" min="1" max="10" value="${initialPeople}">
+          <span id="modalPeopleValue">${initialPeople}</span>
+        </div>
       </div>
       <div class="recipe-tags">${(recipe.tags || []).map(tag => `<span class="recipe-tag">${tag}</span>`).join("")}</div>
       <div class="recipe-section">
         <h4>Ingrédients</h4>
-        <p>${recipe.ingredients.join(", ")}</p>
+        <ul class="recipe-ingredients-list">
+          ${scaledIngredients.map(item => `<li>${item}</li>`).join("")}
+        </ul>
       </div>
       <div class="recipe-section">
         <h4>Ustensiles</h4>
@@ -248,12 +261,70 @@ function renderHomeRecipeDetail(recipe) {
     </div>
   `;
 
-  const closeButton = container.querySelector(".recipe-detail-close");
-  if (closeButton) {
-    closeButton.addEventListener("click", () => {
-      container.innerHTML = "";
+  document.body.appendChild(modal);
+  document.body.classList.add("modal-open");
+
+  const closeButton = modal.querySelector(".recipe-modal-close");
+  const backdrop = modal.querySelector(".recipe-modal-backdrop");
+  const peopleRange = modal.querySelector("#modalPeopleRange");
+  const peopleValue = modal.querySelector("#modalPeopleValue");
+  const peopleMeta = modal.querySelector("#modalPeopleMeta");
+  const ingredientsList = modal.querySelector(".recipe-ingredients-list");
+
+  const refreshIngredients = (people) => {
+    const list = scaleIngredients(recipe.ingredients, people);
+    if (ingredientsList) {
+      ingredientsList.innerHTML = list.map(item => `<li>${item}</li>`).join("");
+    }
+    if (peopleMeta) {
+      peopleMeta.textContent = `Pour ${people} personnes`;
+    }
+  };
+
+  if (peopleRange) {
+    peopleRange.addEventListener("input", (e) => {
+      const people = +e.target.value;
+      if (peopleValue) peopleValue.textContent = people;
+      refreshIngredients(people);
     });
   }
+
+  if (closeButton) closeButton.addEventListener("click", closeRecipeModal);
+  if (backdrop) backdrop.addEventListener("click", closeRecipeModal);
+}
+
+function closeRecipeModal() {
+  const modal = document.getElementById("recipe-modal");
+  if (!modal) return;
+  modal.remove();
+  document.body.classList.remove("modal-open");
+}
+
+function scaleIngredients(ingredients, people) {
+  if (people <= 1) return ingredients;
+  const ratio = people / 2;
+  return ingredients.map(ingredient => scaleIngredientText(ingredient, ratio));
+}
+
+function scaleIngredientText(text, ratio) {
+  const trimmed = text.trim();
+  const numericMatch = trimmed.match(/^([0-9]+(?:[.,][0-9]+)?)(\s*)(.*)$/);
+  if (numericMatch) {
+    const quantity = parseFloat(numericMatch[1].replace(",", "."));
+    const rest = numericMatch[3];
+    const scaled = quantity * ratio;
+    const formatted = Number.isInteger(scaled) ? scaled : scaled.toFixed(2).replace(/\.00$/, "").replace(/\.?0+$/, "");
+    return `${formatted}${numericMatch[2]}${rest}`;
+  }
+
+  const fractionMatch = trimmed.match(/^½(.*)$/);
+  if (fractionMatch) {
+    const scaled = 0.5 * ratio;
+    const formatted = Number.isInteger(scaled) ? scaled : scaled.toFixed(2).replace(/\.00$/, "").replace(/\.?0+$/, "");
+    return `${formatted} ${fractionMatch[1].trim()}`;
+  }
+
+  return ratio === 1 ? trimmed : `${ratio}× ${trimmed}`;
 }
 
 function formatDifficulty(recipe) {
@@ -470,6 +541,7 @@ function renderRecipes(filter = null) {
   const container = document.getElementById("recipe-list");
   if (!container) return;
 
+  const settings = getBurgerSettings();
   const allRecipes = (window.DB && window.DB.recipes) || [];
   let recipes = allRecipes;
   let header = "📚 Recettes";
@@ -494,6 +566,7 @@ function renderRecipes(filter = null) {
               <div class="recipe-meta">
                 <span>⏱ ${recipe.time} min</span>
                 <span>${formatDifficulty(recipe)}</span>
+                <span>Pour ${settings.people} pers.</span>
               </div>
               <div class="recipe-tags">${(recipe.tags || []).map(tag => `<span class="recipe-tag">${tag}</span>`).join("")}</div>
             </div>
@@ -502,13 +575,6 @@ function renderRecipes(filter = null) {
         <div class="recipe-card-actions">
           <button class="recipe-open-btn" type="button">Recette</button>
           <button class="fav-btn" type="button" aria-label="Ajouter aux favoris">♥</button>
-        </div>
-        <div class="recipe-details" hidden>
-          <div class="recipe-detail-grid">
-            <div><strong>Ingrédients :</strong> ${recipe.ingredients.join(", ")}</div>
-            <div><strong>Ustensiles :</strong> ${recipe.utensils.join(", ")}</div>
-          </div>
-          <ol>${recipe.steps.map(step => `<li>${step}</li>`).join("")}</ol>
         </div>
       </div>
     `)
@@ -520,30 +586,22 @@ function renderRecipes(filter = null) {
 
 function initRecipeCards() {
   document.querySelectorAll(".recipe-card").forEach((card) => {
-    const summary = card.querySelector(".recipe-summary");
-    const details = card.querySelector(".recipe-details");
     const openBtn = card.querySelector(".recipe-open-btn");
-    if (!summary || !details) return;
+    const recipeName = card.dataset.recipe;
+    if (!openBtn || !recipeName) return;
 
-    summary.addEventListener("click", (event) => {
-      if (event.target.closest(".fav-btn") || event.target.closest(".recipe-open-btn")) return;
-      details.hidden = !details.hidden;
-      summary.setAttribute("aria-expanded", String(!details.hidden));
-    });
+    openBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const recipe = (window.DB && window.DB.recipes.find(r => r.name === recipeName)) || null;
+      if (!recipe) return;
 
-    if (openBtn) {
-      openBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        details.hidden = false;
-        summary.setAttribute("aria-expanded", "true");
-      });
-    }
-
-    summary.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        summary.click();
+      const existingModal = document.getElementById("recipe-modal");
+      if (existingModal && existingModal.dataset.recipe === recipeName) {
+        closeRecipeModal();
+        return;
       }
+
+      renderRecipeModal(recipe);
     });
   });
 }
@@ -840,6 +898,20 @@ if (toggleBtn && sideMenu) {
 
 let burgerMenuEventsBound = false;
 
+function getBurgerSettings() {
+  const defaults = {
+    diet: null,
+    preferences: [],
+    price: 20,
+    time: 30,
+    difficulty: 2,
+    usePantry: true,
+    people: 2
+  };
+  const saved = JSON.parse(localStorage.getItem("dishelp_settings")) || {};
+  return { ...defaults, ...saved };
+}
+
 function renderBurgerMenu() {
   const container = document.getElementById("burger-content");
   if (!container) return;
@@ -849,14 +921,7 @@ function renderBurgerMenu() {
     burgerMenuEventsBound = true;
   }
 
-  const settings = JSON.parse(localStorage.getItem("dishelp_settings")) || {
-    diet: null,
-    preferences: [],
-    price: 20,
-    time: 30,
-    difficulty: 2,
-    usePantry: true
-  };
+  const settings = getBurgerSettings();
 
   container.innerHTML = `
 
@@ -907,6 +972,13 @@ function renderBurgerMenu() {
                 data-star="${i}">★</span>
         `).join("")}
       </div>
+    </li>
+
+    <!-- NOMBRE DE PERSONNES -->
+    <li class="burger-section">
+      <strong>Nombre de personnes ( <span class="people-value">${settings.people}</span> )</strong>
+      <input type="range" min="1" max="10" step="1"
+             value="${settings.people}" id="peopleRange">
     </li>
 
     <!-- GARDE-MANGER -->
@@ -973,6 +1045,17 @@ function renderBurgerMenu() {
     priceValue.textContent = settings.price;
     saveBurgerSettings(settings);
   });
+
+  const peopleRange = container.querySelector("#peopleRange");
+  const peopleValue = container.querySelector(".people-value");
+  if (peopleRange) {
+    peopleRange.addEventListener("input", e => {
+      e.stopPropagation();
+      settings.people = +e.target.value;
+      peopleValue.textContent = settings.people;
+      saveBurgerSettings(settings);
+    });
+  }
 
   container.querySelectorAll(".star").forEach(star => {
     star.addEventListener("click", e => {
