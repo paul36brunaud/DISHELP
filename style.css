@@ -155,6 +155,33 @@ select {
   transform: translateY(-3px);
 }
 
+.recipe-summary {
+  cursor: pointer;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.recipe-summary:hover {
+  opacity: 0.95;
+}
+
+.recipe-summary h3 {
+  margin: 0 0 0.4rem;
+}
+
+.recipe-details {
+  margin-top: 0.8rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  padding-top: 0.8rem;
+}
+
+.recipe-details ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
 .recipe-card button {
   background: var(--accent);
   color: white;

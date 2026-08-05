@@ -37,12 +37,18 @@ home: `
       <h3>Recettes</h3>
       <p>Toutes les idées disponibles</p>
     </div>
+  </div>
 `,
 
 
   favorites: `
     <h2>❤️ Mes favoris</h2>
     <div id="fav-list"></div>
+  `,
+
+  recipes: `
+    <h2>📚 Recettes</h2>
+    <div id="recipe-list" class="home-menus"></div>
   `,
 
   pantry: `
@@ -126,6 +132,7 @@ function showPage(target) {
   if (target === "pantry") renderPantry();
   if (target === "favorites") renderFavorites();
   if (target === "profile") initProfile();
+  if (target === "recipes") renderRecipes();
 
   const toggleBtn = document.getElementById("toggleBtn");
   const sideMenu = document.getElementById("menu");
@@ -153,10 +160,13 @@ function showPage(target) {
 
 function initHomeMenus() {
   document.querySelectorAll(".home-card").forEach(card => {
+    if (card.dataset.listenerBound === "true") return;
+    card.dataset.listenerBound = "true";
+
     card.addEventListener("click", () => {
       const action = card.dataset.action;
 
-      if (action === "recettes") showPage("home");
+      if (action === "recettes") showPage("recipes");
 
       if (action === "menu-jour") {
         const menu = generateDailyMenu();
@@ -274,6 +284,7 @@ function saveFavorites() {
 
 function renderFavorites() {
   const list = document.getElementById("fav-list");
+  if (!list) return;
 
   if (!favorites || favorites.length === 0) {
     list.innerHTML = "<p>Aucun favori pour le moment.</p>";
@@ -291,8 +302,97 @@ function renderFavorites() {
 
   list.querySelectorAll(".fav-toggle").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const index = btn.dataset.index;
+      const index = parseInt(btn.dataset.index, 10);
+      if (Number.isNaN(index)) return;
       favorites.splice(index, 1);
+      saveFavorites();
+      renderFavorites();
+      updateHeartIcons();
+    });
+  });
+}
+
+function renderRecipes() {
+  const container = document.getElementById("recipe-list");
+  if (!container) return;
+
+  const recipes = (window.DB && window.DB.recipes) || [];
+  if (!recipes.length) {
+    container.innerHTML = "<p>Aucune recette disponible.</p>";
+    return;
+  }
+
+  container.innerHTML = recipes
+    .map(recipe => `
+      <div class="recipe-card" data-recipe="${recipe.name}">
+        <div class="recipe-summary" role="button" tabindex="0" aria-expanded="false">
+          <h3>${recipe.name}</h3>
+          <p>${recipe.tags ? recipe.tags.join(", ") : ""}</p>
+          <p><strong>⏱ ${recipe.time} min</strong></p>
+          <button class="fav-btn" type="button" aria-label="Ajouter aux favoris"></button>
+        </div>
+        <div class="recipe-details" hidden>
+          <p><strong>Ingrédients :</strong> ${recipe.ingredients.join(", ")}</p>
+          <p><strong>Ustensiles :</strong> ${recipe.utensils.join(", ")}</p>
+          <ol>${recipe.steps.map(step => `<li>${step}</li>`).join("")}</ol>
+        </div>
+      </div>
+    `)
+    .join("");
+
+  initRecipeFavorites();
+  initRecipeCards();
+}
+
+function initRecipeCards() {
+  document.querySelectorAll(".recipe-card").forEach((card) => {
+    const summary = card.querySelector(".recipe-summary");
+    const details = card.querySelector(".recipe-details");
+    if (!summary || !details) return;
+
+    summary.addEventListener("click", (event) => {
+      if (event.target.closest(".fav-btn")) return;
+      details.hidden = !details.hidden;
+      summary.setAttribute("aria-expanded", String(!details.hidden));
+    });
+
+    summary.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        summary.click();
+      }
+    });
+  });
+}
+
+function initRecipeFavorites() {
+  document.querySelectorAll(".fav-btn").forEach((btn) => {
+    const recipeCard = btn.closest(".recipe-card");
+    if (!recipeCard) return;
+
+    const recipeName = recipeCard.dataset.recipe;
+    const recipe = (window.DB && window.DB.recipes.find(r => r.name === recipeName)) || null;
+    if (!recipe) return;
+
+    if (favorites.some(fav => fav.name === recipeName)) {
+      setToCross(btn);
+    } else {
+      setToHeart(btn);
+    }
+
+    btn.addEventListener("click", () => {
+      if (favorites.some(fav => fav.name === recipeName)) {
+        favorites = favorites.filter(fav => fav.name !== recipeName);
+        setToHeart(btn);
+      } else {
+        favorites.push({
+          name: recipe.name,
+          description: recipe.tags ? recipe.tags.join(", ") : "",
+          full: `<h3>${recipe.name}</h3><p>${recipe.tags ? recipe.tags.join(", ") : ""}</p>`
+        });
+        setToCross(btn);
+      }
+
       saveFavorites();
       renderFavorites();
       updateHeartIcons();
@@ -506,17 +606,23 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================================
 
 function generateDailyMenu() {
-    const pantry = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
+    const pantryRaw = JSON.parse(localStorage.getItem("dishelp_pantry")) || [];
     const allergens = JSON.parse(localStorage.getItem("dishelp_allergens")) || [];
+    const normalizedAllergens = allergens.map(a => a.toLowerCase());
+    const pantryNormalized = pantryRaw.map(item => {
+      if (typeof item === "string") return item.toLowerCase();
+      if (item && item.name) return item.name.toLowerCase();
+      return "";
+    });
 
     // Filtrer les recettes compatibles
     const availableRecipes = DB.recipes.filter(recipe => {
         const hasAllIngredients = recipe.ingredients.every(ing =>
-            pantry.some(p => p.name.toLowerCase() === ing.toLowerCase())
+            pantryNormalized.includes(ing.toLowerCase())
         );
 
-        const safeWithAllergens = !recipe.ingredients.some(ing =>
-            allergens.includes(ing.toLowerCase())
+        const safeWithAllergens = !recipe.allergens.some(allergen =>
+            normalizedAllergens.includes(allergen.toLowerCase())
         );
 
         return hasAllIngredients && safeWithAllergens;
@@ -564,9 +670,16 @@ if (toggleBtn && sideMenu) {
   });
 }
 
+let burgerMenuEventsBound = false;
+
 function renderBurgerMenu() {
   const container = document.getElementById("burger-content");
   if (!container) return;
+
+  if (!burgerMenuEventsBound) {
+    container.addEventListener("click", e => e.stopPropagation());
+    burgerMenuEventsBound = true;
+  }
 
   const settings = JSON.parse(localStorage.getItem("dishelp_settings")) || {
     diet: null,
@@ -646,9 +759,6 @@ function renderBurgerMenu() {
   `;
 
   /* ===== EVENTS ===== */
-
-  // empêcher la fermeture du menu
-  container.addEventListener("click", e => e.stopPropagation());
 
   // régime
   container.querySelectorAll(".diet-btn").forEach(btn => {
